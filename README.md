@@ -1,1 +1,1 @@
-# irm-kmi-ha
+# IRM KMI Weather integration for Home Assistant
