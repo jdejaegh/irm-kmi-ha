@@ -3,6 +3,8 @@
 Home Assistant weather provider using data from Belgian IRM KMI. 
 The data is collected via their non-public mobile application API.
 
+Although the provider is Belgian, the data is available for Belgium 🇧🇪, Luxembourg 🇱🇺, and The Netherlands 🇳🇱
+
 ## Roadmap
 
 - [ ] Basic weather provider capability (current weather only)
