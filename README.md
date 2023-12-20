@@ -1,8 +1,21 @@
 # IRM KMI Weather integration for Home Assistant
 
+Home Assistant weather provider using data from Belgian IRM KMI. 
+The data is collected via their non-public mobile application API.
+
+## Roadmap
+
+- [ ] Basic weather provider capability (current weather only)
+- [ ] Forecasts
+  - [ ] Hourly
+  - [ ] Daily
+- [ ] Camera entity for the satellite view
+
 ## Mapping between IRM KMI and Home Assistant weather conditions
 
-| Condition       | Description                       | IRM KMI icon                                                                                                                                                                                                                                                                                        | IRM KMI data (`ww-dayNight`)                                                  |
+Mapping was established based on my own interpretation of the icons and conditions.
+
+| HA Condition    | HA Description                    | IRM KMI icon                                                                                                                                                                                                                                                                                        | IRM KMI data (`ww-dayNight`)                                                  |
 |-----------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
 | clear-night     | Clear night                       | <img height="64" src="img/0-n.png" width="64"/>                                                                                                                                                                                                                                                     | `0-n`                                                                         |
 | cloudy          | Many clouds                       | <img height="64" src="img/3-d.png" width="64"/> <img height="64" src="img/3-n.png" width="64"/> <img height="64" src="img/15-d.png" width="64"/>                                                                                                                                                    | `3-d` `3-n` `14-d` `14-n` `15-d` `15-n`                                       |
