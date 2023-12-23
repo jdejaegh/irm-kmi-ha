@@ -4,6 +4,7 @@
   "codeowners": ["@jdejaegh"],
   "dependencies": [],
   "documentation": "https://github.com/jdejaegh/irm-kmi-ha/",
+  "issue_tracker": "https://github.com/jdejaegh/irm-kmi-ha/issues",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "requirements": [],
