@@ -5,13 +5,30 @@ The data is collected via their non-public mobile application API.
 
 Although the provider is Belgian, the data is available for Belgium 🇧🇪, Luxembourg 🇱🇺, and The Netherlands 🇳🇱
 
+## Installing via HACS
+
+1. Go to HACS > Integrations
+2. Add this repo into your HACS custom repositories
+3. Search for IRM KMI and download it
+4. Configure the integration via `configuration.yaml`:
+    ```yaml
+    weather:
+      - platform: irm_kmi
+        name: "Namur"
+        lat: 50.4645871
+        lon: 4.8508549
+    ```
+5. Restart Home Assistant
+
+
 ## Roadmap
 
-- [ ] Basic weather provider capability (current weather only)
+- [X] Basic weather provider capability (current weather only)
 - [ ] Forecasts
   - [ ] Hourly
   - [ ] Daily
 - [ ] Camera entity for the satellite view
+- [ ] Use UI to configure the integration
 
 ## Mapping between IRM KMI and Home Assistant weather conditions
 
