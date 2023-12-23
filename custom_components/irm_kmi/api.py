@@ -40,10 +40,7 @@ def _api_key(method_name: str):
 class IrmKmiApiClient:
     """Sample API Client."""
 
-    def __init__(
-            self,
-            session: aiohttp.ClientSession,
-    ) -> None:
+    def __init__(self, session: aiohttp.ClientSession) -> None:
         """Sample API Client."""
         self._session = session
         self._base_url = "https://app.meteo.be/services/appv4/"
@@ -53,6 +50,12 @@ class IrmKmiApiClient:
         return await self._api_wrapper(
             params={"ins": city_id,
                     "s": "getForecasts"}
+        )
+
+    async def get_forecasts_coord(self, coord: dict) -> any:
+        """Get forecasts for given city."""
+        return await self._api_wrapper(
+            params={"s": "getForecasts"} | coord
         )
 
     async def _api_wrapper(

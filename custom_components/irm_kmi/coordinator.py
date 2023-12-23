@@ -15,10 +15,11 @@ from .api import IrmKmiApiClient, IrmKmiApiError
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class IrmKmiCoordinator(DataUpdateCoordinator):
     """Coordinator to update data from IRM KMI"""
 
-    def __init__(self, hass, city_id):
+    def __init__(self, hass, coord: dict):
         """Initialize my coordinator."""
         super().__init__(
             hass,
@@ -29,7 +30,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=30),
         )
         self._api_client = IrmKmiApiClient(session=async_get_clientsession(hass))
-        self._city_id = city_id
+        self._coord = coord
 
     async def _async_update_data(self):
         """Fetch data from API endpoint.
@@ -44,7 +45,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 # Grab active context variables to limit data required to be fetched from API
                 # Note: using context is not required if there is no need or ability to limit
                 # data retrieved from API.
-                data = await self._api_client.get_forecasts_city(city_id=self._city_id)
+                data = await self._api_client.get_forecasts_coord(self._coord)
                 return data
         except IrmKmiApiError as err:
             raise UpdateFailed(f"Error communicating with API: {err}")
