@@ -36,10 +36,10 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         data = self.coordinator.data.get('for', {}).get('hourly')
         if data is None or not isinstance(data, list) or len(data) == 0:
             return None
-        data = data[0]
-        if datetime.now().strftime('%H') != data['hour']:
-            return None
-        return data
+        for current in data[:2]:
+            if datetime.now().strftime('%H') == current['hour']:
+                return current
+        return None
 
     @property
     def name(self) -> str:
