@@ -1,3 +1,5 @@
 {
-  "name": "IRM KMI Belgian weather"
+  "name": "IRM KMI Belgian weather",
+  "country": ["BE", "NL", "LU"],
+  "render_readme": true
 }
