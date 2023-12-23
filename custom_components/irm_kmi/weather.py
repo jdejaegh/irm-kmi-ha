@@ -40,6 +40,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         if datetime.now().strftime('%H') != data['hour']:
             return None
         return data
+
     @property
     def name(self) -> str:
         return self._name
