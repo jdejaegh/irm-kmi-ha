@@ -1,14 +1,11 @@
 import logging
 
-from datetime import datetime
-
 from homeassistant.components.weather import WeatherEntity
 from homeassistant.const import UnitOfTemperature, UnitOfSpeed, UnitOfPrecipitationDepth, UnitOfPressure
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
 )
 
-from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .coordinator import IrmKmiCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -18,7 +15,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     _LOGGER.debug(f"IRM KMI setup.  Config: {config}")
     coordinator = IrmKmiCoordinator(hass, coord={'lat': config.get("lat"), 'long': config.get("lon")})
 
-    await coordinator.async_request_refresh()
+    await coordinator.async_config_entry_first_refresh()
 
     async_add_entities([IrmKmiWeather(
         coordinator,
@@ -32,28 +29,17 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         super().__init__(coordinator)
         self._name = name
 
-    def _current_hour_data(self) -> dict | None:
-        data = self.coordinator.data.get('for', {}).get('hourly')
-        if data is None or not isinstance(data, list) or len(data) == 0:
-            return None
-        for current in data[:2]:
-            if datetime.now().strftime('%H') == current['hour']:
-                return current
-        return None
-
     @property
     def name(self) -> str:
         return self._name
 
     @property
     def condition(self) -> str | None:
-        irm_condition = (self.coordinator.data.get('obs', {}).get('ww'),
-                         self.coordinator.data.get('obs', {}).get('dayNight'))
-        return CDT_MAP.get(irm_condition, None)
+        return self.coordinator.data.get('current_weather').get('condition')
 
     @property
     def native_temperature(self) -> float | None:
-        return self.coordinator.data.get('obs', {}).get('temp')
+        return self.coordinator.data.get('current_weather').get('temperature')
 
     @property
     def native_temperature_unit(self) -> str | None:
@@ -65,18 +51,15 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
     @property
     def native_wind_speed(self) -> float | None:
-        data = self._current_hour_data()
-        return data.get('windSpeedKm', None)
+        return self.coordinator.data.get('current_weather').get('wind_speed')
 
     @property
     def native_wind_gust_speed(self) -> float | None:
-        data = self._current_hour_data()
-        return data.get('windPeakSpeedKm', None)
+        return self.coordinator.data.get('current_weather').get('wind_gust_speed')
 
     @property
     def wind_bearing(self) -> float | str | None:
-        data = self._current_hour_data()
-        return data.get('windDirection', None)
+        return self.coordinator.data.get('current_weather').get('wind_bearing')
 
     @property
     def native_precipitation_unit(self) -> str | None:
@@ -84,8 +67,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
     @property
     def native_pressure(self) -> float | None:
-        data = self._current_hour_data()
-        return data.get('pressure', None)
+        return self.coordinator.data.get('current_weather').get('pressure')
 
     @property
     def native_pressure_unit(self) -> str | None:
@@ -93,12 +75,4 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
     @property
     def uv_index(self) -> float | None:
-        data = self.coordinator.data.get('module', None)
-        if data is None or not isinstance(data, list):
-            return None
-
-        for module in data:
-            if module.get('type', None) == 'uv':
-                return module.get('data', {}).get('levelValue')
-
-        return None
+        return self.coordinator.data.get('current_weather').get('uv_index')
