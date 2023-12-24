@@ -13,6 +13,7 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 
+from . import IrmKmiForecast
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .api import IrmKmiApiClient, IrmKmiApiError
 
@@ -33,7 +34,7 @@ def daily_dict_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
 
         is_daytime = f.get('dayNight', None) == 'd'
 
-        forecast = Forecast(
+        forecast = IrmKmiForecast(
             datetime=(datetime.now() + timedelta(days=n_days)).strftime('%Y-%m-%d')
             if is_daytime else datetime.now().strftime('%Y-%m-%d'),
             condition=CDT_MAP.get((f.get('ww1'), f.get('dayNight')), None),
@@ -45,6 +46,8 @@ def daily_dict_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
             precipitation_probability=f.get('precipChance', None),
             wind_bearing=f.get('wind', {}).get('dirText', {}).get('en'),
             is_daytime=is_daytime,
+            text_fr=f.get('text', {}).get('fr'),
+            text_nl=f.get('text', {}).get('nl')
         )
         forecasts.append(forecast)
         if is_daytime:
