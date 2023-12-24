@@ -2,9 +2,11 @@
 
 from datetime import timedelta, datetime
 import logging
+from typing import List
 
 import async_timeout
 
+from homeassistant.components.weather import Forecast
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
@@ -15,6 +17,40 @@ from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .api import IrmKmiApiClient, IrmKmiApiError
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def daily_dict_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
+    if data is None or not isinstance(data, list) or len(data) == 0:
+        return None
+
+    forecasts = list()
+    n_days = 0
+
+    for f in data:
+        precipitation = None
+        if f.get('precipQuantity', None) is not None:
+            precipitation = float(f.get('precipQuantity'))
+
+        is_daytime = f.get('dayNight', None) == 'd'
+
+        forecast = Forecast(
+            datetime=(datetime.now() + timedelta(days=n_days)).strftime('%Y-%m-%d')
+            if is_daytime else datetime.now().strftime('%Y-%m-%d'),
+            condition=CDT_MAP.get((f.get('ww1'), f.get('dayNight')), None),
+            native_precipitation=precipitation,
+            native_temperature=f.get('tempMax', None),
+            native_templow=f.get('tempMin', None),
+            native_wind_gust_speed=f.get('wind', {}).get('peakSpeed'),
+            native_wind_speed=f.get('wind', {}).get('speed'),
+            precipitation_probability=f.get('precipChance', None),
+            wind_bearing=f.get('wind', {}).get('dirText', {}).get('en'),
+            is_daytime=is_daytime,
+        )
+        forecasts.append(forecast)
+        if is_daytime:
+            n_days += 1
+
+    return forecasts
 
 
 class IrmKmiCoordinator(DataUpdateCoordinator):
@@ -43,9 +79,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             # Note: asyncio.TimeoutError and aiohttp.ClientError are already
             # handled by the data update coordinator.
             async with async_timeout.timeout(10):
-                # Grab active context variables to limit data required to be fetched from API
-                # Note: using context is not required if there is no need or ability to limit
-                # data retrieved from API.
                 api_data = await self._api_client.get_forecasts_coord(self._coord)
                 _LOGGER.debug(f"Observation for {api_data.get('cityName', '')}: {api_data.get('obs', '{}')}")
 
@@ -75,14 +108,11 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                         'temperature': api_data.get('obs', {}).get('temp'),
                         'wind_speed': now_hourly.get('windSpeedKm', None) if now_hourly is not None else None,
                         'wind_gust_speed': now_hourly.get('windPeakSpeedKm', None) if now_hourly is not None else None,
-                        'wind_bearing': now_hourly.get('windDirection', None) if now_hourly is not None else None,
+                        'wind_bearing': now_hourly.get('windDirectionText', {}).get('en') if now_hourly is not None else None,
                         'pressure': now_hourly.get('pressure', None) if now_hourly is not None else None,
                         'uv_index': uv_index
                     },
-
-                    'hourly_forecast': {
-
-                    }
+                    'daily_forecast': daily_dict_to_forecast(api_data.get('for', {}).get('daily'))
                 }
 
                 return processed_data

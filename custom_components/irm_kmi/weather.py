@@ -1,6 +1,7 @@
 import logging
+from typing import List
 
-from homeassistant.components.weather import WeatherEntity
+from homeassistant.components.weather import WeatherEntity, WeatherEntityFeature, Forecast
 from homeassistant.const import UnitOfTemperature, UnitOfSpeed, UnitOfPrecipitationDepth, UnitOfPressure
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
@@ -28,6 +29,12 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
     def __init__(self, coordinator: IrmKmiCoordinator, name: str) -> None:
         super().__init__(coordinator)
         self._name = name
+
+    @property
+    def supported_features(self) -> WeatherEntityFeature:
+        features = WeatherEntityFeature(0)
+        features |= WeatherEntityFeature.FORECAST_TWICE_DAILY
+        return features
 
     @property
     def name(self) -> str:
@@ -76,3 +83,10 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
     @property
     def uv_index(self) -> float | None:
         return self.coordinator.data.get('current_weather').get('uv_index')
+
+    @property
+    def forecast(self) -> list[Forecast] | None:
+        return self.coordinator.data.get('daily_forecast')
+
+    async def async_forecast_twice_daily(self) -> List[Forecast] | None:
+        return self.coordinator.data.get('daily_forecast')
