@@ -20,7 +20,49 @@ from .api import IrmKmiApiClient, IrmKmiApiError
 _LOGGER = logging.getLogger(__name__)
 
 
-def daily_dict_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
+def hourly_list_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
+    if data is None or not isinstance(data, list) or len(data) == 0:
+        return None
+
+    forecasts = list()
+    day = datetime.now()
+
+    for f in data:
+        if 'dateShow' in f:
+            day = day + timedelta(days=1)
+
+        hour = f.get('hour', None)
+        if hour is None:
+            continue
+
+        precipitation_probability = None
+        if f.get('precipChance', None) is not None:
+            precipitation_probability = int(f.get('precipChance'))
+
+        ww = None
+        if f.get('ww', None) is not None:
+            ww = int(f.get('ww'))
+
+        forecast = Forecast(
+            datetime=day.strftime(f'%Y-%m-%dT{hour}:00:00'),
+            condition=CDT_MAP.get((ww, f.get('dayNight', None)), None),
+            native_precipitation=f.get('precipQuantity', None),
+            native_temperature=f.get('temp', None),
+            native_templow=None,
+            native_wind_gust_speed=f.get('windPeakSpeedKm', None),
+            native_wind_speed=f.get('windSpeedKm', None),
+            precipitation_probability=precipitation_probability,
+            wind_bearing=f.get('windDirectionText', {}).get('en'),
+            native_pressure=f.get('pressure', None),
+            is_daytime=f.get('dayNight', None) == 'd'
+        )
+
+        forecasts.append(forecast)
+
+    return forecasts
+
+
+def daily_list_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
     if data is None or not isinstance(data, list) or len(data) == 0:
         return None
 
@@ -37,7 +79,7 @@ def daily_dict_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
         forecast = IrmKmiForecast(
             datetime=(datetime.now() + timedelta(days=n_days)).strftime('%Y-%m-%d')
             if is_daytime else datetime.now().strftime('%Y-%m-%d'),
-            condition=CDT_MAP.get((f.get('ww1'), f.get('dayNight')), None),
+            condition=CDT_MAP.get((f.get('ww1', None), f.get('dayNight', None)), None),
             native_precipitation=precipitation,
             native_temperature=f.get('tempMax', None),
             native_templow=f.get('tempMin', None),
@@ -115,7 +157,8 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                         'pressure': now_hourly.get('pressure', None) if now_hourly is not None else None,
                         'uv_index': uv_index
                     },
-                    'daily_forecast': daily_dict_to_forecast(api_data.get('for', {}).get('daily'))
+                    'daily_forecast': daily_list_to_forecast(api_data.get('for', {}).get('daily')),
+                    'hourly_forecast': hourly_list_to_forecast(api_data.get('for', {}).get('hourly'))
                 }
 
                 return processed_data

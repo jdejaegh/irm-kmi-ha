@@ -34,6 +34,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
     def supported_features(self) -> WeatherEntityFeature:
         features = WeatherEntityFeature(0)
         features |= WeatherEntityFeature.FORECAST_TWICE_DAILY
+        features |= WeatherEntityFeature.FORECAST_HOURLY
         return features
 
     @property
@@ -86,7 +87,15 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
     @property
     def forecast(self) -> list[Forecast] | None:
-        return self.coordinator.data.get('daily_forecast')
+        result = list()
+        if self.coordinator.data.get('daily_forecast') is not None:
+            result += self.coordinator.data.get('daily_forecast')
+        if self.coordinator.data.get('hourly_forecast') is not None:
+            result += self.coordinator.data.get('hourly_forecast')
+        return result
 
     async def async_forecast_twice_daily(self) -> List[Forecast] | None:
         return self.coordinator.data.get('daily_forecast')
+
+    async def async_forecast_hourly(self) -> list[Forecast] | None:
+        return self.coordinator.data.get('hourly_forecast')
