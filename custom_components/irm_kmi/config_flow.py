@@ -1,6 +1,6 @@
 import logging
-import voluptuous as vol
 
+import voluptuous as vol
 from homeassistant.components.zone import DOMAIN as ZONE_DOMAIN
 from homeassistant.config_entries import ConfigFlow
 from homeassistant.const import CONF_ZONE

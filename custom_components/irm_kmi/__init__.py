@@ -3,8 +3,8 @@
 # File inspired from https://github.com/ludeeus/integration_blueprint
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
 from homeassistant.const import CONF_ZONE
+from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, PLATFORMS
 from .coordinator import IrmKmiCoordinator

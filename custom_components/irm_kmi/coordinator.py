@@ -1,22 +1,20 @@
 """Example integration using DataUpdateCoordinator."""
 
-from datetime import timedelta, datetime
 import logging
+from datetime import datetime, timedelta
 from typing import List
 
 import async_timeout
-
 from homeassistant.components.weather import Forecast
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import (
-    DataUpdateCoordinator,
-    UpdateFailed,
-)
+from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
+                                                      UpdateFailed)
 
-from .data import IrmKmiForecast
-from .const import OUT_OF_BENELUX, IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .api import IrmKmiApiClient, IrmKmiApiError
+from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
+from .const import OUT_OF_BENELUX
+from .data import IrmKmiForecast
 
 _LOGGER = logging.getLogger(__name__)
 

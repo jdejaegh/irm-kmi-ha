@@ -1,14 +1,14 @@
 """API Client for IRM KMI weather"""
 from __future__ import annotations
 
-import logging
 import asyncio
+import hashlib
+import logging
 import socket
+from datetime import datetime
 
 import aiohttp
 import async_timeout
-import hashlib
-from datetime import datetime
 
 _LOGGER = logging.getLogger(__name__)
 

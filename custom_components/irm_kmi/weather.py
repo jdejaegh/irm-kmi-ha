@@ -1,15 +1,15 @@
 import logging
 from typing import List
 
-from homeassistant.components.weather import WeatherEntity, WeatherEntityFeature, Forecast
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.components.weather import (Forecast, WeatherEntity,
+                                              WeatherEntityFeature)
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfTemperature, UnitOfSpeed, UnitOfPrecipitationDepth, UnitOfPressure
+from homeassistant.const import (UnitOfPrecipitationDepth, UnitOfPressure,
+                                 UnitOfSpeed, UnitOfTemperature)
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-)
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import DOMAIN
 from .coordinator import IrmKmiCoordinator
