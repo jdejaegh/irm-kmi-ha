@@ -1,6 +1,7 @@
 """API Client for IRM KMI weather"""
 from __future__ import annotations
 
+import logging
 import asyncio
 import socket
 
@@ -8,6 +9,8 @@ import aiohttp
 import async_timeout
 import hashlib
 from datetime import datetime
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class IrmKmiApiError(Exception):
@@ -26,12 +29,6 @@ class IrmKmiApiParametersError(
     """Exception to indicate a parameter error."""
 
 
-class IrmKmiApiAuthenticationError(
-    IrmKmiApiError
-):
-    """Exception to indicate an authentication error."""
-
-
 def _api_key(method_name: str):
     """Get API key."""
     return hashlib.md5(f"r9EnW374jkJ9acc;{method_name};{datetime.now().strftime('%d/%m/%Y')}".encode()).hexdigest()
@@ -39,7 +36,7 @@ def _api_key(method_name: str):
 
 class IrmKmiApiClient:
     """Sample API Client."""
-
+    COORD_DECIMALS = 6
     def __init__(self, session: aiohttp.ClientSession) -> None:
         """Sample API Client."""
         self._session = session
@@ -54,6 +51,11 @@ class IrmKmiApiClient:
 
     async def get_forecasts_coord(self, coord: dict) -> any:
         """Get forecasts for given city."""
+        assert 'lat' in coord
+        assert 'long' in coord
+        coord['lat'] = round(coord['lat'], self.COORD_DECIMALS)
+        coord['long'] = round(coord['long'], self.COORD_DECIMALS)
+
         return await self._api_wrapper(
             params={"s": "getForecasts"} | coord
         )
@@ -75,6 +77,7 @@ class IrmKmiApiClient:
 
         try:
             async with async_timeout.timeout(10):
+                _LOGGER.debug(f"Calling for {params}")
                 response = await self._session.request(
                     method=method,
                     url=f"{self._base_url}{path}",
@@ -82,6 +85,7 @@ class IrmKmiApiClient:
                     json=data,
                     params=params
                 )
+                _LOGGER.debug(f"API status code {response.status}")
                 response.raise_for_status()
                 return await response.json()
 

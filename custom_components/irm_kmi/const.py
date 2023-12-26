@@ -11,8 +11,14 @@ from homeassistant.components.weather import (
     ATTR_CONDITION_CLEAR_NIGHT,
     ATTR_CONDITION_EXCEPTIONAL
 )
+from homeassistant.const import Platform
 
 DOMAIN = 'irm_kmi'
+PLATFORMS: list[Platform] = [Platform.WEATHER]
+OUT_OF_BENELUX = ["außerhalb der Benelux (Brussels)",
+                  "Hors de Belgique (Bxl)",
+                  "Outside the Benelux (Brussels)",
+                  "Buiten de Benelux (Brussel)"]
 
 # map ('ww', 'dayNight') tuple from IRM KMI to HA conditions
 IRM_KMI_TO_HA_CONDITION_MAP = {

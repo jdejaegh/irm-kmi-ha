@@ -2,6 +2,7 @@
   "domain": "irm_kmi",
   "name": "IRM KMI Weather Belgium",
   "codeowners": ["@jdejaegh"],
+  "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/jdejaegh/irm-kmi-ha/",
   "integration_type": "service",
