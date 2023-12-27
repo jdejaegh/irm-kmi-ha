@@ -1,0 +1,3 @@
+homeassistant==2023.12.3
+pytest==7.4.3
+pytest_homeassistant_custom_component==0.13.85
