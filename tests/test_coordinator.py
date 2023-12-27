@@ -1,0 +1,84 @@
+import json
+from datetime import datetime
+from freezegun import freeze_time
+
+from pytest_homeassistant_custom_component.common import load_fixture
+from homeassistant.components.weather import ATTR_CONDITION_CLOUDY, ATTR_CONDITION_PARTLYCLOUDY, ATTR_CONDITION_RAINY, Forecast
+
+from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
+from custom_components.irm_kmi.data import IrmKmiForecast
+
+
+def get_api_data() -> dict:
+    fixture: str = "forecast.json"
+    return json.loads(load_fixture(fixture))
+
+
+@freeze_time(datetime.fromisoformat('2023-12-26T18:30:00.028724'))
+def test_current_weather() -> None:
+    api_data = get_api_data()
+    result = IrmKmiCoordinator.process_api_data(api_data).get('current_weather')
+
+    expected = {
+        'condition': ATTR_CONDITION_CLOUDY,
+        'temperature': 7,
+        'wind_speed': 5,
+        'wind_gust_speed': None,
+        'wind_bearing': 'WSW',
+        'pressure': 1020,
+        'uv_index': .7
+    }
+
+    assert result == expected
+
+
+@freeze_time(datetime.fromisoformat('2023-12-26T18:30:00.028724'))
+def test_daily_forecast() -> None:
+    api_data = get_api_data().get('for', {}).get('daily')
+    result = IrmKmiCoordinator.daily_list_to_forecast(api_data)
+
+    assert isinstance(result, list)
+    assert len(result) == 8
+
+    expected = IrmKmiForecast(
+        datetime='2023-12-27',
+        condition=ATTR_CONDITION_PARTLYCLOUDY,
+        native_precipitation=0,
+        native_temperature=9,
+        native_templow=4,
+        native_wind_gust_speed=50,
+        native_wind_speed=20,
+        precipitation_probability=0,
+        wind_bearing='S',
+        is_daytime=True,
+        text_fr='Bar',
+        text_nl='Foo'
+    )
+
+    assert result[1] == expected
+
+
+@freeze_time(datetime.fromisoformat('2023-12-26T18:30:00.028724'))
+def test_hourly_forecast() -> None:
+    api_data = get_api_data().get('for', {}).get('hourly')
+    result = IrmKmiCoordinator.hourly_list_to_forecast(api_data)
+
+    assert isinstance(result, list)
+    assert len(result) == 49
+
+    expected = Forecast(
+        datetime='2023-12-27T02:00:00',
+        condition=ATTR_CONDITION_RAINY,
+        native_precipitation=.98,
+        native_temperature=8,
+        native_templow=None,
+        native_wind_gust_speed=None,
+        native_wind_speed=15,
+        precipitation_probability=70,
+        wind_bearing='S',
+        native_pressure=1020,
+        is_daytime=False
+    )
+
+    assert result[8] == expected
+

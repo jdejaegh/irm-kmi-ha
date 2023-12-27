@@ -65,8 +65,8 @@
 				"day_night": "1",
 				"dayNight": "d",
 				"text": {
-					"nl": "Woensdag start bewolkt met lichte regen. In de voormiddag verlaat de zwakke regenzone ons land via Nederland. In de namiddag blijft het droog en wordt het vrij zonnig met soms wat meer hoge sluierwolken. De maxima liggen tussen 5 en 8 graden in het zuiden van het land en rond 9 of 10 graden in het centrum en aan zee. De matige zuidenwind ruimt naar zuidzuidwest en wordt vrij krachtig tot lokaal krachtig aan zee. Vooral in de kuststreek en op het Ardense reliëf zijn er windstoten mogelijk rond 50 km\/h of 55 km\/h.\n\nWoensdagavond krijgen we opnieuw regen en buien te verwerken vanaf het westen. Aan de achterzijde van deze storing klaart het uit. In het uiterste zuidoosten van het land regent het pas aan het einde van de nacht. De minima liggen tussen 4 en 9 graden. Er staat een matige tot vrij krachtige zuidwestenwind met rukwinden rond 55 of 60 km\/h.",
-					"fr": "Mercredi, la journée débutera sous les nuages et de faibles pluies. En matinée, cette zone de précipitations affaiblies quittera notre pays pour les Pays-Bas. L'après-midi, le temps restera sec et assez ensoleillé même si le soleil sera parfois masqué par des champs de nuages élevés. Les maxima seront compris entre 5 et 8 degrés dans le sud et proches de 9 ou 10 degrés en dans le centre et à la mer. Le vent modéré de sud virera au sud-sud-ouest et deviendra assez fort, à parfois fort au littoral. Des rafales de 50 à 55 km\/h pourront se produire, essentiellement à la côte et sur les hauteurs de l'Ardenne.\n\nMercredi soir, on prévoit à nouveau de la pluie et des averses depuis l'ouest. A l'arrière, le ciel se dégagera. Dans le sud-est du pays, les précipitations ne seront attendues qu'en fin de nuit. Les minima varieront de 4 à 9 degrés, sous un vent modéré à assez fort de sud-ouest. Les rafales pourront atteindre des valeurs de 55 à 60 km\/h."
+					"nl": "Foo",
+					"fr": "Bar"
 				},
 				"dawnRiseSeconds": "31440",
 				"dawnSetSeconds": "60180",
