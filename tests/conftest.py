@@ -78,3 +78,14 @@ def mock_exception_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None
         irm_kmi = irm_kmi_api_mock.return_value
         irm_kmi.get_forecasts_coord.side_effect = IrmKmiApiParametersError
         yield irm_kmi
+
+
+@pytest.fixture()
+def mock_coordinator(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    with patch(
+            "custom_components.irm_kmi.IrmKmiCoordinator", autospec=True
+    ) as coordinator_mock:
+        coord = coordinator_mock.return_value
+        coord._async_animation_data.return_value = {'animation': None}
+        yield coord

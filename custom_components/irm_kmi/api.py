@@ -9,6 +9,7 @@ from datetime import datetime
 
 import aiohttp
 import async_timeout
+from aiohttp import ClientResponse
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,38 +51,36 @@ class IrmKmiApiClient:
         coord['lat'] = round(coord['lat'], self.COORD_DECIMALS)
         coord['long'] = round(coord['long'], self.COORD_DECIMALS)
 
-        return await self._api_wrapper(
-            params={"s": "getForecasts"} | coord
-        )
+        response = await self._api_wrapper(params={"s": "getForecasts", "k": _api_key("getForecasts")} | coord)
+        return await response.json()
+
+    async def get_image(self, url, params: dict | None = None) -> bytes:
+        # TODO support etag and head request before requesting content
+        r: ClientResponse = await self._api_wrapper(base_url=url, params={} if params is None else params)
+        return await r.read()
 
     async def _api_wrapper(
             self,
             params: dict,
+            base_url: str | None = None,
             path: str = "",
             method: str = "get",
             data: dict | None = None,
-            headers: dict | None = None
+            headers: dict | None = None,
     ) -> any:
         """Get information from the API."""
 
-        if 's' not in params:
-            raise IrmKmiApiParametersError("No query provided as 's' argument for API")
-        else:
-            params['k'] = _api_key(params['s'])
-
         try:
             async with async_timeout.timeout(10):
-                _LOGGER.debug(f"Calling for {params}")
                 response = await self._session.request(
                     method=method,
-                    url=f"{self._base_url}{path}",
+                    url=f"{self._base_url if base_url is None else base_url}{path}",
                     headers=headers,
                     json=data,
                     params=params
                 )
-                _LOGGER.debug(f"API status code {response.status}")
                 response.raise_for_status()
-                return await response.json()
+                return response
 
         except asyncio.TimeoutError as exception:
             raise IrmKmiApiCommunicationError(

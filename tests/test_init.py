@@ -1,6 +1,6 @@
 """Tests for the IRM KMI integration."""
 
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from homeassistant.config_entries import ConfigEntryState
@@ -15,6 +15,7 @@ async def test_load_unload_config_entry(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry,
         mock_irm_kmi_api: AsyncMock,
+        mock_coordinator: AsyncMock
 ) -> None:
     """Test the IRM KMI configuration entry loading/unloading."""
     hass.states.async_set(

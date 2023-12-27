@@ -14,7 +14,7 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
 from homeassistant.const import Platform
 
 DOMAIN = 'irm_kmi'
-PLATFORMS: list[Platform] = [Platform.WEATHER]
+PLATFORMS: list[Platform] = [Platform.WEATHER, Platform.CAMERA]
 OUT_OF_BENELUX = ["außerhalb der Benelux (Brussels)",
                   "Hors de Belgique (Bxl)",
                   "Outside the Benelux (Brussels)",

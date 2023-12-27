@@ -1,4 +1,4 @@
-""""Support for IRM KMI weather."""
+"""Support for IRM KMI weather."""
 
 import logging
 from typing import List
@@ -24,7 +24,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     _LOGGER.debug(f'async_setup_entry entry is: {entry}')
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    await coordinator.async_config_entry_first_refresh()
+    # await coordinator.async_config_entry_first_refresh()
     async_add_entities(
         [IrmKmiWeather(coordinator, entry)]
     )
@@ -37,6 +37,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
                  entry: ConfigEntry
                  ) -> None:
         super().__init__(coordinator)
+        WeatherEntity.__init__(self)
         self._name = entry.title
         self._attr_unique_id = entry.entry_id
         self._attr_device_info = DeviceInfo(

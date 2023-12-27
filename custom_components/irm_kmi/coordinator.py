@@ -1,7 +1,8 @@
 """DataUpdateCoordinator for the IRM KMI integration."""
-
+import asyncio
 import logging
 from datetime import datetime, timedelta
+from io import BytesIO
 from typing import List
 
 import async_timeout
@@ -10,6 +11,7 @@ from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
+from PIL import Image, ImageDraw, ImageFont
 
 from .api import IrmKmiApiClient, IrmKmiApiError
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
@@ -60,7 +62,64 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         if api_data.get('cityName', None) in OUT_OF_BENELUX:
             raise UpdateFailed(f"Zone '{self._zone}' is out of Benelux and forecast is only available in the Benelux")
 
-        return self.process_api_data(api_data)
+        result = self.process_api_data(api_data)
+
+        # TODO make such that the most up to date image is specified to entity for static display
+        return result | await self._async_animation_data(api_data)
+
+    async def _async_animation_data(self, api_data: dict) -> dict:
+
+        default = {'animation': None}
+        animation_data = api_data.get('animation', {}).get('sequence')
+        localisation_layer = api_data.get('animation', {}).get('localisationLayer')
+        country = api_data.get('country', None)
+
+        if animation_data is None or localisation_layer is None or not isinstance(animation_data, list):
+            return default
+
+        coroutines = list()
+        coroutines.append(self._api_client.get_image(f"{localisation_layer}&th={'d' if country == 'NL' else 'n'}"))
+        for frame in animation_data:
+            if frame.get('uri', None) is not None:
+                coroutines.append(self._api_client.get_image(frame.get('uri')))
+
+        try:
+            async with async_timeout.timeout(20):
+                r = await asyncio.gather(*coroutines, return_exceptions=True)
+        except IrmKmiApiError:
+            _LOGGER.warning(f"Could not get images for weather radar")
+            return default
+        _LOGGER.debug(f"Just downloaded {len(r)} images")
+
+        if country == 'NL':
+            background = Image.open("custom_components/irm_kmi/resources/nl.png").convert('RGBA')
+        else:
+            background = Image.open("custom_components/irm_kmi/resources/be_bw.png").convert('RGBA')
+        localisation = Image.open(BytesIO(r[0])).convert('RGBA')
+        merged_frames = list()
+        for frame in r[1:]:
+            layer = Image.open(BytesIO(frame)).convert('RGBA')
+            temp = Image.alpha_composite(background, layer)
+            temp = Image.alpha_composite(temp, localisation)
+
+            draw = ImageDraw.Draw(temp)
+            font = ImageFont.truetype("custom_components/irm_kmi/resources/roboto_medium.ttf", 16)
+            # TODO write actual date time
+            if country == 'NL':
+                draw.text((4, 4), "Sample Text", (0, 0, 0), font=font)
+            else:
+                draw.text((4, 4), "Sample Text", (255, 255, 255), font=font)
+
+            bytes_img = BytesIO()
+            temp.save(bytes_img, 'png')
+            merged_frames.append(bytes_img.getvalue())
+
+        return {'animation': {
+            'images': merged_frames,
+            # TODO support translation for hint
+            'hint': api_data.get('animation', {}).get('sequenceHint', {}).get('en')
+        }
+        }
 
     @staticmethod
     def process_api_data(api_data):
@@ -82,6 +141,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 if module.get('type', None) == 'uv':
                     uv_index = module.get('data', {}).get('levelValue')
         # Put everything together
+        # TODO NL cities have a better 'obs' section, use that for current weather
         processed_data = {
             'current_weather': {
                 'condition': CDT_MAP.get(
