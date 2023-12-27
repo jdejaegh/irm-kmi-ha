@@ -55,12 +55,23 @@ def mock_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMoc
 
 
 @pytest.fixture()
-def mock_exception_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+def mock_irm_kmi_api_out_benelux(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
     """Return a mocked IrmKmi api client."""
-    fixture: str = "forecast.json"
+    fixture: str = "forecast_out_of_benelux.json"
 
     forecast = json.loads(load_fixture(fixture))
     print(type(forecast))
+    with patch(
+            "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_forecasts_coord.return_value = forecast
+        yield irm_kmi
+
+
+@pytest.fixture()
+def mock_exception_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
     with patch(
             "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
     ) as irm_kmi_api_mock:

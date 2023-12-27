@@ -16,7 +16,7 @@ async def test_load_unload_config_entry(
         mock_config_entry: MockConfigEntry,
         mock_irm_kmi_api: AsyncMock,
 ) -> None:
-    """Test the Open-Meteo configuration entry loading/unloading."""
+    """Test the IRM KMI configuration entry loading/unloading."""
     hass.states.async_set(
         "zone.home",
         0,
@@ -42,10 +42,10 @@ async def test_config_entry_not_ready(
         mock_config_entry: MockConfigEntry,
         mock_exception_irm_kmi_api: AsyncMock
 ) -> None:
-    """Test the Open-Meteo configuration entry not ready."""
+    """Test the IRM KMI configuration entry not ready."""
     hass.states.async_set(
         "zone.home",
-        "zoning",
+        0,
         {"latitude": 50.738681639, "longitude": 4.054077148},
     )
     mock_config_entry.add_to_hass(hass)
@@ -60,7 +60,7 @@ async def test_config_entry_zone_removed(
         hass: HomeAssistant,
         caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test the Open-Meteo configuration entry not ready."""
+    """Test the IRM KMI configuration entry not ready."""
     mock_config_entry = MockConfigEntry(
         title="My Castle",
         domain=DOMAIN,
@@ -73,3 +73,29 @@ async def test_config_entry_zone_removed(
 
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
     assert "Zone 'zone.castle' not found" in caplog.text
+
+
+async def test_zone_out_of_benelux(
+        hass: HomeAssistant,
+        caplog: pytest.LogCaptureFixture,
+        mock_irm_kmi_api_out_benelux: AsyncMock
+) -> None:
+    """Test the IRM KMI when configuration zone is out of Benelux"""
+    mock_config_entry = MockConfigEntry(
+        title="London",
+        domain=DOMAIN,
+        data={CONF_ZONE: "zone.london"},
+        unique_id="zone.london",
+    )
+    hass.states.async_set(
+        "zone.london",
+        0,
+        {"latitude": 51.5072, "longitude": 0.1276},
+    )
+
+    mock_config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(mock_config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
+    assert "Zone 'zone.london' is out of Benelux" in caplog.text
