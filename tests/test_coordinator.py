@@ -1,9 +1,11 @@
 import json
 from datetime import datetime
-from freezegun import freeze_time
 
+from freezegun import freeze_time
+from homeassistant.components.weather import (ATTR_CONDITION_CLOUDY,
+                                              ATTR_CONDITION_PARTLYCLOUDY,
+                                              ATTR_CONDITION_RAINY, Forecast)
 from pytest_homeassistant_custom_component.common import load_fixture
-from homeassistant.components.weather import ATTR_CONDITION_CLOUDY, ATTR_CONDITION_PARTLYCLOUDY, ATTR_CONDITION_RAINY, Forecast
 
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
 from custom_components.irm_kmi.data import IrmKmiForecast
