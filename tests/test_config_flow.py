@@ -1,4 +1,4 @@
-"""Tests for the Open-Meteo config flow."""
+"""Tests for the IRM KMI config flow."""
 
 from unittest.mock import MagicMock
 

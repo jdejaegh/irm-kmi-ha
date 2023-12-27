@@ -1,3 +1,4 @@
+"""Config flow to set up IRM KMI integration via the UI"""
 import logging
 
 import voluptuous as vol

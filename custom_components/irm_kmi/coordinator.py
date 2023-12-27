@@ -1,4 +1,4 @@
-"""Example integration using DataUpdateCoordinator."""
+"""DataUpdateCoordinator for the IRM KMI integration."""
 
 import logging
 from datetime import datetime, timedelta

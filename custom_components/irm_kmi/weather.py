@@ -1,3 +1,5 @@
+""""Support for IRM KMI weather."""
+
 import logging
 from typing import List
 

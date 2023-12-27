@@ -1,3 +1,4 @@
+"""Data classes for IRM KMI integration"""
 from homeassistant.components.weather import Forecast
 
 
