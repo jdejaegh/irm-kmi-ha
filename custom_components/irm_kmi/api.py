@@ -37,17 +37,11 @@ def _api_key(method_name: str):
 class IrmKmiApiClient:
     """Sample API Client."""
     COORD_DECIMALS = 6
+
     def __init__(self, session: aiohttp.ClientSession) -> None:
         """Sample API Client."""
         self._session = session
         self._base_url = "https://app.meteo.be/services/appv4/"
-
-    async def get_forecasts_city(self, city_id: int) -> any:
-        """Get forecasts for given city."""
-        return await self._api_wrapper(
-            params={"ins": city_id,
-                    "s": "getForecasts"}
-        )
 
     async def get_forecasts_coord(self, coord: dict) -> any:
         """Get forecasts for given city."""
@@ -99,5 +93,5 @@ class IrmKmiApiClient:
             ) from exception
         except Exception as exception:  # pylint: disable=broad-except
             raise IrmKmiApiError(
-                "Something really wrong happened!"
+                f"Something really wrong happened! {exception}"
             ) from exception
