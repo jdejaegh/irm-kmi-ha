@@ -148,10 +148,20 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         forecasts = list()
         n_days = 0
 
-        for f in data:
+        for (idx, f) in enumerate(data):
             precipitation = None
             if f.get('precipQuantity', None) is not None:
-                precipitation = float(f.get('precipQuantity'))
+                try:
+                    precipitation = float(f.get('precipQuantity'))
+                except TypeError:
+                    pass
+
+            native_wind_gust_speed = None
+            if f.get('wind', {}).get('peakSpeed') is not None:
+                try:
+                    native_wind_gust_speed = int(f.get('wind', {}).get('peakSpeed'))
+                except TypeError:
+                    pass
 
             is_daytime = f.get('dayNight', None) == 'd'
 
@@ -162,7 +172,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 native_precipitation=precipitation,
                 native_temperature=f.get('tempMax', None),
                 native_templow=f.get('tempMin', None),
-                native_wind_gust_speed=f.get('wind', {}).get('peakSpeed'),
+                native_wind_gust_speed=native_wind_gust_speed,
                 native_wind_speed=f.get('wind', {}).get('speed'),
                 precipitation_probability=f.get('precipChance', None),
                 wind_bearing=f.get('wind', {}).get('dirText', {}).get('en'),
@@ -171,7 +181,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 text_nl=f.get('text', {}).get('nl')
             )
             forecasts.append(forecast)
-            if is_daytime:
+            if is_daytime or idx == 0:
                 n_days += 1
 
         return forecasts
