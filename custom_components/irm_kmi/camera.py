@@ -19,7 +19,6 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     """Set up the camera entry."""
 
-    _LOGGER.debug(f'async_setup_entry entry is: {entry}')
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([IrmKmiRadar(coordinator, entry)])
 
@@ -66,13 +65,11 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
 
     async def handle_async_still_stream(self, request: web.Request, interval: float) -> web.StreamResponse:
         """Generate an HTTP MJPEG stream from camera images."""
-        _LOGGER.info("handle_async_still_stream")
         self._image_index = 0
         return await async_get_still_stream(request, self.iterate, self.content_type, interval)
 
     async def handle_async_mjpeg_stream(self, request: web.Request) -> web.StreamResponse:
         """Serve an HTTP MJPEG stream from the camera."""
-        _LOGGER.info("handle_async_mjpeg_stream")
         return await self.handle_async_still_stream(request, self.frame_interval)
 
     async def iterate(self) -> bytes | None:
