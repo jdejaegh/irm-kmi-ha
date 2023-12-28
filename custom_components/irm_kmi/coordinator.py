@@ -135,7 +135,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             background = Image.open("custom_components/irm_kmi/resources/nl.png").convert('RGBA')
             fill_color = (0, 0, 0)
         else:
-            background = Image.open("custom_components/irm_kmi/resources/be_bw.png").convert('RGBA')
+            background = Image.open("custom_components/irm_kmi/resources/be_black.png").convert('RGBA')
             fill_color = (255, 255, 255)
 
         most_recent_frame = None

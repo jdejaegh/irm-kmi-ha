@@ -153,7 +153,7 @@ async def test_get_image_be(
 
     # Construct the expected image for the most recent one
     tz = pytz.timezone(hass.config.time_zone)
-    background = Image.open("custom_components/irm_kmi/resources/be_bw.png").convert('RGBA')
+    background = Image.open("custom_components/irm_kmi/resources/be_black.png").convert('RGBA')
     layer = Image.open("tests/fixtures/clouds_be.png").convert('RGBA')
     localisation = Image.open("tests/fixtures/loc_layer_be_n.png").convert('RGBA')
     temp = Image.alpha_composite(background, layer)
