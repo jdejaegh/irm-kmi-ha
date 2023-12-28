@@ -2,7 +2,6 @@
 # File inspired by https://github.com/jodur/imagesdirectory-camera/blob/main/custom_components/imagedirectory/camera.py
 
 import logging
-import os
 
 from homeassistant.components.camera import Camera, async_get_still_stream
 from homeassistant.config_entries import ConfigEntry
@@ -22,7 +21,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     _LOGGER.debug(f'async_setup_entry entry is: {entry}')
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    # await coordinator.async_config_entry_first_refresh()
     async_add_entities(
         [IrmKmiRadar(coordinator, entry)]
     )
@@ -57,10 +55,7 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
     def camera_image(self,
                      width: int | None = None,
                      height: int | None = None) -> bytes | None:
-        images = self.coordinator.data.get('animation', {}).get('images')
-        if isinstance(images, list) and len(images) > 0:
-            return images[0]
-        return None
+        return self.coordinator.data.get('animation', {}).get('most_recent_image')
 
     async def async_camera_image(
             self,
@@ -84,10 +79,10 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
         return await self.handle_async_still_stream(request, self.frame_interval)
 
     async def iterate(self) -> bytes | None:
-        images = self.coordinator.data.get('animation', {}).get('images')
-        if isinstance(images, list) and len(images) > 0:
-            r = images[self._image_index]
-            self._image_index = (self._image_index + 1) % len(images)
+        sequence = self.coordinator.data.get('animation', {}).get('sequence')
+        if isinstance(sequence, list) and len(sequence) > 0:
+            r = sequence[self._image_index].get('image', None)
+            self._image_index = (self._image_index + 1) % len(sequence)
             return r
         return None
 

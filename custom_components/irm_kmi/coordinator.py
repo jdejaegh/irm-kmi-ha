@@ -6,6 +6,7 @@ from io import BytesIO
 from typing import List
 
 import async_timeout
+import pytz
 from homeassistant.components.weather import Forecast
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -16,7 +17,8 @@ from PIL import Image, ImageDraw, ImageFont
 from .api import IrmKmiApiClient, IrmKmiApiError
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import OUT_OF_BENELUX
-from .data import IrmKmiForecast
+from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
+                   ProcessedCoordinatorData, RadarAnimationData)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +39,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         self._api_client = IrmKmiApiClient(session=async_get_clientsession(hass))
         self._zone = zone
 
-    async def _async_update_data(self):
+    async def _async_update_data(self) -> ProcessedCoordinatorData:
         """Fetch data from API endpoint.
 
         This is the place to pre-process the data to lookup tables
@@ -62,67 +64,107 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         if api_data.get('cityName', None) in OUT_OF_BENELUX:
             raise UpdateFailed(f"Zone '{self._zone}' is out of Benelux and forecast is only available in the Benelux")
 
-        result = self.process_api_data(api_data)
+        return await self.process_api_data(api_data)
 
-        # TODO make such that the most up to date image is specified to entity for static display
-        return result | await self._async_animation_data(api_data)
+    async def _async_animation_data(self, api_data: dict) -> RadarAnimationData:
 
-    async def _async_animation_data(self, api_data: dict) -> dict:
-
-        default = {'animation': None}
         animation_data = api_data.get('animation', {}).get('sequence')
-        localisation_layer = api_data.get('animation', {}).get('localisationLayer')
-        country = api_data.get('country', None)
+        localisation_layer_url = api_data.get('animation', {}).get('localisationLayer')
+        country = api_data.get('country', '')
 
-        if animation_data is None or localisation_layer is None or not isinstance(animation_data, list):
-            return default
+        if animation_data is None or localisation_layer_url is None or not isinstance(animation_data, list):
+            return RadarAnimationData()
 
+        try:
+            images_from_api = await self.download_images_from_api(animation_data, country, localisation_layer_url)
+        except IrmKmiApiError:
+            _LOGGER.warning(f"Could not get images for weather radar")
+            return RadarAnimationData()
+
+        localisation = Image.open(BytesIO(images_from_api[0])).convert('RGBA')
+        images_from_api = images_from_api[1:]
+
+        radar_animation = await self.merge_frames_from_api(animation_data, country, images_from_api, localisation)
+        # TODO support translation here
+        radar_animation['hint'] = api_data.get('animation', {}).get('sequenceHint', {}).get('en')
+        return radar_animation
+
+    async def download_images_from_api(self, animation_data, country, localisation_layer_url):
         coroutines = list()
-        coroutines.append(self._api_client.get_image(f"{localisation_layer}&th={'d' if country == 'NL' else 'n'}"))
+        coroutines.append(self._api_client.get_image(f"{localisation_layer_url}&th={'d' if country == 'NL' else 'n'}"))
         for frame in animation_data:
             if frame.get('uri', None) is not None:
                 coroutines.append(self._api_client.get_image(frame.get('uri')))
+        async with async_timeout.timeout(20):
+            images_from_api = await asyncio.gather(*coroutines, return_exceptions=True)
 
-        try:
-            async with async_timeout.timeout(20):
-                r = await asyncio.gather(*coroutines, return_exceptions=True)
-        except IrmKmiApiError:
-            _LOGGER.warning(f"Could not get images for weather radar")
-            return default
-        _LOGGER.debug(f"Just downloaded {len(r)} images")
+        _LOGGER.debug(f"Just downloaded {len(images_from_api)} images")
+        return images_from_api
+
+    async def merge_frames_from_api(self, animation_data, country, images_from_api,
+                                    localisation_layer) -> RadarAnimationData:
 
         if country == 'NL':
             background = Image.open("custom_components/irm_kmi/resources/nl.png").convert('RGBA')
         else:
             background = Image.open("custom_components/irm_kmi/resources/be_bw.png").convert('RGBA')
-        localisation = Image.open(BytesIO(r[0])).convert('RGBA')
-        merged_frames = list()
-        for frame in r[1:]:
+
+        most_recent_frame = None
+        tz = pytz.timezone(self.hass.config.time_zone)
+        current_time = datetime.now(tz=tz)
+        sequence: List[AnimationFrameData] = list()
+        for (idx, sequence_element) in enumerate(animation_data):
+            frame = images_from_api[idx]
             layer = Image.open(BytesIO(frame)).convert('RGBA')
             temp = Image.alpha_composite(background, layer)
-            temp = Image.alpha_composite(temp, localisation)
+            temp = Image.alpha_composite(temp, localisation_layer)
 
             draw = ImageDraw.Draw(temp)
             font = ImageFont.truetype("custom_components/irm_kmi/resources/roboto_medium.ttf", 16)
-            # TODO write actual date time
+            time_image = (datetime.fromisoformat(sequence_element.get('time'))
+                          .astimezone(tz=tz))
+
+            time_str = time_image.isoformat(sep=' ', timespec='minutes')
+
             if country == 'NL':
-                draw.text((4, 4), "Sample Text", (0, 0, 0), font=font)
+                draw.text((4, 4), time_str, (0, 0, 0), font=font)
             else:
-                draw.text((4, 4), "Sample Text", (255, 255, 255), font=font)
+                draw.text((4, 4), time_str, (255, 255, 255), font=font)
 
             bytes_img = BytesIO()
-            temp.save(bytes_img, 'png')
-            merged_frames.append(bytes_img.getvalue())
+            temp.save(bytes_img, 'png', compress_level=8)
 
-        return {'animation': {
-            'images': merged_frames,
-            # TODO support translation for hint
-            'hint': api_data.get('animation', {}).get('sequenceHint', {}).get('en')
-        }
-        }
+            sequence.append(
+                AnimationFrameData(
+                    time=time_image,
+                    image=bytes_img.getvalue()
+                )
+            )
+
+            if most_recent_frame is None and current_time < time_image:
+                recent_idx = idx - 1 if idx > 0 else idx
+                most_recent_frame = sequence[recent_idx].get('image', None)
+                _LOGGER.debug(f"Most recent frame is at {sequence[recent_idx].get('time')}")
+
+        background.close()
+        most_recent_frame = most_recent_frame if most_recent_frame is not None else sequence[-1].get('image')
+
+        return RadarAnimationData(
+            sequence=sequence,
+            most_recent_image=most_recent_frame
+        )
+
+    async def process_api_data(self, api_data: dict) -> ProcessedCoordinatorData:
+
+        return ProcessedCoordinatorData(
+            current_weather=IrmKmiCoordinator.current_weather_from_data(api_data),
+            daily_forecast=IrmKmiCoordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
+            hourly_forecast=IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
+            animation=await self._async_animation_data(api_data=api_data)
+        )
 
     @staticmethod
-    def process_api_data(api_data):
+    def current_weather_from_data(api_data: dict) -> CurrentWeatherData:
         # Process data to get current hour forecast
         now_hourly = None
         hourly_forecast_data = api_data.get('for', {}).get('hourly')
@@ -140,23 +182,18 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             for module in module_data:
                 if module.get('type', None) == 'uv':
                     uv_index = module.get('data', {}).get('levelValue')
-        # Put everything together
+
         # TODO NL cities have a better 'obs' section, use that for current weather
-        processed_data = {
-            'current_weather': {
-                'condition': CDT_MAP.get(
-                    (api_data.get('obs', {}).get('ww'), api_data.get('obs', {}).get('dayNight')), None),
-                'temperature': api_data.get('obs', {}).get('temp'),
-                'wind_speed': now_hourly.get('windSpeedKm', None) if now_hourly is not None else None,
-                'wind_gust_speed': now_hourly.get('windPeakSpeedKm', None) if now_hourly is not None else None,
-                'wind_bearing': now_hourly.get('windDirectionText', {}).get('en') if now_hourly is not None else None,
-                'pressure': now_hourly.get('pressure', None) if now_hourly is not None else None,
-                'uv_index': uv_index
-            },
-            'daily_forecast': IrmKmiCoordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
-            'hourly_forecast': IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly'))
-        }
-        return processed_data
+        current_weather = CurrentWeatherData(
+            condition=CDT_MAP.get((api_data.get('obs', {}).get('ww'), api_data.get('obs', {}).get('dayNight')), None),
+            temperature=api_data.get('obs', {}).get('temp'),
+            wind_speed=now_hourly.get('windSpeedKm', None) if now_hourly is not None else None,
+            wind_gust_speed=now_hourly.get('windPeakSpeedKm', None) if now_hourly is not None else None,
+            wind_bearing=now_hourly.get('windDirectionText', {}).get('en') if now_hourly is not None else None,
+            pressure=now_hourly.get('pressure', None) if now_hourly is not None else None,
+            uv_index=uv_index
+        )
+        return current_weather
 
     @staticmethod
     def hourly_list_to_forecast(data: List[dict] | None) -> List[Forecast] | None:

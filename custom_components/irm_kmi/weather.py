@@ -24,7 +24,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     _LOGGER.debug(f'async_setup_entry entry is: {entry}')
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    # await coordinator.async_config_entry_first_refresh()
     async_add_entities(
         [IrmKmiWeather(coordinator, entry)]
     )

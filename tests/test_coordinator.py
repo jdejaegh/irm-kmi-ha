@@ -8,7 +8,7 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLOUDY,
 from pytest_homeassistant_custom_component.common import load_fixture
 
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
-from custom_components.irm_kmi.data import IrmKmiForecast
+from custom_components.irm_kmi.data import CurrentWeatherData, IrmKmiForecast
 
 
 def get_api_data() -> dict:
@@ -19,17 +19,17 @@ def get_api_data() -> dict:
 @freeze_time(datetime.fromisoformat('2023-12-26T18:30:00.028724'))
 def test_current_weather() -> None:
     api_data = get_api_data()
-    result = IrmKmiCoordinator.process_api_data(api_data).get('current_weather')
+    result = IrmKmiCoordinator.current_weather_from_data(api_data)
 
-    expected = {
-        'condition': ATTR_CONDITION_CLOUDY,
-        'temperature': 7,
-        'wind_speed': 5,
-        'wind_gust_speed': None,
-        'wind_bearing': 'WSW',
-        'pressure': 1020,
-        'uv_index': .7
-    }
+    expected = CurrentWeatherData(
+        condition=ATTR_CONDITION_CLOUDY,
+        temperature=7,
+        wind_speed=5,
+        wind_gust_speed=None,
+        wind_bearing='WSW',
+        pressure=1020,
+        uv_index=.7
+    )
 
     assert result == expected
 
@@ -83,4 +83,3 @@ def test_hourly_forecast() -> None:
     )
 
     assert result[8] == expected
-
