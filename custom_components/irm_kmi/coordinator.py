@@ -3,12 +3,14 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 from io import BytesIO
-from typing import List
+from typing import List, Tuple
 
 import async_timeout
 import pytz
 from homeassistant.components.weather import Forecast
+from homeassistant.components.zone import Zone
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
@@ -26,7 +28,7 @@ _LOGGER = logging.getLogger(__name__)
 class IrmKmiCoordinator(DataUpdateCoordinator):
     """Coordinator to update data from IRM KMI"""
 
-    def __init__(self, hass, zone):
+    def __init__(self, hass: HomeAssistant, zone: Zone):
         """Initialize my coordinator."""
         super().__init__(
             hass,
@@ -89,6 +91,15 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         radar_animation['hint'] = api_data.get('animation', {}).get('sequenceHint', {}).get('en')
         return radar_animation
 
+    async def process_api_data(self, api_data: dict) -> ProcessedCoordinatorData:
+
+        return ProcessedCoordinatorData(
+            current_weather=IrmKmiCoordinator.current_weather_from_data(api_data),
+            daily_forecast=IrmKmiCoordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
+            hourly_forecast=IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
+            animation=await self._async_animation_data(api_data=api_data)
+        )
+
     async def download_images_from_api(self, animation_data, country, localisation_layer_url):
         coroutines = list()
         coroutines.append(self._api_client.get_image(f"{localisation_layer_url}&th={'d' if country == 'NL' else 'n'}"))
@@ -101,18 +112,28 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         _LOGGER.debug(f"Just downloaded {len(images_from_api)} images")
         return images_from_api
 
-    async def merge_frames_from_api(self, animation_data, country, images_from_api,
-                                    localisation_layer) -> RadarAnimationData:
+    async def merge_frames_from_api(self,
+                                    animation_data: List[dict],
+                                    country: str,
+                                    images_from_api: Tuple[bytes],
+                                    localisation_layer: Image
+                                    ) -> RadarAnimationData:
+
+        background: Image
+        fill_color: tuple
 
         if country == 'NL':
             background = Image.open("custom_components/irm_kmi/resources/nl.png").convert('RGBA')
+            fill_color = (0, 0, 0)
         else:
             background = Image.open("custom_components/irm_kmi/resources/be_bw.png").convert('RGBA')
+            fill_color = (255, 255, 255)
 
         most_recent_frame = None
         tz = pytz.timezone(self.hass.config.time_zone)
         current_time = datetime.now(tz=tz)
         sequence: List[AnimationFrameData] = list()
+
         for (idx, sequence_element) in enumerate(animation_data):
             frame = images_from_api[idx]
             layer = Image.open(BytesIO(frame)).convert('RGBA')
@@ -126,10 +147,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
             time_str = time_image.isoformat(sep=' ', timespec='minutes')
 
-            if country == 'NL':
-                draw.text((4, 4), time_str, (0, 0, 0), font=font)
-            else:
-                draw.text((4, 4), time_str, (255, 255, 255), font=font)
+            draw.text((4, 4), time_str, fill_color, font=font)
 
             bytes_img = BytesIO()
             temp.save(bytes_img, 'png', compress_level=8)
@@ -154,15 +172,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             most_recent_image=most_recent_frame
         )
 
-    async def process_api_data(self, api_data: dict) -> ProcessedCoordinatorData:
-
-        return ProcessedCoordinatorData(
-            current_weather=IrmKmiCoordinator.current_weather_from_data(api_data),
-            daily_forecast=IrmKmiCoordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
-            hourly_forecast=IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
-            animation=await self._async_animation_data(api_data=api_data)
-        )
-
     @staticmethod
     def current_weather_from_data(api_data: dict) -> CurrentWeatherData:
         # Process data to get current hour forecast
@@ -183,7 +192,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 if module.get('type', None) == 'uv':
                     uv_index = module.get('data', {}).get('levelValue')
 
-        # TODO NL cities have a better 'obs' section, use that for current weather
         current_weather = CurrentWeatherData(
             condition=CDT_MAP.get((api_data.get('obs', {}).get('ww'), api_data.get('obs', {}).get('dayNight')), None),
             temperature=api_data.get('obs', {}).get('temp'),
@@ -193,6 +201,11 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             pressure=now_hourly.get('pressure', None) if now_hourly is not None else None,
             uv_index=uv_index
         )
+
+        if api_data.get('country', '') == 'NL':
+            current_weather['wind_speed'] = api_data.get('obs', {}).get('windSpeedKm')
+            current_weather['wind_bearing'] = api_data.get('obs', {}).get('windDirectionText', {}).get('en')
+
         return current_weather
 
     @staticmethod
