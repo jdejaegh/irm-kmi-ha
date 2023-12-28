@@ -2,6 +2,7 @@
 
 import logging
 
+from aiohttp import web
 from homeassistant.components.camera import Camera, async_get_still_stream
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -20,19 +21,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     _LOGGER.debug(f'async_setup_entry entry is: {entry}')
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        [IrmKmiRadar(coordinator, entry)]
-    )
+    async_add_entities([IrmKmiRadar(coordinator, entry)])
 
 
 class IrmKmiRadar(CoordinatorEntity, Camera):
-    """Representation of a local file camera."""
+    """Representation of a radar view camera."""
 
     def __init__(self,
                  coordinator: IrmKmiCoordinator,
                  entry: ConfigEntry,
                  ) -> None:
-        """Initialize Local File Camera component."""
+        """Initialize IrmKmiRadar component."""
         super().__init__(coordinator)
         Camera.__init__(self)
         self._name = f"Radar {entry.title}"
@@ -48,12 +47,13 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
 
     @property
     def frame_interval(self) -> float:
-        """Return the interval between frames of the mjpeg stream"""
+        """Return the interval between frames of the mjpeg stream."""
         return 0.3
 
     def camera_image(self,
                      width: int | None = None,
                      height: int | None = None) -> bytes | None:
+        """Return still image to be used as thumbnail."""
         return self.coordinator.data.get('animation', {}).get('most_recent_image')
 
     async def async_camera_image(
@@ -61,23 +61,22 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
             width: int | None = None,
             height: int | None = None
     ) -> bytes | None:
-        """Return bytes of camera image."""
+        """Return still image to be used as thumbnail."""
         return self.camera_image()
 
-    async def handle_async_still_stream(self, request, interval):
+    async def handle_async_still_stream(self, request: web.Request, interval: float) -> web.StreamResponse:
         """Generate an HTTP MJPEG stream from camera images."""
         _LOGGER.info("handle_async_still_stream")
         self._image_index = 0
-        return await async_get_still_stream(
-            request, self.iterate, self.content_type, interval
-        )
+        return await async_get_still_stream(request, self.iterate, self.content_type, interval)
 
-    async def handle_async_mjpeg_stream(self, request):
+    async def handle_async_mjpeg_stream(self, request: web.Request) -> web.StreamResponse:
         """Serve an HTTP MJPEG stream from the camera."""
         _LOGGER.info("handle_async_mjpeg_stream")
         return await self.handle_async_still_stream(request, self.frame_interval)
 
     async def iterate(self) -> bytes | None:
+        """Loop over all the frames when called multiple times."""
         sequence = self.coordinator.data.get('animation', {}).get('sequence')
         if isinstance(sequence, list) and len(sequence) > 0:
             r = sequence[self._image_index].get('image', None)
@@ -86,12 +85,12 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
         return None
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of this camera."""
         return self._name
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> dict:
         """Return the camera state attributes."""
         attrs = {"hint": self.coordinator.data.get('animation', {}).get('hint')}
         return attrs

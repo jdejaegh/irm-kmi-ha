@@ -1,4 +1,4 @@
-"""Config flow to set up IRM KMI integration via the UI"""
+"""Config flow to set up IRM KMI integration via the UI."""
 import logging
 
 import voluptuous as vol
@@ -17,7 +17,7 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input: dict | None = None) -> FlowResult:
-
+        """Define the user step of the configuration flow."""
         if user_input is not None:
             _LOGGER.debug(f"Provided config user is: {user_input}")
 
@@ -32,11 +32,7 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_ZONE): EntitySelector(
-                        EntitySelectorConfig(domain=ZONE_DOMAIN),
-                    ),
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Required(CONF_ZONE): EntitySelector(EntitySelectorConfig(domain=ZONE_DOMAIN)),
+            })
         )

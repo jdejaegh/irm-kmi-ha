@@ -18,33 +18,28 @@ class IrmKmiApiError(Exception):
     """Exception to indicate a general API error."""
 
 
-class IrmKmiApiCommunicationError(
-    IrmKmiApiError
-):
+class IrmKmiApiCommunicationError(IrmKmiApiError):
     """Exception to indicate a communication error."""
 
 
-class IrmKmiApiParametersError(
-    IrmKmiApiError
-):
+class IrmKmiApiParametersError(IrmKmiApiError):
     """Exception to indicate a parameter error."""
 
 
-def _api_key(method_name: str):
+def _api_key(method_name: str) -> str:
     """Get API key."""
     return hashlib.md5(f"r9EnW374jkJ9acc;{method_name};{datetime.now().strftime('%d/%m/%Y')}".encode()).hexdigest()
 
 
 class IrmKmiApiClient:
-    """Sample API Client."""
+    """API client for IRM KMI weather data"""
     COORD_DECIMALS = 6
 
     def __init__(self, session: aiohttp.ClientSession) -> None:
-        """Sample API Client."""
         self._session = session
         self._base_url = "https://app.meteo.be/services/appv4/"
 
-    async def get_forecasts_coord(self, coord: dict) -> any:
+    async def get_forecasts_coord(self, coord: dict) -> dict:
         """Get forecasts for given city."""
         assert 'lat' in coord
         assert 'long' in coord
@@ -55,6 +50,7 @@ class IrmKmiApiClient:
         return await response.json()
 
     async def get_image(self, url, params: dict | None = None) -> bytes:
+        """Get the image at the specified url with the parameters"""
         # TODO support etag and head request before requesting content
         r: ClientResponse = await self._api_wrapper(base_url=url, params={} if params is None else params)
         return await r.read()
@@ -83,14 +79,8 @@ class IrmKmiApiClient:
                 return response
 
         except asyncio.TimeoutError as exception:
-            raise IrmKmiApiCommunicationError(
-                "Timeout error fetching information",
-            ) from exception
+            raise IrmKmiApiCommunicationError("Timeout error fetching information") from exception
         except (aiohttp.ClientError, socket.gaierror) as exception:
-            raise IrmKmiApiCommunicationError(
-                "Error fetching information",
-            ) from exception
+            raise IrmKmiApiCommunicationError("Error fetching information") from exception
         except Exception as exception:  # pylint: disable=broad-except
-            raise IrmKmiApiError(
-                f"Something really wrong happened! {exception}"
-            ) from exception
+            raise IrmKmiApiError(f"Something really wrong happened! {exception}") from exception

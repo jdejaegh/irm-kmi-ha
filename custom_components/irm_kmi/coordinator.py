@@ -3,7 +3,7 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 from io import BytesIO
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import async_timeout
 import pytz
@@ -29,7 +29,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
     """Coordinator to update data from IRM KMI"""
 
     def __init__(self, hass: HomeAssistant, zone: Zone):
-        """Initialize my coordinator."""
+        """Initialize the coordinator."""
         super().__init__(
             hass,
             _LOGGER,
@@ -69,7 +69,8 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         return await self.process_api_data(api_data)
 
     async def _async_animation_data(self, api_data: dict) -> RadarAnimationData:
-
+        """From the API data passed in, call the API to get all the images and create the radar animation data object.
+        Frames from the API are merged with the background map and the location marker to create each frame."""
         animation_data = api_data.get('animation', {}).get('sequence')
         localisation_layer_url = api_data.get('animation', {}).get('localisationLayer')
         country = api_data.get('country', '')
@@ -92,7 +93,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         return radar_animation
 
     async def process_api_data(self, api_data: dict) -> ProcessedCoordinatorData:
-
+        """From the API data, create the object that will be used in the entities"""
         return ProcessedCoordinatorData(
             current_weather=IrmKmiCoordinator.current_weather_from_data(api_data),
             daily_forecast=IrmKmiCoordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
@@ -100,7 +101,11 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             animation=await self._async_animation_data(api_data=api_data)
         )
 
-    async def download_images_from_api(self, animation_data, country, localisation_layer_url):
+    async def download_images_from_api(self,
+                                       animation_data: dict,
+                                       country: str,
+                                       localisation_layer_url: str) -> tuple[Any]:
+        """Download a batch of images to create the radar frames."""
         coroutines = list()
         coroutines.append(
             self._api_client.get_image(localisation_layer_url,
@@ -110,7 +115,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             if frame.get('uri', None) is not None:
                 coroutines.append(self._api_client.get_image(frame.get('uri')))
         async with async_timeout.timeout(20):
-            images_from_api = await asyncio.gather(*coroutines, return_exceptions=True)
+            images_from_api = await asyncio.gather(*coroutines)
 
         _LOGGER.debug(f"Just downloaded {len(images_from_api)} images")
         return images_from_api
@@ -121,7 +126,8 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                                     images_from_api: Tuple[bytes],
                                     localisation_layer: Image
                                     ) -> RadarAnimationData:
-
+        """Merge three layers to create one frame of the radar: the basemap, the clouds and the location marker.
+        Adds text in the top right to specify the timestamp of each image."""
         background: Image
         fill_color: tuple
 
@@ -177,6 +183,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
     @staticmethod
     def current_weather_from_data(api_data: dict) -> CurrentWeatherData:
+        """Parse the API data to build a CurrentWeatherData."""
         # Process data to get current hour forecast
         now_hourly = None
         hourly_forecast_data = api_data.get('for', {}).get('hourly')
@@ -234,6 +241,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
     @staticmethod
     def hourly_list_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
+        """Parse data from the API to create a list of hourly forecasts"""
         if data is None or not isinstance(data, list) or len(data) == 0:
             return None
 
@@ -276,6 +284,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
     @staticmethod
     def daily_list_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
+        """Parse data from the API to create a list of daily forecasts"""
         if data is None or not isinstance(data, list) or len(data) == 0:
             return None
 

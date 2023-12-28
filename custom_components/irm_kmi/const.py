@@ -1,4 +1,4 @@
-"""Constants for the IRM KMI integration"""
+"""Constants for the IRM KMI integration."""
 
 from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
                                               ATTR_CONDITION_CLOUDY,

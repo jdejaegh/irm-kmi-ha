@@ -14,6 +14,7 @@ class IrmKmiForecast(Forecast):
 
 
 class CurrentWeatherData(TypedDict, total=False):
+    """Class to hold the currently observable weather at a given location"""
     condition: str | None
     temperature: float | None
     wind_speed: float | None
@@ -24,17 +25,20 @@ class CurrentWeatherData(TypedDict, total=False):
 
 
 class AnimationFrameData(TypedDict, total=False):
+    """Holds one single frame of the radar camera, along with the timestamp of the frame"""
     time: datetime | None
     image: bytes | None
 
 
 class RadarAnimationData(TypedDict, total=False):
+    """Holds frames and additional data for the animation to be rendered"""
     sequence: List[AnimationFrameData] | None
     most_recent_image: bytes | None
     hint: str | None
 
 
 class ProcessedCoordinatorData(TypedDict, total=False):
+    """Data class that will be exposed to the entities consuming data from an IrmKmiCoordinator"""
     current_weather: CurrentWeatherData
     hourly_forecast: List[Forecast] | None
     daily_forecast: List[IrmKmiForecast] | None
