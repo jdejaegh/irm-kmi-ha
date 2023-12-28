@@ -22,7 +22,7 @@ Although the provider is Belgian, the data is available for Belgium 🇧🇪, Lu
 - [X] Forecasts
   - [X] Hourly
   - [X] Daily
-- [ ] Camera entity for the satellite view
+- [X] Camera entity for the satellite view
 - [X] Use UI to configure the integration
 
 ## Mapping between IRM KMI and Home Assistant weather conditions
