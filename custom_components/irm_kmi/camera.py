@@ -1,5 +1,4 @@
 """Create a radar view for IRM KMI weather"""
-# File inspired by https://github.com/jodur/imagesdirectory-camera/blob/main/custom_components/imagedirectory/camera.py
 
 import logging
 
@@ -47,7 +46,7 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
 
         self._image_index = 0
 
-    @property  # Baseclass Camera property override
+    @property
     def frame_interval(self) -> float:
         """Return the interval between frames of the mjpeg stream"""
         return 0.3

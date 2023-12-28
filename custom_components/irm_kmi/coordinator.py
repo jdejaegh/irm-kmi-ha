@@ -102,7 +102,10 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
     async def download_images_from_api(self, animation_data, country, localisation_layer_url):
         coroutines = list()
-        coroutines.append(self._api_client.get_image(f"{localisation_layer_url}&th={'d' if country == 'NL' else 'n'}"))
+        coroutines.append(
+            self._api_client.get_image(localisation_layer_url,
+                                       params={'th': 'd' if country == 'NL' else 'n'}))
+
         for frame in animation_data:
             if frame.get('uri', None) is not None:
                 coroutines.append(self._api_client.get_image(frame.get('uri')))
@@ -184,6 +187,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             for current in hourly_forecast_data[:2]:
                 if datetime.now().strftime('%H') == current['hour']:
                     now_hourly = current
+                    break
         # Get UV index
         module_data = api_data.get('module', None)
         uv_index = None
@@ -192,13 +196,33 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 if module.get('type', None) == 'uv':
                     uv_index = module.get('data', {}).get('levelValue')
 
+        try:
+            pressure = float(now_hourly.get('pressure', None)) if now_hourly is not None else None
+        except TypeError:
+            pressure = None
+
+        try:
+            wind_speed = float(now_hourly.get('windSpeedKm', None)) if now_hourly is not None else None
+        except TypeError:
+            wind_speed = None
+
+        try:
+            wind_gust_speed = float(now_hourly.get('windPeakSpeedKm', None)) if now_hourly is not None else None
+        except TypeError:
+            wind_gust_speed = None
+
+        try:
+            temperature = float(api_data.get('obs', {}).get('temp'))
+        except TypeError:
+            temperature = None
+
         current_weather = CurrentWeatherData(
             condition=CDT_MAP.get((api_data.get('obs', {}).get('ww'), api_data.get('obs', {}).get('dayNight')), None),
-            temperature=api_data.get('obs', {}).get('temp'),
-            wind_speed=now_hourly.get('windSpeedKm', None) if now_hourly is not None else None,
-            wind_gust_speed=now_hourly.get('windPeakSpeedKm', None) if now_hourly is not None else None,
+            temperature=temperature,
+            wind_speed=wind_speed,
+            wind_gust_speed=wind_gust_speed,
             wind_bearing=now_hourly.get('windDirectionText', {}).get('en') if now_hourly is not None else None,
-            pressure=now_hourly.get('pressure', None) if now_hourly is not None else None,
+            pressure=pressure,
             uv_index=uv_index
         )
 

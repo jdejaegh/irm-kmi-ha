@@ -45,7 +45,6 @@ def mock_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMoc
     fixture: str = "forecast.json"
 
     forecast = json.loads(load_fixture(fixture))
-    print(type(forecast))
     with patch(
             "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
     ) as irm_kmi_api_mock:
@@ -81,8 +80,35 @@ def mock_exception_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None
 
 
 @pytest.fixture()
-def mock_coordinator(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+def mock_image_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
     """Return a mocked IrmKmi api client."""
+
+    async def patched(url: str, params: dict | None = None) -> bytes:
+        if "cdn.knmi.nl" in url:
+            file_name = "tests/fixtures/clouds_nl.png"
+        elif "app.meteo.be/services/appv4/?s=getIncaImage" in url:
+            file_name = "tests/fixtures/clouds_be.png"
+        elif "getLocalizationLayerBE" in url:
+            file_name = "tests/fixtures/loc_layer_be_n.png"
+        elif "getLocalizationLayerNL" in url:
+            file_name = "tests/fixtures/loc_layer_nl_d.png"
+        else:
+            raise ValueError("Not a valid parameter for the mock")
+
+        with open(file_name, "rb") as file:
+            return file.read()
+
+    with patch(
+            "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_image.side_effect = patched
+        yield irm_kmi
+
+
+@pytest.fixture()
+def mock_coordinator(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked coordinator."""
     with patch(
             "custom_components.irm_kmi.IrmKmiCoordinator", autospec=True
     ) as coordinator_mock:
