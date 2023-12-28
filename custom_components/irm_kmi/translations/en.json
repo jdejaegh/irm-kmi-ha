@@ -1,0 +1,17 @@
+{
+  "title": "Royal Meteorological Institute of Belgium",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Select a zone",
+        "data" : {
+          "zone": "Zone"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Weather for this zone is already configured",
+      "unknown": "Unknown error occurred"
+    }
+  }
+}

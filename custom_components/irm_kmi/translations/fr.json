@@ -1,0 +1,17 @@
+{
+  "title": "Institut royal météorologique de Belgique",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Choisissez une zone",
+        "data" : {
+          "zone": "Zone"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "La météo pour cette zone est déjà configurée",
+      "unknown": "Une erreur inconnue est survenue"
+    }
+  }
+}

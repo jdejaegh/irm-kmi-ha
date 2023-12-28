@@ -17,7 +17,7 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
 from PIL import Image, ImageDraw, ImageFont
 
 from .api import IrmKmiApiClient, IrmKmiApiError
-from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
+from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP, LANGS
 from .const import OUT_OF_BENELUX
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
                    ProcessedCoordinatorData, RadarAnimationData)
@@ -88,8 +88,9 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         images_from_api = images_from_api[1:]
 
         radar_animation = await self.merge_frames_from_api(animation_data, country, images_from_api, localisation)
-        # TODO support translation here
-        radar_animation['hint'] = api_data.get('animation', {}).get('sequenceHint', {}).get('en')
+
+        lang = self.hass.config.language if self.hass.config.language in LANGS else 'en'
+        radar_animation['hint'] = api_data.get('animation', {}).get('sequenceHint', {}).get(lang)
         return radar_animation
 
     async def process_api_data(self, api_data: dict) -> ProcessedCoordinatorData:

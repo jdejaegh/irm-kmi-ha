@@ -33,6 +33,7 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
-                vol.Required(CONF_ZONE): EntitySelector(EntitySelectorConfig(domain=ZONE_DOMAIN)),
+                vol.Required(CONF_ZONE, description="Zone to use for weather forecast"):
+                    EntitySelector(EntitySelectorConfig(domain=ZONE_DOMAIN)),
             })
         )
