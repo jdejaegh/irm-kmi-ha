@@ -46,3 +46,21 @@ Mapping was established based on my own interpretation of the icons and conditio
 | sunny           | Sunshine                          | <img height="64" src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/0-d.png" width="64"/> <img height="64" src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/1-d.png" width="64"/>                                                                                                                                                                                                                                                                                                                                                                                                     | `0-d` `1-d`                                                                   |
 | windy           | Wind                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                                                                               |
 | windy-variant   | Wind and clouds                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                                                                               |
+
+## Limitations
+
+1. The weather provider sometime uses two weather conditions on for the same day.  When this is the case, only the first
+weather condition is taken into account in this integration.
+<br><img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/monday.png" height="150" alt="Example of two weather conditions">
+
+2. The trends for 14 days are not shown
+3. The warnings shown in the app are not shown by the integration
+4. The provider only has data for Belgium, Luxembourg and The Netherlands 
+
+## Disclaimer
+
+This is a personal project and isn't in any way affiliated with, sponsored or endorsed by [The Royal Meteorological 
+Institute of Belgium](https://www.meteo.be).
+
+All product names, trademarks and registered trademarks in (the images in) this repository, are property of their 
+respective owners. All images in this repository are used by the project for identification purposes only.
