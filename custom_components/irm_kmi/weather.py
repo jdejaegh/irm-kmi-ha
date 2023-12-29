@@ -23,9 +23,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     """Set up the weather entry."""
 
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        [IrmKmiWeather(coordinator, entry)]
-    )
+    async_add_entities([IrmKmiWeather(coordinator, entry)])
 
 
 class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
@@ -59,11 +57,11 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
     @property
     def condition(self) -> str | None:
-        return self.coordinator.data.get('current_weather').get('condition')
+        return self.coordinator.data.get('current_weather', {}).get('condition')
 
     @property
     def native_temperature(self) -> float | None:
-        return self.coordinator.data.get('current_weather').get('temperature')
+        return self.coordinator.data.get('current_weather', {}).get('temperature')
 
     @property
     def native_temperature_unit(self) -> str | None:
@@ -75,15 +73,15 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
     @property
     def native_wind_speed(self) -> float | None:
-        return self.coordinator.data.get('current_weather').get('wind_speed')
+        return self.coordinator.data.get('current_weather', {}).get('wind_speed')
 
     @property
     def native_wind_gust_speed(self) -> float | None:
-        return self.coordinator.data.get('current_weather').get('wind_gust_speed')
+        return self.coordinator.data.get('current_weather', {}).get('wind_gust_speed')
 
     @property
     def wind_bearing(self) -> float | str | None:
-        return self.coordinator.data.get('current_weather').get('wind_bearing')
+        return self.coordinator.data.get('current_weather', {}).get('wind_bearing')
 
     @property
     def native_precipitation_unit(self) -> str | None:
@@ -91,7 +89,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
     @property
     def native_pressure(self) -> float | None:
-        return self.coordinator.data.get('current_weather').get('pressure')
+        return self.coordinator.data.get('current_weather', {}).get('pressure')
 
     @property
     def native_pressure_unit(self) -> str | None:
@@ -99,7 +97,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
     @property
     def uv_index(self) -> float | None:
-        return self.coordinator.data.get('current_weather').get('uv_index')
+        return self.coordinator.data.get('current_weather', {}).get('uv_index')
 
     async def async_forecast_twice_daily(self) -> List[Forecast] | None:
         return self.coordinator.data.get('daily_forecast')

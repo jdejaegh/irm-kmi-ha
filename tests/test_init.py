@@ -98,5 +98,5 @@ async def test_zone_out_of_benelux(
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     await hass.async_block_till_done()
 
-    assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
+    assert mock_config_entry.state is ConfigEntryState.SETUP_ERROR
     assert "Zone 'zone.london' is out of Benelux" in caplog.text

@@ -3,8 +3,8 @@
 # File inspired from https://github.com/ludeeus/integration_blueprint
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_ZONE
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryError
 
 from .const import DOMAIN, PLATFORMS
 from .coordinator import IrmKmiCoordinator
@@ -15,10 +15,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
     hass.data.setdefault(DOMAIN, {})
 
-    hass.data[DOMAIN][entry.entry_id] = coordinator = IrmKmiCoordinator(hass, entry.data[CONF_ZONE])
+    hass.data[DOMAIN][entry.entry_id] = coordinator = IrmKmiCoordinator(hass, entry)
 
-    # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
-    await coordinator.async_config_entry_first_refresh()
+    try:
+        # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
+        await coordinator.async_config_entry_first_refresh()
+    except ConfigEntryError:
+        # This happens when the zone is out of Benelux (no forecast available there)
+        return False
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))

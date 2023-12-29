@@ -1,4 +1,5 @@
 """Constants for the IRM KMI integration."""
+from typing import Final
 
 from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
                                               ATTR_CONDITION_CLOUDY,
@@ -13,16 +14,32 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
                                               ATTR_CONDITION_SUNNY)
 from homeassistant.const import Platform
 
-DOMAIN = 'irm_kmi'
-PLATFORMS: list[Platform] = [Platform.WEATHER, Platform.CAMERA]
-OUT_OF_BENELUX = ["außerhalb der Benelux (Brussels)",
-                  "Hors de Belgique (Bxl)",
-                  "Outside the Benelux (Brussels)",
-                  "Buiten de Benelux (Brussel)"]
-LANGS = ['en', 'fr', 'nl', 'de']
+DOMAIN: Final = 'irm_kmi'
+PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA]
+OUT_OF_BENELUX: Final = ["außerhalb der Benelux (Brussels)",
+                         "Hors de Belgique (Bxl)",
+                         "Outside the Benelux (Brussels)",
+                         "Buiten de Benelux (Brussel)"]
+LANGS: Final = ['en', 'fr', 'nl', 'de']
+
+
+CONF_STYLE_STD: Final = 'standard_style'
+CONF_STYLE_CONTRAST: Final = 'contrast_style'
+CONF_STYLE_YELLOW_RED: Final = 'yellow_red_style'
+CONF_STYLE_SATELLITE: Final = 'satellite_style'
+CONF_STYLE: Final = "style"
+
+CONF_STYLE_OPTIONS: Final = [
+    CONF_STYLE_STD,
+    CONF_STYLE_CONTRAST,
+    CONF_STYLE_YELLOW_RED,
+    CONF_STYLE_SATELLITE
+]
+
+CONF_DARK_MODE: Final = "dark_mode"
 
 # map ('ww', 'dayNight') tuple from IRM KMI to HA conditions
-IRM_KMI_TO_HA_CONDITION_MAP = {
+IRM_KMI_TO_HA_CONDITION_MAP: Final = {
     (0, 'd'): ATTR_CONDITION_SUNNY,
     (0, 'n'): ATTR_CONDITION_CLEAR_NIGHT,
     (1, 'd'): ATTR_CONDITION_SUNNY,

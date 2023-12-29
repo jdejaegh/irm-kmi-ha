@@ -11,7 +11,7 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLOUDY,
 from homeassistant.components.zone import Zone
 from homeassistant.core import HomeAssistant
 from PIL import Image, ImageDraw, ImageFont
-from pytest_homeassistant_custom_component.common import load_fixture
+from pytest_homeassistant_custom_component.common import load_fixture, MockConfigEntry
 
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
 from custom_components.irm_kmi.data import CurrentWeatherData, IrmKmiForecast
@@ -111,9 +111,10 @@ def test_hourly_forecast() -> None:
 @freeze_time(datetime.fromisoformat("2023-12-28T15:30:00+01:00"))
 async def test_get_image_nl(
         hass: HomeAssistant,
-        mock_image_irm_kmi_api: AsyncMock) -> None:
+        mock_image_irm_kmi_api: AsyncMock,
+        mock_config_entry: MockConfigEntry) -> None:
     api_data = get_api_data("forecast_nl.json")
-    coordinator = IrmKmiCoordinator(hass, Zone({}))
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
     result = await coordinator._async_animation_data(api_data)
 
@@ -121,7 +122,7 @@ async def test_get_image_nl(
     tz = pytz.timezone(hass.config.time_zone)
     background = Image.open("custom_components/irm_kmi/resources/nl.png").convert('RGBA')
     layer = Image.open("tests/fixtures/clouds_nl.png").convert('RGBA')
-    localisation = Image.open("tests/fixtures/loc_layer_nl_d.png").convert('RGBA')
+    localisation = Image.open("tests/fixtures/loc_layer_nl.png").convert('RGBA')
     temp = Image.alpha_composite(background, layer)
     expected = Image.alpha_composite(temp, localisation)
     draw = ImageDraw.Draw(expected)
@@ -145,9 +146,10 @@ async def test_get_image_nl(
 async def test_get_image_be(
         hass: HomeAssistant,
         mock_image_irm_kmi_api: AsyncMock,
+        mock_config_entry: MockConfigEntry
 ) -> None:
     api_data = get_api_data("forecast.json")
-    coordinator = IrmKmiCoordinator(hass, Zone({}))
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
     result = await coordinator._async_animation_data(api_data)
 

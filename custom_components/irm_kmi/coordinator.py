@@ -7,20 +7,22 @@ from typing import Any, List, Tuple
 
 import async_timeout
 import pytz
+from PIL import Image, ImageDraw, ImageFont
 from homeassistant.components.weather import Forecast
-from homeassistant.components.zone import Zone
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
-from PIL import Image, ImageDraw, ImageFont
 
 from .api import IrmKmiApiClient, IrmKmiApiError
-from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP, LANGS
-from .const import OUT_OF_BENELUX
+from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
+from .const import LANGS, OUT_OF_BENELUX
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
                    ProcessedCoordinatorData, RadarAnimationData)
+from .utils import disable_from_config, enable_from_config
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +30,7 @@ _LOGGER = logging.getLogger(__name__)
 class IrmKmiCoordinator(DataUpdateCoordinator):
     """Coordinator to update data from IRM KMI"""
 
-    def __init__(self, hass: HomeAssistant, zone: Zone):
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         """Initialize the coordinator."""
         super().__init__(
             hass,
@@ -39,7 +41,9 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(minutes=7),
         )
         self._api_client = IrmKmiApiClient(session=async_get_clientsession(hass))
-        self._zone = zone
+        self._zone = entry.data.get('zone')
+        self._config_entry = entry
+        self._disabled = False
 
     async def _async_update_data(self) -> ProcessedCoordinatorData:
         """Fetch data from API endpoint.
@@ -64,9 +68,23 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(f"Error communicating with API: {err}")
 
         if api_data.get('cityName', None) in OUT_OF_BENELUX:
-            raise UpdateFailed(f"Zone '{self._zone}' is out of Benelux and forecast is only available in the Benelux")
+            if self.data is None:
+                error_text = f"Zone '{self._zone}' is out of Benelux and forecast is only available in the Benelux"
+                _LOGGER.error(error_text)
+                raise ConfigEntryError(error_text)
+            else:
+                # TODO create a repair when this triggers
+                _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux."
+                              f"Associated device is now disabled.  Move the zone back in Benelux and re-enable to fix "
+                              f"this")
+                disable_from_config(self.hass, self._config_entry)
+                return ProcessedCoordinatorData()
 
         return await self.process_api_data(api_data)
+
+    async def async_refresh(self) -> None:
+        """Refresh data and log errors."""
+        await self._async_refresh(log_failures=True, raise_on_entry_error=True)
 
     async def _async_animation_data(self, api_data: dict) -> RadarAnimationData:
         """From the API data passed in, call the API to get all the images and create the radar animation data object.
@@ -103,7 +121,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         )
 
     async def download_images_from_api(self,
-                                       animation_data: dict,
+                                       animation_data: list,
                                        country: str,
                                        localisation_layer_url: str) -> tuple[Any]:
         """Download a batch of images to create the radar frames."""
@@ -172,7 +190,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             if most_recent_frame is None and current_time < time_image:
                 recent_idx = idx - 1 if idx > 0 else idx
                 most_recent_frame = sequence[recent_idx].get('image', None)
-                _LOGGER.debug(f"Most recent frame is at {sequence[recent_idx].get('time')}")
 
         background.close()
         most_recent_frame = most_recent_frame if most_recent_frame is not None else sequence[-1].get('image')

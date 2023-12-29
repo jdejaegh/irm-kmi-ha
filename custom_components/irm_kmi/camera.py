@@ -91,4 +91,3 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
         """Return the camera state attributes."""
         attrs = {"hint": self.coordinator.data.get('animation', {}).get('hint')}
         return attrs
-

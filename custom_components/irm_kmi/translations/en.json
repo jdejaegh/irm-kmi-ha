@@ -3,15 +3,27 @@
   "config": {
     "step": {
       "user": {
-        "title": "Select a zone",
-        "data" : {
-          "zone": "Zone"
+        "title": "Configuration",
+        "data": {
+          "zone": "Zone",
+          "style": "Style of the radar",
+          "dark_mode": "Radar dark mode"
         }
       }
-    },
-    "abort": {
-      "already_configured": "Weather for this zone is already configured",
-      "unknown": "Unknown error occurred"
     }
+  },
+  "selector": {
+    "style": {
+      "options": {
+        "standard_style": "Standard",
+        "contrast_style": "High contrast",
+        "yellow_red_style": "Yellow-Red",
+        "satellite_style": "Satellite"
+      }
+    }
+  },
+  "abort": {
+    "already_configured": "Weather for this zone is already configured",
+    "unknown": "Unknown error occurred"
   }
 }

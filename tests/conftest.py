@@ -11,7 +11,7 @@ from pytest_homeassistant_custom_component.common import (MockConfigEntry,
                                                           load_fixture)
 
 from custom_components.irm_kmi.api import IrmKmiApiParametersError
-from custom_components.irm_kmi.const import DOMAIN
+from custom_components.irm_kmi.const import DOMAIN, CONF_STYLE, CONF_STYLE_STD, CONF_DARK_MODE
 
 
 @pytest.fixture(autouse=True)
@@ -25,7 +25,9 @@ def mock_config_entry() -> MockConfigEntry:
     return MockConfigEntry(
         title="Home",
         domain=DOMAIN,
-        data={CONF_ZONE: "zone.home"},
+        data={CONF_ZONE: "zone.home",
+              CONF_STYLE: CONF_STYLE_STD,
+              CONF_DARK_MODE: True},
         unique_id="zone.home",
     )
 
@@ -91,7 +93,7 @@ def mock_image_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, Ma
         elif "getLocalizationLayerBE" in url:
             file_name = "tests/fixtures/loc_layer_be_n.png"
         elif "getLocalizationLayerNL" in url:
-            file_name = "tests/fixtures/loc_layer_nl_d.png"
+            file_name = "tests/fixtures/loc_layer_nl.png"
         else:
             raise ValueError("Not a valid parameter for the mock")
 

@@ -3,7 +3,7 @@
   "name": "IRM KMI Weather Belgium",
   "codeowners": ["@jdejaegh"],
   "config_flow": true,
-  "dependencies": [],
+  "dependencies": ["zone"],
   "documentation": "https://github.com/jdejaegh/irm-kmi-ha/",
   "integration_type": "service",
   "iot_class": "cloud_polling",
