@@ -10,6 +10,10 @@
           "dark_mode": "Radar dark mode"
         }
       }
+    },
+    "abort": {
+      "already_configured": "Weather for this zone is already configured",
+      "unknown": "Unknown error occurred"
     }
   },
   "selector": {
@@ -21,9 +25,5 @@
         "satellite_style": "Satellite"
       }
     }
-  },
-  "abort": {
-    "already_configured": "Weather for this zone is already configured",
-    "unknown": "Unknown error occurred"
   }
 }
