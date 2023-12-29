@@ -2,7 +2,7 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry, entity_registry
+from homeassistant.helpers import device_registry
 
 _LOGGER = logging.getLogger(__name__)
 

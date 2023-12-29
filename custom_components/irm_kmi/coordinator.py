@@ -7,7 +7,6 @@ from typing import Any, List, Tuple
 
 import async_timeout
 import pytz
-from PIL import Image, ImageDraw, ImageFont
 from homeassistant.components.weather import Forecast
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
@@ -16,13 +15,14 @@ from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
+from PIL import Image, ImageDraw, ImageFont
 
 from .api import IrmKmiApiClient, IrmKmiApiError
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import LANGS, OUT_OF_BENELUX
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
                    ProcessedCoordinatorData, RadarAnimationData)
-from .utils import disable_from_config, enable_from_config
+from .utils import disable_from_config
 
 _LOGGER = logging.getLogger(__name__)
 

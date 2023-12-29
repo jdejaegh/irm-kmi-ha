@@ -11,7 +11,8 @@ from pytest_homeassistant_custom_component.common import (MockConfigEntry,
                                                           load_fixture)
 
 from custom_components.irm_kmi.api import IrmKmiApiParametersError
-from custom_components.irm_kmi.const import DOMAIN, CONF_STYLE, CONF_STYLE_STD, CONF_DARK_MODE
+from custom_components.irm_kmi.const import (CONF_DARK_MODE, CONF_STYLE,
+                                             CONF_STYLE_STD, DOMAIN)
 
 
 async def patched(url: str, params: dict | None = None) -> bytes:

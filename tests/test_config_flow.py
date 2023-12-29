@@ -8,7 +8,8 @@ from homeassistant.const import CONF_ZONE
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
-from custom_components.irm_kmi.const import DOMAIN, CONF_STYLE, CONF_STYLE_STD, CONF_DARK_MODE
+from custom_components.irm_kmi.const import (CONF_DARK_MODE, CONF_STYLE,
+                                             CONF_STYLE_STD, DOMAIN)
 
 
 async def test_full_user_flow(

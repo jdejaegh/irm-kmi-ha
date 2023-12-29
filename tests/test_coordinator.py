@@ -10,7 +10,8 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLOUDY,
                                               ATTR_CONDITION_RAINY, Forecast)
 from homeassistant.core import HomeAssistant
 from PIL import Image, ImageDraw, ImageFont
-from pytest_homeassistant_custom_component.common import load_fixture, MockConfigEntry
+from pytest_homeassistant_custom_component.common import (MockConfigEntry,
+                                                          load_fixture)
 
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
 from custom_components.irm_kmi.data import CurrentWeatherData, IrmKmiForecast
