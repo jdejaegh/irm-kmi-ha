@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(self, user_input: dict | None = None) -> FlowResult:
         """Define the user step of the configuration flow."""

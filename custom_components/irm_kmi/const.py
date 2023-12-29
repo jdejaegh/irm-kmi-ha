@@ -38,6 +38,13 @@ CONF_STYLE_OPTIONS: Final = [
 
 CONF_DARK_MODE: Final = "dark_mode"
 
+STYLE_TO_PARAM_MAP: Final = {
+    CONF_STYLE_STD: 1,
+    CONF_STYLE_CONTRAST: 2,
+    CONF_STYLE_YELLOW_RED: 3,
+    CONF_STYLE_SATELLITE: 4
+}
+
 # map ('ww', 'dayNight') tuple from IRM KMI to HA conditions
 IRM_KMI_TO_HA_CONDITION_MAP: Final = {
     (0, 'd'): ATTR_CONDITION_SUNNY,
