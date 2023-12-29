@@ -106,6 +106,8 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         data: list[Forecast] = self.coordinator.data.get('daily_forecast')
         if not isinstance(data, list):
             return None
+        if len(data) > 0 and not data[0].get('is_daytime'):
+            return data
         if len(data) > 1 and data[0].get('native_templow') is None and not data[1].get('is_daytime'):
             data[0]['native_templow'] = data[1]['native_templow']
         return [f for f in data if f.get('is_daytime')]
