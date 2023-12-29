@@ -23,7 +23,6 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input: dict | None = None) -> FlowResult:
         """Define the user step of the configuration flow."""
-        print(f"IN CONFIG FLOW HERE with {user_input}")
         if user_input is not None:
             _LOGGER.debug(f"Provided config user is: {user_input}")
 

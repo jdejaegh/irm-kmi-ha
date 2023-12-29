@@ -7,7 +7,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
 
-from .const import DOMAIN, PLATFORMS, CONF_DARK_MODE, CONF_STYLE_STD, CONF_STYLE
+from .const import (CONF_DARK_MODE, CONF_STYLE, CONF_STYLE_STD, DOMAIN,
+                    PLATFORMS)
 from .coordinator import IrmKmiCoordinator
 from .weather import IrmKmiWeather
 
@@ -16,10 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
-    _LOGGER.debug(f"Setting up entry v{entry.version}")
-
     hass.data.setdefault(DOMAIN, {})
-
     hass.data[DOMAIN][entry.entry_id] = coordinator = IrmKmiCoordinator(hass, entry)
 
     try:
@@ -58,7 +56,6 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
 
     new = {**config_entry.data}
     if config_entry.version == 1:
-
         new = new | {CONF_STYLE: CONF_STYLE_STD, CONF_DARK_MODE: True}
         config_entry.version = 2
 

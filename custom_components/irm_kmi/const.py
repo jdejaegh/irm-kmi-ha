@@ -22,7 +22,6 @@ OUT_OF_BENELUX: Final = ["außerhalb der Benelux (Brussels)",
                          "Buiten de Benelux (Brussel)"]
 LANGS: Final = ['en', 'fr', 'nl', 'de']
 
-
 CONF_STYLE_STD: Final = 'standard_style'
 CONF_STYLE_CONTRAST: Final = 'contrast_style'
 CONF_STYLE_YELLOW_RED: Final = 'yellow_red_style'

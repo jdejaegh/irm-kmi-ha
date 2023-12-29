@@ -30,6 +30,7 @@ async def patched(url: str, params: dict | None = None) -> bytes:
     with open(file_name, "rb") as file:
         return file.read()
 
+
 @pytest.fixture(autouse=True)
 def auto_enable_custom_integrations(enable_custom_integrations):
     yield
