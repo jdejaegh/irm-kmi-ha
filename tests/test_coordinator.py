@@ -8,7 +8,6 @@ from freezegun import freeze_time
 from homeassistant.components.weather import (ATTR_CONDITION_CLOUDY,
                                               ATTR_CONDITION_PARTLYCLOUDY,
                                               ATTR_CONDITION_RAINY, Forecast)
-from homeassistant.components.zone import Zone
 from homeassistant.core import HomeAssistant
 from PIL import Image, ImageDraw, ImageFont
 from pytest_homeassistant_custom_component.common import load_fixture, MockConfigEntry
