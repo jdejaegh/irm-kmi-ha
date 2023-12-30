@@ -1,19 +1,19 @@
 {
   "title": "Royal Meteorological Institute of Belgium",
   "config": {
+    "abort": {
+      "already_configured": "The weather for this zone is already configured",
+      "unknown": "Unknown error"
+    },
     "step": {
       "user": {
         "title": "Configuration",
         "data": {
-          "zone": "Zone",
           "style": "Style of the radar",
-          "dark_mode": "Radar dark mode"
+          "dark_mode": "Radar dark mode",
+          "use_deprecated_forecast_attribute": "Use the deprecated forecat attribute"
         }
       }
-    },
-    "abort": {
-      "already_configured": "Weather for this zone is already configured",
-      "unknown": "Unknown error occurred"
     }
   },
   "selector": {
@@ -23,6 +23,25 @@
         "contrast_style": "High contrast",
         "yellow_red_style": "Yellow-Red",
         "satellite_style": "Satellite"
+      }
+    },
+    "use_deprecated_forecast_attribute": {
+      "options": {
+        "do_not_use_deprecated_forecast": "Do not use (recommended)",
+        "daily_in_deprecated_forecast": "Use for daily forecast",
+        "hourly_in_use_deprecated_forecast": "Use for hourly forecast"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "style": "Style of the radar",
+          "dark_mode": "Radar dark mode",
+          "use_deprecated_forecast_attribute": "Use the deprecated forecat attribute"
+        }
       }
     }
   }
