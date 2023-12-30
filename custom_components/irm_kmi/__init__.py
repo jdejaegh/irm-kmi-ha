@@ -7,8 +7,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
 
-from .const import (CONF_DARK_MODE, CONF_STYLE, CONF_STYLE_STD, DOMAIN,
-                    PLATFORMS)
+from .const import (CONF_DARK_MODE, CONF_STYLE, OPTION_STYLE_STD, DOMAIN,
+                    PLATFORMS, OPTION_DEPRECATED_FORECAST_NOT_USED,
+                    CONF_USE_DEPRECATED_FORECAST)
 from .coordinator import IrmKmiCoordinator
 from .weather import IrmKmiWeather
 
@@ -50,15 +51,19 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     """Migrate old entry."""
     _LOGGER.debug(f"Migrating from version {config_entry.version}")
 
-    if config_entry.version > 1:
+    if config_entry.version > 2:
         # This means the user has downgraded from a future version
         return False
 
     new = {**config_entry.data}
     if config_entry.version == 1:
-        new = new | {CONF_STYLE: CONF_STYLE_STD, CONF_DARK_MODE: True}
+        new = new | {CONF_STYLE: OPTION_STYLE_STD, CONF_DARK_MODE: True}
         config_entry.version = 2
+        hass.config_entries.async_update_entry(config_entry, data=new)
 
+    if config_entry.version == 2:
+        new = new | {CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED}
+        config_entry.version = 3
         hass.config_entries.async_update_entry(config_entry, data=new)
 
     _LOGGER.debug(f"Migration to version {config_entry.version} successful")

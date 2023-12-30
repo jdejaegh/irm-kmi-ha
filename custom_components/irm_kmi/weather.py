@@ -1,5 +1,5 @@
 """Support for IRM KMI weather."""
-
+import asyncio
 import logging
 from typing import List
 
@@ -13,8 +13,11 @@ from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from . import DOMAIN
+from . import DOMAIN, CONF_USE_DEPRECATED_FORECAST
+from .const import OPTION_DEPRECATED_FORECAST_HOURLY, OPTION_DEPRECATED_FORECAST_NOT_USED, \
+    OPTION_DEPRECATED_FORECAST_DAILY
 from .coordinator import IrmKmiCoordinator
+from .utils import get_config_value
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,6 +45,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
             manufacturer="IRM KMI",
             name=entry.title
         )
+        self._deprecated_forecast_as = get_config_value(entry, CONF_USE_DEPRECATED_FORECAST)
 
     @property
     def supported_features(self) -> WeatherEntityFeature:
@@ -99,10 +103,27 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
     def uv_index(self) -> float | None:
         return self.coordinator.data.get('current_weather', {}).get('uv_index')
 
+    @property
+    def forecast(self) -> list[Forecast] | None:
+        """This attribute is deprecated by Home Assistant by still implemented for compatibility
+        with older components.  Newer components should use the service weather.get_forecasts instead."""
+        if self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_NOT_USED:
+            return None
+        elif self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_HOURLY:
+            return self.coordinator.data.get('hourly_forecast')
+        elif self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_DAILY:
+            return self.daily_forecast()
+
     async def async_forecast_twice_daily(self) -> List[Forecast] | None:
         return self.coordinator.data.get('daily_forecast')
 
     async def async_forecast_daily(self) -> list[Forecast] | None:
+        return self.daily_forecast()
+
+    async def async_forecast_hourly(self) -> list[Forecast] | None:
+        return self.coordinator.data.get('hourly_forecast')
+
+    def daily_forecast(self) -> list[Forecast] | None:
         data: list[Forecast] = self.coordinator.data.get('daily_forecast')
         if not isinstance(data, list):
             return None
@@ -113,6 +134,3 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         if len(data) > 1 and data[0].get('native_templow') is None and not data[1].get('is_daytime'):
             data[0]['native_templow'] = data[1].get('native_templow')
         return [f for f in data if f.get('is_daytime')]
-
-    async def async_forecast_hourly(self) -> list[Forecast] | None:
-        return self.coordinator.data.get('hourly_forecast')

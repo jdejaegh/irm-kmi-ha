@@ -9,7 +9,7 @@ import async_timeout
 import pytz
 from homeassistant.components.weather import Forecast
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
+from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE, CONF_ZONE
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -18,12 +18,12 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
 from PIL import Image, ImageDraw, ImageFont
 
 from .api import IrmKmiApiClient, IrmKmiApiError
-from .const import CONF_DARK_MODE, CONF_STYLE, CONF_STYLE_SATELLITE
+from .const import CONF_DARK_MODE, CONF_STYLE, OPTION_STYLE_SATELLITE
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import LANGS, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
                    ProcessedCoordinatorData, RadarAnimationData)
-from .utils import disable_from_config
+from .utils import disable_from_config, get_config_value
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,9 +42,11 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(minutes=7),
         )
         self._api_client = IrmKmiApiClient(session=async_get_clientsession(hass))
-        self._zone = entry.data.get('zone')
+        self._zone = get_config_value(entry, CONF_ZONE)
+        self._dark_mode = get_config_value(entry, CONF_DARK_MODE)
+        self._style = get_config_value(entry, CONF_STYLE)
         self._config_entry = entry
-        self._disabled = False
+        _LOGGER.debug(f"Config entry: {entry.title} -- {entry.data}  -- {entry.options}")
 
     async def _async_update_data(self) -> ProcessedCoordinatorData:
         """Fetch data from API endpoint.
@@ -127,16 +129,14 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                                        localisation_layer_url: str) -> tuple[Any]:
         """Download a batch of images to create the radar frames."""
         coroutines = list()
-        dark_mode = self._config_entry.data[CONF_DARK_MODE]
-        style = self._config_entry.data[CONF_STYLE]
         coroutines.append(
             self._api_client.get_image(localisation_layer_url,
-                                       params={'th': 'd' if country == 'NL' or not dark_mode else 'n'}))
+                                       params={'th': 'd' if country == 'NL' or not self._dark_mode else 'n'}))
 
         for frame in animation_data:
             if frame.get('uri', None) is not None:
                 coroutines.append(
-                    self._api_client.get_image(frame.get('uri'), params={'rs': STYLE_TO_PARAM_MAP[style]}))
+                    self._api_client.get_image(frame.get('uri'), params={'rs': STYLE_TO_PARAM_MAP[self._style]}))
         async with async_timeout.timeout(20):
             images_from_api = await asyncio.gather(*coroutines)
 
@@ -153,17 +153,16 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         Adds text in the top right to specify the timestamp of each image."""
         background: Image
         fill_color: tuple
-        dark_mode = self._config_entry.data[CONF_DARK_MODE]
-        satellite_mode = self._config_entry.data[CONF_STYLE] == CONF_STYLE_SATELLITE
+        satellite_mode = self._style == OPTION_STYLE_SATELLITE
 
         if country == 'NL':
             background = Image.open("custom_components/irm_kmi/resources/nl.png").convert('RGBA')
             fill_color = (0, 0, 0)
         else:
             image_path = (f"custom_components/irm_kmi/resources/be_"
-                          f"{'satellite' if satellite_mode else 'black' if dark_mode else 'white'}.png")
+                          f"{'satellite' if satellite_mode else 'black' if self._dark_mode else 'white'}.png")
             background = (Image.open(image_path).convert('RGBA'))
-            fill_color = (255, 255, 255) if dark_mode or satellite_mode else (0, 0, 0)
+            fill_color = (255, 255, 255) if self._dark_mode or satellite_mode else (0, 0, 0)
 
         most_recent_frame = None
         tz = pytz.timezone(self.hass.config.time_zone)

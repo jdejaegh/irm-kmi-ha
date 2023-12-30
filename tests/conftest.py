@@ -12,7 +12,8 @@ from pytest_homeassistant_custom_component.common import (MockConfigEntry,
 
 from custom_components.irm_kmi.api import IrmKmiApiParametersError
 from custom_components.irm_kmi.const import (CONF_DARK_MODE, CONF_STYLE,
-                                             CONF_STYLE_STD, DOMAIN)
+                                             OPTION_STYLE_STD, DOMAIN, OPTION_DEPRECATED_FORECAST_NOT_USED,
+                                             CONF_USE_DEPRECATED_FORECAST)
 
 
 async def patched(url: str, params: dict | None = None) -> bytes:
@@ -43,8 +44,9 @@ def mock_config_entry() -> MockConfigEntry:
         title="Home",
         domain=DOMAIN,
         data={CONF_ZONE: "zone.home",
-              CONF_STYLE: CONF_STYLE_STD,
-              CONF_DARK_MODE: True},
+              CONF_STYLE: OPTION_STYLE_STD,
+              CONF_DARK_MODE: True,
+              CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED},
         unique_id="zone.home",
     )
 

@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -23,3 +24,9 @@ def modify_from_config(hass: HomeAssistant, config_entry: ConfigEntry, enable: b
         _LOGGER.info(f"Disabling device {device.name} because it is out of Benelux")
         dr.async_update_device(device_id=device.id,
                                disabled_by=None if enable else device_registry.DeviceEntryDisabler.INTEGRATION)
+
+
+def get_config_value(config_entry: ConfigEntry, key: str) -> Any:
+    if config_entry.options and key in config_entry.options:
+        return config_entry.options[key]
+    return config_entry.data[key]

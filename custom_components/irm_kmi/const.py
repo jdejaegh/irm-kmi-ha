@@ -22,27 +22,38 @@ OUT_OF_BENELUX: Final = ["außerhalb der Benelux (Brussels)",
                          "Buiten de Benelux (Brussel)"]
 LANGS: Final = ['en', 'fr', 'nl', 'de']
 
-CONF_STYLE_STD: Final = 'standard_style'
-CONF_STYLE_CONTRAST: Final = 'contrast_style'
-CONF_STYLE_YELLOW_RED: Final = 'yellow_red_style'
-CONF_STYLE_SATELLITE: Final = 'satellite_style'
+OPTION_STYLE_STD: Final = 'standard_style'
+OPTION_STYLE_CONTRAST: Final = 'contrast_style'
+OPTION_STYLE_YELLOW_RED: Final = 'yellow_red_style'
+OPTION_STYLE_SATELLITE: Final = 'satellite_style'
 CONF_STYLE: Final = "style"
 
 CONF_STYLE_OPTIONS: Final = [
-    CONF_STYLE_STD,
-    CONF_STYLE_CONTRAST,
-    CONF_STYLE_YELLOW_RED,
-    CONF_STYLE_SATELLITE
+    OPTION_STYLE_STD,
+    OPTION_STYLE_CONTRAST,
+    OPTION_STYLE_YELLOW_RED,
+    OPTION_STYLE_SATELLITE
 ]
 
 CONF_DARK_MODE: Final = "dark_mode"
 
 STYLE_TO_PARAM_MAP: Final = {
-    CONF_STYLE_STD: 1,
-    CONF_STYLE_CONTRAST: 2,
-    CONF_STYLE_YELLOW_RED: 3,
-    CONF_STYLE_SATELLITE: 4
+    OPTION_STYLE_STD: 1,
+    OPTION_STYLE_CONTRAST: 2,
+    OPTION_STYLE_YELLOW_RED: 3,
+    OPTION_STYLE_SATELLITE: 4
 }
+
+CONF_USE_DEPRECATED_FORECAST: Final = 'use_deprecated_forecast_attribute'
+OPTION_DEPRECATED_FORECAST_NOT_USED: Final = 'do_not_use_deprecated_forecast'
+OPTION_DEPRECATED_FORECAST_DAILY: Final = 'daily_in_deprecated_forecast'
+OPTION_DEPRECATED_FORECAST_HOURLY: Final = 'hourly_in_use_deprecated_forecast'
+
+CONF_USE_DEPRECATED_FORECAST_OPTIONS: Final = [
+    OPTION_DEPRECATED_FORECAST_NOT_USED,
+    OPTION_DEPRECATED_FORECAST_DAILY,
+    OPTION_DEPRECATED_FORECAST_HOURLY
+]
 
 # map ('ww', 'dayNight') tuple from IRM KMI to HA conditions
 IRM_KMI_TO_HA_CONDITION_MAP: Final = {

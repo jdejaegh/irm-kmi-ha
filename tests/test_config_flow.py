@@ -9,7 +9,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.irm_kmi.const import (CONF_DARK_MODE, CONF_STYLE,
-                                             CONF_STYLE_STD, DOMAIN)
+                                             OPTION_STYLE_STD, DOMAIN, CONF_USE_DEPRECATED_FORECAST,
+                                             OPTION_DEPRECATED_FORECAST_NOT_USED)
 
 
 async def test_full_user_flow(
@@ -27,12 +28,13 @@ async def test_full_user_flow(
     result2 = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         user_input={CONF_ZONE: ENTITY_ID_HOME,
-                    CONF_STYLE: CONF_STYLE_STD,
+                    CONF_STYLE: OPTION_STYLE_STD,
                     CONF_DARK_MODE: False},
     )
     print(result2)
     assert result2.get("type") == FlowResultType.CREATE_ENTRY
     assert result2.get("title") == "test home"
     assert result2.get("data") == {CONF_ZONE: ENTITY_ID_HOME,
-                                   CONF_STYLE: CONF_STYLE_STD,
-                                   CONF_DARK_MODE: False}
+                                   CONF_STYLE: OPTION_STYLE_STD,
+                                   CONF_DARK_MODE: False,
+                                   CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED}
