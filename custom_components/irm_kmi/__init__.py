@@ -7,9 +7,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
 
-from .const import (CONF_DARK_MODE, CONF_STYLE, OPTION_STYLE_STD, DOMAIN,
-                    PLATFORMS, OPTION_DEPRECATED_FORECAST_NOT_USED,
-                    CONF_USE_DEPRECATED_FORECAST)
+from .const import (CONF_DARK_MODE, CONF_STYLE, CONF_USE_DEPRECATED_FORECAST,
+                    CONFIG_FLOW_VERSION, DOMAIN,
+                    OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD,
+                    PLATFORMS)
 from .coordinator import IrmKmiCoordinator
 from .weather import IrmKmiWeather
 
@@ -51,7 +52,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     """Migrate old entry."""
     _LOGGER.debug(f"Migrating from version {config_entry.version}")
 
-    if config_entry.version > 2:
+    if config_entry.version > CONFIG_FLOW_VERSION - 1:
         # This means the user has downgraded from a future version
         return False
 

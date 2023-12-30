@@ -3,7 +3,7 @@ import logging
 
 import voluptuous as vol
 from homeassistant.components.zone import DOMAIN as ZONE_DOMAIN
-from homeassistant.config_entries import ConfigFlow, OptionsFlow, ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.const import CONF_ZONE
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
@@ -13,16 +13,18 @@ from homeassistant.helpers.selector import (EntitySelector,
                                             SelectSelectorConfig,
                                             SelectSelectorMode)
 
-from .utils import get_config_value
 from .const import (CONF_DARK_MODE, CONF_STYLE, CONF_STYLE_OPTIONS,
-                    OPTION_STYLE_STD, DOMAIN, CONF_USE_DEPRECATED_FORECAST, OPTION_DEPRECATED_FORECAST_NOT_USED,
-                    CONF_USE_DEPRECATED_FORECAST_OPTIONS)
+                    CONF_USE_DEPRECATED_FORECAST,
+                    CONF_USE_DEPRECATED_FORECAST_OPTIONS, CONFIG_FLOW_VERSION,
+                    DOMAIN, OPTION_DEPRECATED_FORECAST_NOT_USED,
+                    OPTION_STYLE_STD)
+from .utils import get_config_value
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
-    VERSION = 3
+    VERSION = CONFIG_FLOW_VERSION
 
     @staticmethod
     @callback

@@ -1,5 +1,4 @@
 """Support for IRM KMI weather."""
-import asyncio
 import logging
 from typing import List
 
@@ -13,9 +12,10 @@ from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from . import DOMAIN, CONF_USE_DEPRECATED_FORECAST
-from .const import OPTION_DEPRECATED_FORECAST_HOURLY, OPTION_DEPRECATED_FORECAST_NOT_USED, \
-    OPTION_DEPRECATED_FORECAST_DAILY
+from . import CONF_USE_DEPRECATED_FORECAST, DOMAIN
+from .const import (OPTION_DEPRECATED_FORECAST_DAILY,
+                    OPTION_DEPRECATED_FORECAST_HOURLY,
+                    OPTION_DEPRECATED_FORECAST_NOT_USED)
 from .coordinator import IrmKmiCoordinator
 from .utils import get_config_value
 

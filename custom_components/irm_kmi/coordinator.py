@@ -7,6 +7,7 @@ from typing import Any, List, Tuple
 
 import async_timeout
 import pytz
+from PIL import Image, ImageDraw, ImageFont
 from homeassistant.components.weather import Forecast
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE, CONF_ZONE
@@ -15,7 +16,6 @@ from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
-from PIL import Image, ImageDraw, ImageFont
 
 from .api import IrmKmiApiClient, IrmKmiApiError
 from .const import CONF_DARK_MODE, CONF_STYLE, OPTION_STYLE_SATELLITE
