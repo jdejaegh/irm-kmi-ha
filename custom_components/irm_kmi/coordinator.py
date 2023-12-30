@@ -46,7 +46,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         self._dark_mode = get_config_value(entry, CONF_DARK_MODE)
         self._style = get_config_value(entry, CONF_STYLE)
         self._config_entry = entry
-        _LOGGER.debug(f"Config entry: {entry.title} -- {entry.data}  -- {entry.options}")
 
     async def _async_update_data(self) -> ProcessedCoordinatorData:
         """Fetch data from API endpoint.
