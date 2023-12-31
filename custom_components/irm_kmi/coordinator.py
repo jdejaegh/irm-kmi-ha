@@ -194,15 +194,14 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             )
 
             if most_recent_frame is None and current_time < time_image:
-                recent_idx = idx - 1 if idx > 0 else idx
-                most_recent_frame = sequence[recent_idx].get('image', None)
+                most_recent_frame = idx - 1 if idx > 0 else idx
 
         background.close()
-        most_recent_frame = most_recent_frame if most_recent_frame is not None else sequence[-1].get('image')
+        most_recent_frame = most_recent_frame if most_recent_frame is not None else -1
 
         return RadarAnimationData(
             sequence=sequence,
-            most_recent_image=most_recent_frame
+            most_recent_image_idx=most_recent_frame
         )
 
     @staticmethod

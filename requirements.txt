@@ -4,3 +4,5 @@ homeassistant==2023.12.3
 voluptuous==0.13.1
 Pillow==10.1.0
 pytz==2023.3.post1
+svgwrite==1.4.3
+CairoSVG==2.7.1

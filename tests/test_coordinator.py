@@ -135,8 +135,8 @@ async def test_get_image_nl(
     result_image = Image.open(BytesIO(result['sequence'][-1]['image'])).convert('RGBA')
 
     assert list(result_image.getdata()) == list(expected.getdata())
-
-    thumb_image = Image.open(BytesIO(result['most_recent_image'])).convert('RGBA')
+    most_recent_image = result['sequence'][result['most_recent_image_idx']]['image']
+    thumb_image = Image.open(BytesIO(most_recent_image)).convert('RGBA')
     assert list(thumb_image.getdata()) == list(expected.getdata())
 
     assert result['hint'] == "No rain forecasted shortly"
@@ -170,8 +170,8 @@ async def test_get_image_be(
     result_image = Image.open(BytesIO(result['sequence'][9]['image'])).convert('RGBA')
 
     assert list(result_image.getdata()) == list(expected.getdata())
-
-    thumb_image = Image.open(BytesIO(result['most_recent_image'])).convert('RGBA')
+    most_recent_image = result['sequence'][result['most_recent_image_idx']]['image']
+    thumb_image = Image.open(BytesIO(most_recent_image)).convert('RGBA')
     assert list(thumb_image.getdata()) == list(expected.getdata())
 
     assert result['hint'] == "No rain forecasted shortly"

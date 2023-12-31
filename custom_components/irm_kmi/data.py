@@ -28,13 +28,19 @@ class AnimationFrameData(TypedDict, total=False):
     """Holds one single frame of the radar camera, along with the timestamp of the frame"""
     time: datetime | None
     image: bytes | None
+    value: float | None
+    position: float | None
+    position_higher: float | None
+    position_lower: float | None
+    rain_graph: bytes | None
 
 
 class RadarAnimationData(TypedDict, total=False):
     """Holds frames and additional data for the animation to be rendered"""
     sequence: List[AnimationFrameData] | None
-    most_recent_image: bytes | None
+    most_recent_image_idx: int | None
     hint: str | None
+    unit: str | None
 
 
 class ProcessedCoordinatorData(TypedDict, total=False):
