@@ -24,6 +24,7 @@ class CurrentWeatherData(TypedDict, total=False):
     pressure: float | None
 
 
+# TODO cleanup useless fields
 class AnimationFrameData(TypedDict, total=False):
     """Holds one single frame of the radar camera, along with the timestamp of the frame"""
     time: datetime | None
@@ -33,6 +34,7 @@ class AnimationFrameData(TypedDict, total=False):
     position_higher: float | None
     position_lower: float | None
     rain_graph: bytes | None
+    merged_image: bytes | None
 
 
 class RadarAnimationData(TypedDict, total=False):
@@ -41,6 +43,8 @@ class RadarAnimationData(TypedDict, total=False):
     most_recent_image_idx: int | None
     hint: str | None
     unit: str | None
+    location: bytes | None
+    svg: str | None
 
 
 class ProcessedCoordinatorData(TypedDict, total=False):

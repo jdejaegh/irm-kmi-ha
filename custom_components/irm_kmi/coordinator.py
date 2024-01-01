@@ -2,12 +2,10 @@
 import asyncio
 import logging
 from datetime import datetime, timedelta
-from io import BytesIO
 from typing import Any, List, Tuple
 
 import async_timeout
 import pytz
-from PIL import Image, ImageDraw, ImageFont
 from homeassistant.components.weather import Forecast
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE, CONF_ZONE
@@ -18,11 +16,13 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
 
 from .api import IrmKmiApiClient, IrmKmiApiError
-from .const import CONF_DARK_MODE, CONF_STYLE, OPTION_STYLE_SATELLITE
+from .const import CONF_DARK_MODE, CONF_STYLE
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
-from .const import LANGS, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
+from .const import (LANGS, OPTION_STYLE_SATELLITE, OUT_OF_BENELUX,
+                    STYLE_TO_PARAM_MAP)
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
                    ProcessedCoordinatorData, RadarAnimationData)
+from .rain_graph import RainGraph
 from .utils import disable_from_config, get_config_value
 
 _LOGGER = logging.getLogger(__name__)
@@ -104,13 +104,17 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             _LOGGER.warning(f"Could not get images for weather radar")
             return RadarAnimationData()
 
-        localisation = Image.open(BytesIO(images_from_api[0])).convert('RGBA')
+        localisation = images_from_api[0]
         images_from_api = images_from_api[1:]
 
-        radar_animation = await self.merge_frames_from_api(animation_data, country, images_from_api, localisation)
-
         lang = self.hass.config.language if self.hass.config.language in LANGS else 'en'
-        radar_animation['hint'] = api_data.get('animation', {}).get('sequenceHint', {}).get(lang)
+        radar_animation = RadarAnimationData(
+            hint=api_data.get('animation', {}).get('sequenceHint', {}).get(lang),
+            unit=api_data.get('animation', {}).get('unit', {}).get(lang),
+            location=localisation
+        )
+        svg_str = self.create_rain_graph(radar_animation, animation_data, country, images_from_api)
+        radar_animation['svg'] = svg_str
         return radar_animation
 
     async def process_api_data(self, api_data: dict) -> ProcessedCoordinatorData:
@@ -142,67 +146,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         _LOGGER.debug(f"Just downloaded {len(images_from_api)} images")
         return images_from_api
 
-    async def merge_frames_from_api(self,
-                                    animation_data: List[dict],
-                                    country: str,
-                                    images_from_api: Tuple[bytes],
-                                    localisation_layer: Image
-                                    ) -> RadarAnimationData:
-        """Merge three layers to create one frame of the radar: the basemap, the clouds and the location marker.
-        Adds text in the top right to specify the timestamp of each image."""
-        background: Image
-        fill_color: tuple
-        satellite_mode = self._style == OPTION_STYLE_SATELLITE
-
-        if country == 'NL':
-            background = Image.open("custom_components/irm_kmi/resources/nl.png").convert('RGBA')
-            fill_color = (0, 0, 0)
-        else:
-            image_path = (f"custom_components/irm_kmi/resources/be_"
-                          f"{'satellite' if satellite_mode else 'black' if self._dark_mode else 'white'}.png")
-            background = (Image.open(image_path).convert('RGBA'))
-            fill_color = (255, 255, 255) if self._dark_mode or satellite_mode else (0, 0, 0)
-
-        most_recent_frame = None
-        tz = pytz.timezone(self.hass.config.time_zone)
-        current_time = datetime.now(tz=tz)
-        sequence: List[AnimationFrameData] = list()
-
-        for (idx, sequence_element) in enumerate(animation_data):
-            frame = images_from_api[idx]
-            layer = Image.open(BytesIO(frame)).convert('RGBA')
-            temp = Image.alpha_composite(background, layer)
-            temp = Image.alpha_composite(temp, localisation_layer)
-
-            draw = ImageDraw.Draw(temp)
-            font = ImageFont.truetype("custom_components/irm_kmi/resources/roboto_medium.ttf", 16)
-            time_image = (datetime.fromisoformat(sequence_element.get('time'))
-                          .astimezone(tz=tz))
-
-            time_str = time_image.isoformat(sep=' ', timespec='minutes')
-
-            draw.text((4, 4), time_str, fill_color, font=font)
-
-            bytes_img = BytesIO()
-            temp.save(bytes_img, 'png', compress_level=8)
-
-            sequence.append(
-                AnimationFrameData(
-                    time=time_image,
-                    image=bytes_img.getvalue()
-                )
-            )
-
-            if most_recent_frame is None and current_time < time_image:
-                most_recent_frame = idx - 1 if idx > 0 else idx
-
-        background.close()
-        most_recent_frame = most_recent_frame if most_recent_frame is not None else -1
-
-        return RadarAnimationData(
-            sequence=sequence,
-            most_recent_image_idx=most_recent_frame
-        )
 
     @staticmethod
     def current_weather_from_data(api_data: dict) -> CurrentWeatherData:
@@ -351,3 +294,50 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 n_days += 1
 
         return forecasts
+
+    def create_rain_graph(self,
+                          radar_animation: RadarAnimationData,
+                          api_animation_data: List[dict],
+                          country: str,
+                          images_from_api: Tuple[bytes],
+                          ) -> str:
+
+        sequence: List[AnimationFrameData] = list()
+        tz = pytz.timezone(self.hass.config.time_zone)
+        current_time = datetime.now(tz=tz)
+        most_recent_frame = None
+
+        for idx, item in enumerate(api_animation_data):
+            frame = AnimationFrameData(
+                image=images_from_api[idx],
+                time=datetime.fromisoformat(item.get('time')) if item.get('time', None) is not None else None,
+                value=item.get('value', 0),
+                position=item.get('position', 0),
+                position_lower=item.get('positionLower', 0),
+                position_higher=item.get('positionHigher', 0)
+            )
+            sequence.append(frame)
+
+            if most_recent_frame is None and current_time < frame['time']:
+                most_recent_frame = idx - 1 if idx > 0 else idx
+
+        radar_animation['sequence'] = sequence
+        radar_animation['most_recent_image_idx'] = most_recent_frame
+
+        satellite_mode = self._style == OPTION_STYLE_SATELLITE
+
+        if country == 'NL':
+            image_path = "custom_components/irm_kmi/resources/nl.png"
+            bg_size = (640, 600)
+        else:
+            image_path = (f"custom_components/irm_kmi/resources/be_"
+                          f"{'satellite' if satellite_mode else 'black' if self._dark_mode else 'white'}.png")
+            bg_size = (640, 490)
+
+        svg_str = RainGraph(radar_animation, image_path, bg_size,
+                            dark_mode=self._dark_mode,
+                            # tz=self.hass.config.time_zone
+                            ).get_svg_string()
+
+        # TODO return value
+        return svg_str

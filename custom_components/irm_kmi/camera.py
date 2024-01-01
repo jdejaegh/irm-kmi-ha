@@ -33,6 +33,7 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
         """Initialize IrmKmiRadar component."""
         super().__init__(coordinator)
         Camera.__init__(self)
+        self.content_type = 'image/svg+xml'
         self._name = f"Radar {entry.title}"
         self._attr_unique_id = entry.entry_id
         self._attr_device_info = DeviceInfo(
@@ -42,18 +43,19 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
             name=f"Radar {entry.title}"
         )
 
-        self._image_index = 0
+        self._image_index = False
 
     @property
     def frame_interval(self) -> float:
         """Return the interval between frames of the mjpeg stream."""
-        return 0.3
+        return 20
 
     def camera_image(self,
                      width: int | None = None,
                      height: int | None = None) -> bytes | None:
         """Return still image to be used as thumbnail."""
-        return self.coordinator.data.get('animation', {}).get('most_recent_image')
+        # TODO make it a still image to avoid cuts in playback on the dashboard
+        return self.coordinator.data.get('animation', {}).get('svg').encode()
 
     async def async_camera_image(
             self,
@@ -74,12 +76,12 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
 
     async def iterate(self) -> bytes | None:
         """Loop over all the frames when called multiple times."""
-        sequence = self.coordinator.data.get('animation', {}).get('sequence')
-        if isinstance(sequence, list) and len(sequence) > 0:
-            r = sequence[self._image_index].get('image', None)
-            self._image_index = (self._image_index + 1) % len(sequence)
-            return r
-        return None
+        # If this is not done this way, the live view can only be opened once
+        self._image_index = not self._image_index
+        if self._image_index:
+            return self.camera_image()
+        else:
+            return None
 
     @property
     def name(self) -> str:
