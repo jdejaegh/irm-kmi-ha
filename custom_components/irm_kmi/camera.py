@@ -54,7 +54,6 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
                      width: int | None = None,
                      height: int | None = None) -> bytes | None:
         """Return still image to be used as thumbnail."""
-        # TODO make it a still image to avoid cuts in playback on the dashboard
         return self.coordinator.data.get('animation', {}).get('svg_still')
 
     async def async_camera_image(

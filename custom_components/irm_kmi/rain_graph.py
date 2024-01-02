@@ -83,8 +83,6 @@ class RainGraph:
             self.draw_location()
             self._dwg_still = self._dwg
 
-        self._dwg_animated.saveas("animated_rain.svg")
-
     def draw_svg_frame(self):
         """Create the global area to draw the other items"""
         self._dwg.embed_font(name="Roboto Medium", filename='custom_components/irm_kmi/resources/roboto_medium.ttf')

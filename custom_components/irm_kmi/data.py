@@ -24,7 +24,6 @@ class CurrentWeatherData(TypedDict, total=False):
     pressure: float | None
 
 
-# TODO cleanup useless fields
 class AnimationFrameData(TypedDict, total=False):
     """Holds one single frame of the radar camera, along with the timestamp of the frame"""
     time: datetime | None
