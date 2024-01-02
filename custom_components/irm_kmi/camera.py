@@ -55,7 +55,7 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
                      height: int | None = None) -> bytes | None:
         """Return still image to be used as thumbnail."""
         # TODO make it a still image to avoid cuts in playback on the dashboard
-        return self.coordinator.data.get('animation', {}).get('svg').encode()
+        return self.coordinator.data.get('animation', {}).get('svg_still')
 
     async def async_camera_image(
             self,
@@ -68,18 +68,18 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
     async def handle_async_still_stream(self, request: web.Request, interval: float) -> web.StreamResponse:
         """Generate an HTTP MJPEG stream from camera images."""
         self._image_index = 0
-        return await async_get_still_stream(request, self.iterate, self.content_type, interval)
+        return await async_get_still_stream(request, self.get_animated_svg, self.content_type, interval)
 
     async def handle_async_mjpeg_stream(self, request: web.Request) -> web.StreamResponse:
         """Serve an HTTP MJPEG stream from the camera."""
         return await self.handle_async_still_stream(request, self.frame_interval)
 
-    async def iterate(self) -> bytes | None:
-        """Loop over all the frames when called multiple times."""
+    async def get_animated_svg(self) -> bytes | None:
+        """Returns the animated svg for camera display"""
         # If this is not done this way, the live view can only be opened once
         self._image_index = not self._image_index
         if self._image_index:
-            return self.camera_image()
+            return self.coordinator.data.get('animation', {}).get('svg_animated')
         else:
             return None
 

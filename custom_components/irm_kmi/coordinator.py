@@ -113,8 +113,9 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             unit=api_data.get('animation', {}).get('unit', {}).get(lang),
             location=localisation
         )
-        svg_str = self.create_rain_graph(radar_animation, animation_data, country, images_from_api)
-        radar_animation['svg'] = svg_str
+        rain_graph = self.create_rain_graph(radar_animation, animation_data, country, images_from_api)
+        radar_animation['svg_animated'] = rain_graph.get_svg_string()
+        radar_animation['svg_still'] = rain_graph.get_svg_string(still_image=True)
         return radar_animation
 
     async def process_api_data(self, api_data: dict) -> ProcessedCoordinatorData:
@@ -145,7 +146,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
         _LOGGER.debug(f"Just downloaded {len(images_from_api)} images")
         return images_from_api
-
 
     @staticmethod
     def current_weather_from_data(api_data: dict) -> CurrentWeatherData:
@@ -300,7 +300,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                           api_animation_data: List[dict],
                           country: str,
                           images_from_api: Tuple[bytes],
-                          ) -> str:
+                          ) -> RainGraph:
 
         sequence: List[AnimationFrameData] = list()
         tz = pytz.timezone(self.hass.config.time_zone)
@@ -334,10 +334,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                           f"{'satellite' if satellite_mode else 'black' if self._dark_mode else 'white'}.png")
             bg_size = (640, 490)
 
-        svg_str = RainGraph(radar_animation, image_path, bg_size,
-                            dark_mode=self._dark_mode,
-                            # tz=self.hass.config.time_zone
-                            ).get_svg_string()
-
-        # TODO return value
-        return svg_str
+        return RainGraph(radar_animation, image_path, bg_size,
+                         dark_mode=self._dark_mode,
+                         tz=self.hass.config.time_zone)

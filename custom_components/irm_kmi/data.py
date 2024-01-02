@@ -33,8 +33,6 @@ class AnimationFrameData(TypedDict, total=False):
     position: float | None
     position_higher: float | None
     position_lower: float | None
-    rain_graph: bytes | None
-    merged_image: bytes | None
 
 
 class RadarAnimationData(TypedDict, total=False):
@@ -44,7 +42,8 @@ class RadarAnimationData(TypedDict, total=False):
     hint: str | None
     unit: str | None
     location: bytes | None
-    svg: str | None
+    svg_still: bytes | None
+    svg_animated: bytes | None
 
 
 class ProcessedCoordinatorData(TypedDict, total=False):

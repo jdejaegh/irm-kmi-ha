@@ -9,7 +9,6 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/jdejaegh/irm-kmi-ha/issues",
   "requirements": [
-    "Pillow==10.1.0",
     "pytz==2023.3.post1",
     "svgwrite==1.4.3"
   ],
