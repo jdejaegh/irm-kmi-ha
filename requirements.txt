@@ -2,7 +2,5 @@ aiohttp==3.9.1
 async_timeout==4.0.3
 homeassistant==2023.12.3
 voluptuous==0.13.1
-Pillow==10.1.0
 pytz==2023.3.post1
 svgwrite==1.4.3
-CairoSVG==2.7.1
