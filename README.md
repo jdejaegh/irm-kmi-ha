@@ -10,20 +10,37 @@ Although the provider is Belgian, the data is available for Belgium 🇧🇪, Lu
 ## Installing via HACS
 
 1. Go to HACS > Integrations
-2. Add this repo into your HACS custom repositories
+2. Add this repo into your [HACS custom repositories](https://hacs.xyz/docs/faq/custom_repositories/)
 3. Search for IRM KMI and download it
 4. Restart Home Assistant
 5. Configure the integration via the UI (search for 'IRM KMI')
 
 
-## Roadmap
+## Features
 
-- [X] Basic weather provider capability (current weather only)
-- [X] Forecasts
-  - [X] Hourly
-  - [X] Daily
-- [X] Camera entity for the satellite view
-- [X] Use UI to configure the integration
+h
+
+- Styles for the radar
+- Support for the old `forecast` attribute for components relying on this
+
+## Screenshots
+
+<details>
+<summary>Show screenshots</summary>
+<img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/camera_light.png"/>  <br>
+<img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/camera_dark.png"/>  <br>
+<img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/camera_sat.png"/>  
+</details>
+
+## Limitations
+
+1. The weather provider sometime uses two weather conditions for the same day (see below).  When this is the case, only the first
+weather condition is taken into account in this integration.
+<br><img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/monday.png" height="150" alt="Example of two weather conditions">
+
+2. The trends for 14 days are not shown
+3. The warnings shown in the app are not shown by the integration
+4. The provider only has data for Belgium, Luxembourg and The Netherlands 
 
 ## Mapping between IRM KMI and Home Assistant weather conditions
 
@@ -47,15 +64,6 @@ Mapping was established based on my own interpretation of the icons and conditio
 | windy           | Wind                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                                                                               |
 | windy-variant   | Wind and clouds                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                                                                               |
 
-## Limitations
-
-1. The weather provider sometime uses two weather conditions for the same day (see below).  When this is the case, only the first
-weather condition is taken into account in this integration.
-<br><img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/monday.png" height="150" alt="Example of two weather conditions">
-
-2. The trends for 14 days are not shown
-3. The warnings shown in the app are not shown by the integration
-4. The provider only has data for Belgium, Luxembourg and The Netherlands 
 
 ## Disclaimer
 
