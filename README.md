@@ -18,8 +18,6 @@ Although the provider is Belgian, the data is available for Belgium 🇧🇪, Lu
 
 ## Features
 
-h
-
 - Styles for the radar
 - Support for the old `forecast` attribute for components relying on this
 
