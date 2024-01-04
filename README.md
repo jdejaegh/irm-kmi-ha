@@ -18,6 +18,14 @@ Although the provider is Belgian, the data is available for Belgium 🇧🇪, Lu
 
 ## Features
 
+This integration provides the following things:
+
+- A weather entity with current weather conditions
+- Weather forecasts (hourly, daily and twice-daily) [using the service `weather.get_forecasts`](https://www.home-assistant.io/integrations/weather/#service-weatherget_forecasts)
+- A camera entity for rain radar and short-term rain previsions
+
+The following options are available:
+
 - Styles for the radar
 - Support for the old `forecast` attribute for components relying on this
 
