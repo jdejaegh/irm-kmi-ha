@@ -135,6 +135,7 @@ class RainGraph:
             self.write_time_and_rain(paragraph, rain_level, time)
 
     def write_time_and_rain(self, paragraph, rain_level, time):
+        """Using the paragraph object, write the time and rain level data"""
         paragraph.add(self._dwg.text(f"{time}", insert=(self._offset, self._top_text_y_pos),
                                      text_anchor="start",
                                      font_size="16px",
@@ -186,6 +187,7 @@ class RainGraph:
             self.draw_chance_precip(list_higher_points, list_lower_points)
 
     def draw_chance_precip(self, list_higher_points: List, list_lower_points: List):
+        """Draw the blue solid line representing the actual rain forecast"""
         precip_higher_chance_path = self._dwg.path(fill='#63c8fa', stroke='none', opacity=.3)
 
         list_higher_points[-1] = tuple(list(list_higher_points[-1]) + ['last'])

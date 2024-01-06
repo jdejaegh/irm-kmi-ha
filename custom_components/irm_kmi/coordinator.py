@@ -301,7 +301,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                           country: str,
                           images_from_api: Tuple[bytes],
                           ) -> RainGraph:
-
+        """Create a RainGraph object that is ready to output animated and still SVG images"""
         sequence: List[AnimationFrameData] = list()
         tz = pytz.timezone(self.hass.config.time_zone)
         current_time = datetime.now(tz=tz)

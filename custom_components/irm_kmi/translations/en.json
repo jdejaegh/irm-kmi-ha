@@ -44,5 +44,11 @@
         }
       }
     }
+  },
+  "issues": {
+    "zone_moved": {
+      "title": "Zone moved",
+      "description": "Hey!"
+    }
   }
 }

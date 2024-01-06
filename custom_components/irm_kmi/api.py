@@ -51,7 +51,6 @@ class IrmKmiApiClient:
 
     async def get_image(self, url, params: dict | None = None) -> bytes:
         """Get the image at the specified url with the parameters"""
-        # TODO support etag and head request before requesting content
         r: ClientResponse = await self._api_wrapper(base_url=url, params={} if params is None else params)
         return await r.read()
 
