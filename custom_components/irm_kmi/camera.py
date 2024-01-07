@@ -48,7 +48,7 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
     @property
     def frame_interval(self) -> float:
         """Return the interval between frames of the mjpeg stream."""
-        return 20
+        return 1
 
     def camera_image(self,
                      width: int | None = None,
@@ -66,7 +66,7 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
 
     async def handle_async_still_stream(self, request: web.Request, interval: float) -> web.StreamResponse:
         """Generate an HTTP MJPEG stream from camera images."""
-        self._image_index = 0
+        self._image_index = False
         return await async_get_still_stream(request, self.get_animated_svg, self.content_type, interval)
 
     async def handle_async_mjpeg_stream(self, request: web.Request) -> web.StreamResponse:
