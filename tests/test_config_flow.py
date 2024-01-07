@@ -19,6 +19,7 @@ from custom_components.irm_kmi.const import (
 async def test_full_user_flow(
         hass: HomeAssistant,
         mock_setup_entry: MagicMock,
+        mock_get_forecast_in_benelux: MagicMock
 ) -> None:
     """Test the full user configuration flow."""
     result = await hass.config_entries.flow.async_init(
@@ -41,6 +42,48 @@ async def test_full_user_flow(
                                    CONF_STYLE: OPTION_STYLE_STD,
                                    CONF_DARK_MODE: False,
                                    CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED}
+
+
+async def test_config_flow_out_benelux_zone(
+        hass: HomeAssistant,
+        mock_setup_entry: MagicMock,
+        mock_get_forecast_out_benelux: MagicMock
+) -> None:
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": SOURCE_USER}
+    )
+
+    result2 = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={CONF_ZONE: ENTITY_ID_HOME,
+                    CONF_STYLE: OPTION_STYLE_STD,
+                    CONF_DARK_MODE: False},
+    )
+
+    assert result2.get("type") == FlowResultType.FORM
+    assert result2.get("step_id") == "user"
+    assert CONF_ZONE in result2.get('errors')
+
+
+async def test_config_flow_with_api_error(
+        hass: HomeAssistant,
+        mock_setup_entry: MagicMock,
+        mock_get_forecast_api_error: MagicMock
+) -> None:
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": SOURCE_USER}
+    )
+
+    result2 = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={CONF_ZONE: ENTITY_ID_HOME,
+                    CONF_STYLE: OPTION_STYLE_STD,
+                    CONF_DARK_MODE: False},
+    )
+
+    assert result2.get("type") == FlowResultType.FORM
+    assert result2.get("step_id") == "user"
+    assert 'base' in result2.get('errors')
 
 
 async def test_config_entry_migration(hass: HomeAssistant) -> None:

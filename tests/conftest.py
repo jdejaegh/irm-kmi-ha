@@ -10,7 +10,8 @@ from homeassistant.const import CONF_ZONE
 from pytest_homeassistant_custom_component.common import (MockConfigEntry,
                                                           load_fixture)
 
-from custom_components.irm_kmi.api import IrmKmiApiParametersError
+from custom_components.irm_kmi.api import (IrmKmiApiError,
+                                           IrmKmiApiParametersError)
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_STYLE, CONF_USE_DEPRECATED_FORECAST, DOMAIN,
     OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD)
@@ -58,6 +59,30 @@ def mock_setup_entry() -> Generator[None, None, None]:
             "custom_components.irm_kmi.async_setup_entry", return_value=True
     ):
         yield
+
+
+@pytest.fixture
+def mock_get_forecast_in_benelux():
+    """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it returns something valid and in the Benelux"""
+    with patch("custom_components.irm_kmi.config_flow.IrmKmiApiClient.get_forecasts_coord",
+               return_value={'cityName': 'Brussels'}):
+        yield
+
+
+@pytest.fixture
+def mock_get_forecast_out_benelux():
+    """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it returns something outside Benelux"""
+    with patch("custom_components.irm_kmi.config_flow.IrmKmiApiClient.get_forecasts_coord",
+               return_value={'cityName': "Outside the Benelux (Brussels)"}):
+        yield
+
+
+@pytest.fixture
+def mock_get_forecast_api_error():
+    """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it raises an error"""
+    with patch("custom_components.irm_kmi.config_flow.IrmKmiApiClient.get_forecasts_coord",
+               side_effet=IrmKmiApiError):
+        return
 
 
 @pytest.fixture()

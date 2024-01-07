@@ -74,29 +74,3 @@ async def test_config_entry_zone_removed(
 
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
     assert "Zone 'zone.castle' not found" in caplog.text
-
-
-async def test_zone_out_of_benelux(
-        hass: HomeAssistant,
-        caplog: pytest.LogCaptureFixture,
-        mock_irm_kmi_api_out_benelux: AsyncMock
-) -> None:
-    """Test the IRM KMI when configuration zone is out of Benelux"""
-    mock_config_entry = MockConfigEntry(
-        title="London",
-        domain=DOMAIN,
-        data={CONF_ZONE: "zone.london"},
-        unique_id="zone.london",
-    )
-    hass.states.async_set(
-        "zone.london",
-        0,
-        {"latitude": 51.5072, "longitude": 0.1276},
-    )
-
-    mock_config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(mock_config_entry.entry_id)
-    await hass.async_block_till_done()
-
-    assert mock_config_entry.state is ConfigEntryState.SETUP_ERROR
-    assert "Zone 'zone.london' is out of Benelux" in caplog.text

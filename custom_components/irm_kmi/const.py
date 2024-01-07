@@ -57,6 +57,11 @@ CONF_USE_DEPRECATED_FORECAST_OPTIONS: Final = [
     OPTION_DEPRECATED_FORECAST_HOURLY
 ]
 
+REPAIR_SOLUTION: Final = "repair_solution"
+REPAIR_OPT_MOVE: Final = "repair_option_move"
+REPAIR_OPT_DELETE: Final = "repair_option_delete"
+REPAIR_OPTIONS: Final = [REPAIR_OPT_MOVE, REPAIR_OPT_DELETE]
+
 # map ('ww', 'dayNight') tuple from IRM KMI to HA conditions
 IRM_KMI_TO_HA_CONDITION_MAP: Final = {
     (0, 'd'): ATTR_CONDITION_SUNNY,

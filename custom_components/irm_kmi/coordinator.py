@@ -10,13 +10,13 @@ from homeassistant.components.weather import Forecast
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE, CONF_ZONE
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryError
+from homeassistant.helpers import issue_registry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
 
 from .api import IrmKmiApiClient, IrmKmiApiError
-from .const import CONF_DARK_MODE, CONF_STYLE
+from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import (LANGS, OPTION_STYLE_SATELLITE, OUT_OF_BENELUX,
                     STYLE_TO_PARAM_MAP)
@@ -39,7 +39,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             # Name of the data. For logging purposes.
             name="IRM KMI weather",
             # Polling interval. Will only be polled if there are subscribers.
-            update_interval=timedelta(minutes=7),
+            update_interval=timedelta(seconds=15),
         )
         self._api_client = IrmKmiApiClient(session=async_get_clientsession(hass))
         self._zone = get_config_value(entry, CONF_ZONE)
@@ -70,17 +70,24 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(f"Error communicating with API: {err}")
 
         if api_data.get('cityName', None) in OUT_OF_BENELUX:
-            if self.data is None:
-                error_text = f"Zone '{self._zone}' is out of Benelux and forecast is only available in the Benelux"
-                _LOGGER.error(error_text)
-                raise ConfigEntryError(error_text)
-            else:
-                # TODO create a repair when this triggers
-                _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux."
-                              f"Associated device is now disabled.  Move the zone back in Benelux and re-enable to fix "
-                              f"this")
-                disable_from_config(self.hass, self._config_entry)
-                return ProcessedCoordinatorData()
+            # TODO create a repair when this triggers
+            _LOGGER.info(f"Config state: {self._config_entry.state}")
+            _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux."
+                          f"Associated device is now disabled.  Move the zone back in Benelux and re-enable to fix "
+                          f"this")
+            disable_from_config(self.hass, self._config_entry)
+
+            issue_registry.async_create_issue(
+                self.hass,
+                DOMAIN,
+                "zone_moved",
+                is_fixable=True,
+                severity=issue_registry.IssueSeverity.ERROR,
+                translation_key='zone_moved',
+                data={'config_entry_id': self._config_entry.entry_id, 'zone': self._zone},
+                translation_placeholders={'zone': self._zone}
+            )
+            return ProcessedCoordinatorData()
 
         return await self.process_api_data(api_data)
 

@@ -48,7 +48,7 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
     @property
     def frame_interval(self) -> float:
         """Return the interval between frames of the mjpeg stream."""
-        return 20
+        return 1
 
     def camera_image(self,
                      width: int | None = None,
