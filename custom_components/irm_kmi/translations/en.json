@@ -14,6 +14,11 @@
           "use_deprecated_forecast_attribute": "Use the deprecated forecat attribute"
         }
       }
+    },
+    "error": {
+      "out_of_benelux": "{zone} is out of Benelux.  Pick a zone in Benelux.",
+      "api_error": "Could not get data from the API",
+      "zone_not_exist": "{zone} does not exist"
     }
   },
   "selector": {
@@ -57,7 +62,7 @@
       "fix_flow": {
         "step": {
           "confirm": {
-            "title": "Title for the confirm step",
+            "title": "Repair: {zone} is outside of Benelux",
             "description": "This integration can only get data for location in the Benelux. Move the zone or delete this configuration entry."
           }
         },

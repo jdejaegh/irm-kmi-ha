@@ -85,6 +85,14 @@ def mock_get_forecast_api_error():
         return
 
 
+@pytest.fixture
+def mock_get_forecast_api_error_repair():
+    """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it raises an error"""
+    with patch("custom_components.irm_kmi.repairs.IrmKmiApiClient.get_forecasts_coord",
+               side_effet=IrmKmiApiError):
+        return
+
+
 @pytest.fixture()
 def mock_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
     """Return a mocked IrmKmi api client."""
@@ -100,13 +108,41 @@ def mock_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMoc
 
 
 @pytest.fixture()
-def mock_irm_kmi_api_out_benelux(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+def mock_irm_kmi_api_coordinator_out_benelux(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
     """Return a mocked IrmKmi api client."""
     fixture: str = "forecast_out_of_benelux.json"
 
     forecast = json.loads(load_fixture(fixture))
     with patch(
             "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_forecasts_coord.return_value = forecast
+        yield irm_kmi
+
+
+@pytest.fixture()
+def mock_irm_kmi_api_repair_in_benelux(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    fixture: str = "forecast.json"
+
+    forecast = json.loads(load_fixture(fixture))
+    with patch(
+            "custom_components.irm_kmi.repairs.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_forecasts_coord.return_value = forecast
+        yield irm_kmi
+
+
+@pytest.fixture()
+def mock_irm_kmi_api_repair_out_of_benelux(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    fixture: str = "forecast_out_of_benelux.json"
+
+    forecast = json.loads(load_fixture(fixture))
+    with patch(
+            "custom_components.irm_kmi.repairs.IrmKmiApiClient", autospec=True
     ) as irm_kmi_api_mock:
         irm_kmi = irm_kmi_api_mock.return_value
         irm_kmi.get_forecasts_coord.return_value = forecast
