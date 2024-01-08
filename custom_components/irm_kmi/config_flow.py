@@ -39,11 +39,11 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
         """Define the user step of the configuration flow."""
         errors = {}
 
-        if user_input is not None:
+        if user_input:
             _LOGGER.debug(f"Provided config user is: {user_input}")
 
             if (zone := self.hass.states.get(user_input[CONF_ZONE])) is None:
-                errors[CONF_ZONE] = 'Zone does not exist'
+                errors[CONF_ZONE] = 'zone_not_exist'
 
             # Check if zone is in Benelux
             if not errors:
@@ -56,10 +56,10 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
                              'long': zone.attributes[ATTR_LONGITUDE]}
                         )
                 except Exception:
-                    errors['base'] = "Could not get data from the API"
+                    errors['base'] = "api_error"
 
                 if api_data.get('cityName', None) in OUT_OF_BENELUX:
-                    errors[CONF_ZONE] = 'Zone is outside of Benelux'
+                    errors[CONF_ZONE] = 'out_of_benelux'
 
                 if not errors:
                     await self.async_set_unique_id(user_input[CONF_ZONE])
@@ -77,6 +77,7 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             errors=errors,
+            description_placeholders={'zone': user_input.get('zone') if user_input is not None else None},
             data_schema=vol.Schema({
                 vol.Required(CONF_ZONE):
                     EntitySelector(EntitySelectorConfig(domain=ZONE_DOMAIN)),
