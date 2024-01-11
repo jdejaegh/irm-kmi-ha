@@ -10,7 +10,8 @@ from homeassistant.const import CONF_ZONE
 from pytest_homeassistant_custom_component.common import (MockConfigEntry,
                                                           load_fixture)
 
-from custom_components.irm_kmi.api import IrmKmiApiParametersError
+from custom_components.irm_kmi.api import (IrmKmiApiError,
+                                           IrmKmiApiParametersError)
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_STYLE, CONF_USE_DEPRECATED_FORECAST, DOMAIN,
     OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD)
@@ -60,6 +61,38 @@ def mock_setup_entry() -> Generator[None, None, None]:
         yield
 
 
+@pytest.fixture
+def mock_get_forecast_in_benelux():
+    """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it returns something valid and in the Benelux"""
+    with patch("custom_components.irm_kmi.config_flow.IrmKmiApiClient.get_forecasts_coord",
+               return_value={'cityName': 'Brussels'}):
+        yield
+
+
+@pytest.fixture
+def mock_get_forecast_out_benelux():
+    """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it returns something outside Benelux"""
+    with patch("custom_components.irm_kmi.config_flow.IrmKmiApiClient.get_forecasts_coord",
+               return_value={'cityName': "Outside the Benelux (Brussels)"}):
+        yield
+
+
+@pytest.fixture
+def mock_get_forecast_api_error():
+    """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it raises an error"""
+    with patch("custom_components.irm_kmi.config_flow.IrmKmiApiClient.get_forecasts_coord",
+               side_effet=IrmKmiApiError):
+        return
+
+
+@pytest.fixture
+def mock_get_forecast_api_error_repair():
+    """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it raises an error"""
+    with patch("custom_components.irm_kmi.repairs.IrmKmiApiClient.get_forecasts_coord",
+               side_effet=IrmKmiApiError):
+        return
+
+
 @pytest.fixture()
 def mock_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
     """Return a mocked IrmKmi api client."""
@@ -75,13 +108,41 @@ def mock_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMoc
 
 
 @pytest.fixture()
-def mock_irm_kmi_api_out_benelux(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+def mock_irm_kmi_api_coordinator_out_benelux(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
     """Return a mocked IrmKmi api client."""
     fixture: str = "forecast_out_of_benelux.json"
 
     forecast = json.loads(load_fixture(fixture))
     with patch(
             "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_forecasts_coord.return_value = forecast
+        yield irm_kmi
+
+
+@pytest.fixture()
+def mock_irm_kmi_api_repair_in_benelux(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    fixture: str = "forecast.json"
+
+    forecast = json.loads(load_fixture(fixture))
+    with patch(
+            "custom_components.irm_kmi.repairs.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_forecasts_coord.return_value = forecast
+        yield irm_kmi
+
+
+@pytest.fixture()
+def mock_irm_kmi_api_repair_out_of_benelux(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    fixture: str = "forecast_out_of_benelux.json"
+
+    forecast = json.loads(load_fixture(fixture))
+    with patch(
+            "custom_components.irm_kmi.repairs.IrmKmiApiClient", autospec=True
     ) as irm_kmi_api_mock:
         irm_kmi = irm_kmi_api_mock.return_value
         irm_kmi.get_forecasts_coord.return_value = forecast
@@ -96,18 +157,6 @@ def mock_exception_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None
     ) as irm_kmi_api_mock:
         irm_kmi = irm_kmi_api_mock.return_value
         irm_kmi.get_forecasts_coord.side_effect = IrmKmiApiParametersError
-        yield irm_kmi
-
-
-@pytest.fixture()
-def mock_image_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
-    """Return a mocked IrmKmi api client."""
-
-    with patch(
-            "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
-    ) as irm_kmi_api_mock:
-        irm_kmi = irm_kmi_api_mock.return_value
-        irm_kmi.get_image.side_effect = patched
         yield irm_kmi
 
 

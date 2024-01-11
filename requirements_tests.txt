@@ -1,5 +1,6 @@
-homeassistant==2023.12.3
-pytest==7.4.3
-pytest_homeassistant_custom_component==0.13.85
-freezegun==1.2.2
+homeassistant==2024.1.2
+pytest
+pytest_homeassistant_custom_component @ git+https://github.com/MatthewFlamm/pytest-homeassistant-custom-component
+freezegun
 Pillow==10.1.0
+isort
