@@ -32,7 +32,7 @@
     },
     "use_deprecated_forecast_attribute": {
       "options": {
-        "do_not_use_deprecated_forecast": "Ne pas utiliser (recommended)",
+        "do_not_use_deprecated_forecast": "Ne pas utiliser (recommandé)",
         "daily_in_deprecated_forecast": "Utiliser pour les prévisions quotidiennes",
         "hourly_in_use_deprecated_forecast": "Utiliser pour les prévisions horaires"
       }
