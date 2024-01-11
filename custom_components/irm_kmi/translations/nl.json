@@ -27,7 +27,7 @@
         "standard_style": "Standard",
         "contrast_style": "High contrast",
         "yellow_red_style": "Yellow-Red",
-        "satellite_style": "Satellite map"
+        "satellite_style": "Satellite"
       }
     },
     "use_deprecated_forecast_attribute": {
