@@ -1,17 +1,78 @@
 {
-  "title": "Institut royal météorologique de Belgique",
+  "title": "Institut Royal Météorologique de Belgique",
   "config": {
+    "abort": {
+      "already_configured": "Les prévisions météo pour cette zone sont déjà configurées",
+      "unknown": "Erreur inconnue"
+    },
     "step": {
       "user": {
-        "title": "Choisissez une zone",
+        "title": "Configuration",
         "data": {
-          "zone": "Zone"
+          "style": "Style du radar",
+          "dark_mode": "Radar en mode sombre",
+          "use_deprecated_forecast_attribute": "Utiliser l'attribut forecat (déprécié)"
         }
       }
     },
-    "abort": {
-      "already_configured": "La météo pour cette zone est déjà configurée",
-      "unknown": "Une erreur inconnue est survenue"
+    "error": {
+      "out_of_benelux": "{zone} est hors du Benelux.  Choisissez une zone dans le Benelux.",
+      "api_error": "Impossible d'obtenir les données depuis l'API",
+      "zone_not_exist": "{zone} n'existe pas"
+    }
+  },
+  "selector": {
+    "style": {
+      "options": {
+        "standard_style": "Standard",
+        "contrast_style": "Contraste élevé",
+        "yellow_red_style": "Jaune-Rouge",
+        "satellite_style": "Carte satellite"
+      }
+    },
+    "use_deprecated_forecast_attribute": {
+      "options": {
+        "do_not_use_deprecated_forecast": "Ne pas utiliser (recommended)",
+        "daily_in_deprecated_forecast": "Utiliser pour les prévisions quotidiennes",
+        "hourly_in_use_deprecated_forecast": "Utiliser pour les prévisions horaires"
+      }
+    },
+    "repair_solution": {
+      "options": {
+        "repair_option_move": "J'ai déplacé la zone dans le Benelux",
+        "repair_option_delete": "Supprimer cette configuration"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "style": "Style du radar",
+          "dark_mode": "Radar en mode sombre",
+          "use_deprecated_forecast_attribute": "Utiliser l'attribut forecat (déprécié)"
+        }
+      }
+    }
+  },
+  "issues": {
+    "zone_moved": {
+      "title": "{zone} est hors du Benelux",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Correction: {zone} est hors du Benelux",
+            "description": "Cette intégration ne fournit des données que pour le Benelux. Déplacer la zone ou supprimer la configuration."
+          }
+        },
+        "error": {
+          "out_of_benelux": "{zone} est hors du Benelux.  Commencez par déplacer la zone dans le Benelux.",
+          "api_error": "Impossible d'obtenir les données depuis l'API",
+          "zone_not_exist": "{zone} n'existe pas",
+          "invalid_choice": "Choix non valide"
+        }
+      }
     }
   }
 }
