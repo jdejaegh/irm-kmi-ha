@@ -1,11 +1,13 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from freezegun import freeze_time
 from homeassistant.components.weather import (ATTR_CONDITION_CLOUDY,
                                               ATTR_CONDITION_PARTLYCLOUDY,
                                               ATTR_CONDITION_RAINY, Forecast)
-from pytest_homeassistant_custom_component.common import load_fixture
+from homeassistant.core import HomeAssistant
+from pytest_homeassistant_custom_component.common import (MockConfigEntry,
+                                                          load_fixture)
 
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
 from custom_components.irm_kmi.data import CurrentWeatherData, IrmKmiForecast
@@ -13,6 +15,15 @@ from custom_components.irm_kmi.data import CurrentWeatherData, IrmKmiForecast
 
 def get_api_data(fixture: str) -> dict:
     return json.loads(load_fixture(fixture))
+
+
+async def test_jules_forgot_to_revert_update_interval_before_pushing(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry,
+) -> None:
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+
+    assert timedelta(minutes=5) <= coordinator.update_interval
 
 
 @freeze_time(datetime.fromisoformat('2023-12-26T18:30:00'))
