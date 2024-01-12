@@ -39,7 +39,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             # Name of the data. For logging purposes.
             name="IRM KMI weather",
             # Polling interval. Will only be polled if there are subscribers.
-            update_interval=timedelta(seconds=15),
+            update_interval=timedelta(minutes=7),
         )
         self._api_client = IrmKmiApiClient(session=async_get_clientsession(hass))
         self._zone = get_config_value(entry, CONF_ZONE)
