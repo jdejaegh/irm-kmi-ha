@@ -45,9 +45,21 @@ class RadarAnimationData(TypedDict, total=False):
     svg_animated: bytes | None
 
 
+class WarningData(TypedDict, total=False):
+    """Holds data about a specific warning"""
+    slug: str
+    id: int
+    level: int
+    friendly_name: str
+    text: str
+    starts_at: datetime
+    ends_at: datetime
+
+
 class ProcessedCoordinatorData(TypedDict, total=False):
     """Data class that will be exposed to the entities consuming data from an IrmKmiCoordinator"""
     current_weather: CurrentWeatherData
     hourly_forecast: List[Forecast] | None
     daily_forecast: List[IrmKmiForecast] | None
     animation: RadarAnimationData
+    warnings: List[WarningData] | None

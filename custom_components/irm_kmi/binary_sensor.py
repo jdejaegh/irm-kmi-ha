@@ -1,16 +1,18 @@
 """Sensor to signal weather warning from the IRM KMI"""
-
+import datetime
 import logging
 
+import pytz
 from homeassistant.components import binary_sensor
-from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
+from homeassistant.components.binary_sensor import (BinarySensorDeviceClass,
+                                                    BinarySensorEntity)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceInfo, DeviceEntryType
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from custom_components.irm_kmi import IrmKmiCoordinator, DOMAIN
+from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +30,6 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
                  coordinator: IrmKmiCoordinator,
                  entry: ConfigEntry
                  ) -> None:
-        _LOGGER.info(f"{entry.entry_id}, {entry.title}")
         super().__init__(coordinator)
         BinarySensorEntity.__init__(self)
         self._attr_device_class = BinarySensorDeviceClass.SAFETY
@@ -44,5 +45,18 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
 
     @property
     def is_on(self) -> bool | None:
-        # TODO return a real value but first, change implementation of coordinator to expose the data
-        return True
+        if self.coordinator.data.get('warnings') is None:
+            return False
+
+        now = datetime.datetime.now(tz=pytz.timezone(self.hass.config.time_zone))
+        for item in self.coordinator.data.get('warnings'):
+            if item.get('starts_at') < now < item.get('ends_at'):
+                return True
+
+        return False
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Return the camera state attributes."""
+        attrs = {"warnings": self.coordinator.data.get('warnings', [])}
+        return attrs

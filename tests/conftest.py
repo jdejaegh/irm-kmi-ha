@@ -17,6 +17,10 @@ from custom_components.irm_kmi.const import (
     OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD)
 
 
+def get_api_data(fixture: str) -> dict:
+    return json.loads(load_fixture(fixture))
+
+
 async def patched(url: str, params: dict | None = None) -> bytes:
     if "cdn.knmi.nl" in url:
         file_name = "tests/fixtures/clouds_nl.png"

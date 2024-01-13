@@ -35,7 +35,6 @@ async def test_full_user_flow(
                     CONF_STYLE: OPTION_STYLE_STD,
                     CONF_DARK_MODE: False},
     )
-    print(result2)
     assert result2.get("type") == FlowResultType.CREATE_ENTRY
     assert result2.get("title") == "test home"
     assert result2.get("data") == {CONF_ZONE: ENTITY_ID_HOME,
