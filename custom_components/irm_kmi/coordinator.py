@@ -18,10 +18,11 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
 from .api import IrmKmiApiClient, IrmKmiApiError
 from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
-from .const import (LANGS, OPTION_STYLE_SATELLITE, OUT_OF_BENELUX,
-                    STYLE_TO_PARAM_MAP)
+from .const import LANGS
+from .const import MAP_WARNING_ID_TO_SLUG as SLUG_MAP
+from .const import OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
-                   ProcessedCoordinatorData, RadarAnimationData)
+                   ProcessedCoordinatorData, RadarAnimationData, WarningData)
 from .rain_graph import RainGraph
 from .utils import disable_from_config, get_config_value
 
@@ -131,7 +132,8 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             current_weather=IrmKmiCoordinator.current_weather_from_data(api_data),
             daily_forecast=IrmKmiCoordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
             hourly_forecast=IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
-            animation=await self._async_animation_data(api_data=api_data)
+            animation=await self._async_animation_data(api_data=api_data),
+            warnings=self.warnings_from_data(api_data.get('for', {}).get('warning'))
         )
 
     async def download_images_from_api(self,
@@ -344,3 +346,37 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         return RainGraph(radar_animation, image_path, bg_size,
                          dark_mode=self._dark_mode,
                          tz=self.hass.config.time_zone)
+
+    def warnings_from_data(self, warning_data: list | None) -> List[WarningData] | None:
+        """Create a list of warning data instances based on the api data"""
+        if warning_data is None or not isinstance(warning_data, list) or len(warning_data) == 0:
+            return None
+
+        result = list()
+        for data in warning_data:
+            try:
+                warning_id = int(data.get('warningType', {}).get('id'))
+                start = datetime.fromisoformat(data.get('fromTimestamp', None))
+                end = datetime.fromisoformat(data.get('toTimestamp', None))
+            except TypeError | ValueError:
+                # Without this data, the warning is useless
+                continue
+
+            try:
+                level = int(data.get('warningLevel'))
+            except TypeError:
+                level = None
+
+            result.append(
+                WarningData(
+                    slug=SLUG_MAP.get(warning_id, 'unknown'),
+                    id=warning_id,
+                    level=level,
+                    friendly_name=data.get('warningType', {}).get('name', {}).get(self.hass.config.language),
+                    text=data.get('text', {}).get(self.hass.config.language),
+                    starts_at=start,
+                    ends_at=end
+                )
+            )
+
+        return result if len(result) > 0 else None

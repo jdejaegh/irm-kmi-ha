@@ -1,4 +1,3 @@
-import json
 from datetime import datetime, timedelta
 
 from freezegun import freeze_time
@@ -6,15 +5,11 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLOUDY,
                                               ATTR_CONDITION_PARTLYCLOUDY,
                                               ATTR_CONDITION_RAINY, Forecast)
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import (MockConfigEntry,
-                                                          load_fixture)
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
 from custom_components.irm_kmi.data import CurrentWeatherData, IrmKmiForecast
-
-
-def get_api_data(fixture: str) -> dict:
-    return json.loads(load_fixture(fixture))
+from tests.conftest import get_api_data
 
 
 async def test_jules_forgot_to_revert_update_interval_before_pushing(
@@ -24,6 +19,30 @@ async def test_jules_forgot_to_revert_update_interval_before_pushing(
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
     assert timedelta(minutes=5) <= coordinator.update_interval
+
+
+@freeze_time(datetime.fromisoformat('2024-01-12T07:10:00'))
+async def test_warning_data(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry
+) -> None:
+    api_data = get_api_data("be_forecast_warning.json")
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+
+    result = coordinator.warnings_from_data(api_data.get('for', {}).get('warning'))
+
+    assert isinstance(result, list)
+    assert len(result) == 2
+
+    first = result[0]
+
+    assert first.get('starts_at').replace(tzinfo=None) < datetime.now()
+    assert first.get('ends_at').replace(tzinfo=None) > datetime.now()
+
+    assert first.get('slug') == 'fog'
+    assert first.get('friendly_name') == 'Fog'
+    assert first.get('id') == 7
+    assert first.get('level') == 1
 
 
 @freeze_time(datetime.fromisoformat('2023-12-26T18:30:00'))

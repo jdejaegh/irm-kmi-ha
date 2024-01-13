@@ -15,7 +15,7 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
 from homeassistant.const import Platform
 
 DOMAIN: Final = 'irm_kmi'
-PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA]
+PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA, Platform.BINARY_SENSOR]
 CONFIG_FLOW_VERSION = 3
 
 OUT_OF_BENELUX: Final = ["außerhalb der Benelux (Brussels)",
@@ -121,3 +121,16 @@ IRM_KMI_TO_HA_CONDITION_MAP: Final = {
     (27, 'd'): ATTR_CONDITION_EXCEPTIONAL,
     (27, 'n'): ATTR_CONDITION_EXCEPTIONAL
 }
+
+MAP_WARNING_ID_TO_SLUG: Final = {
+    0: 'wind',
+    1: 'rain',
+    2: 'ice_or_snow',
+    3: 'thunder',
+    7: 'fog',
+    9: 'cold',
+    12: 'thunder_wind_rain',
+    13: 'thunderstorm_strong_gusts',
+    14: 'thunderstorm_large_rainfall',
+    15: 'storm_surge',
+    17: 'coldspell'}
