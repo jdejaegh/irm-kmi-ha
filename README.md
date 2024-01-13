@@ -5,8 +5,6 @@ The data is collected via their non-public mobile application API.
 
 Although the provider is Belgian, the data is available for Belgium 🇧🇪, Luxembourg 🇱🇺, and The Netherlands 🇳🇱
 
-**Note: this is still under development, new versions may not be backward compatible.**
-
 ## Installing via HACS
 
 1. Go to HACS > Integrations
@@ -23,6 +21,7 @@ This integration provides the following things:
 - A weather entity with current weather conditions
 - Weather forecasts (hourly, daily and twice-daily) [using the service `weather.get_forecasts`](https://www.home-assistant.io/integrations/weather/#service-weatherget_forecasts)
 - A camera entity for rain radar and short-term rain previsions
+- A binary sensor for weather warnings
 
 The following options are available:
 
@@ -33,6 +32,8 @@ The following options are available:
 
 <details>
 <summary>Show screenshots</summary>
+<img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/sensors.png"/>  <br>
+<img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/forecast.png"/>  <br>
 <img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/camera_light.png"/>  <br>
 <img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/camera_dark.png"/>  <br>
 <img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/camera_sat.png"/>  
@@ -45,8 +46,7 @@ weather condition is taken into account in this integration.
 <br><img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/monday.png" height="150" alt="Example of two weather conditions">
 
 2. The trends for 14 days are not shown
-3. The warnings shown in the app are not shown by the integration
-4. The provider only has data for Belgium, Luxembourg and The Netherlands 
+3. The provider only has data for Belgium, Luxembourg and The Netherlands 
 
 ## Mapping between IRM KMI and Home Assistant weather conditions
 
@@ -70,6 +70,39 @@ Mapping was established based on my own interpretation of the icons and conditio
 | windy           | Wind                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                                                                               |
 | windy-variant   | Wind and clouds                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |                                                                               |
 
+
+## Warning details
+
+The warning binary sensor is on if a warning is currently relevant (i.e. warning start time < current time < warning end time). 
+Warnings may be issued by the IRM KMI ahead of time but the binary sensor is only on when at least one of the issued warnings is relevant.
+
+The binary sensor has an additional attribute called `warnings`, with a list of warnings for the current location. 
+Warnings in the list may be warning issued ahead of time. 
+
+Each element in the list has the following attributes:
+ * `slug: str`: warning slug type, can be used for automation and does not change with language setting. Example:  `ice_or_snow`
+ * `id: int`: internal id for the warning type used by the IRM KMI api.  
+ * `level: int`: warning severity, from 1 (lower risk) to 3 (higher risk)
+ * `friendly_name: str`: language specific name for the warning type.  Examples: `Ice or snow`, `Chute de neige ou verglas`, `Sneeuw of ijzel`, `Glätte`
+ * `text: str`: language specific additional information about the warning
+ * `starts_at: datetime`: time at which the warning starts being relevant
+ * `ends_at: datetime`: time at which the warning stops being relevant
+
+The following table summarizes the different known warning types.  Other warning types may be returned and will have `unknown` as slug.  Feel free to open an issue with the id and the English friendly name to have it added to this integration.
+
+| Warning slug                | Warning id | Friendly name (en, fr, nl, de)                                                           |
+|-----------------------------|------------|------------------------------------------------------------------------------------------|
+| wind                        | 0          | Wind, Vent, Wind, Wind                                                                   |
+| rain                        | 1          | Rain, Pluie, Regen, Regen                                                                |
+| ice_or_snow                 | 2          | Ice or snow, Chute de neige ou verglas, Sneeuw of ijzel, Glätte                          |
+| thunder                     | 3          | Thunder, Orage, Onweer, Gewitter                                                         |
+| fog                         | 7          | Fog, Brouillard, Mist, Nebel                                                             |
+| cold                        | 9          | Cold, Froid, Koude, Kalt                                                                 |
+| thunder_wind_rain           | 12         | Thunder Wind Rain, Orage, rafales et averses, Onweer Wind Regen, Gewitter Windböen Regen |
+| thunderstorm_strong_gusts   | 13         | Thunderstorm & strong gusts, Orage et rafales, Onweer en wind, Gewitter und Windböen     |
+| thunderstorm_large_rainfall | 14         | Thunderstorm & large rainfall, Orage et averses, Onweer en regen, Gewitter und Regen     |
+| storm_surge                 | 15         | Storm surge, Marée forte, Stormtij, Sturmflut                                            |
+| coldspell                   | 17         | Coldspell, Vague de froid, Koude, Koude                                                  |
 
 ## Disclaimer
 
