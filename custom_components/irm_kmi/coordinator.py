@@ -347,10 +347,10 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                          dark_mode=self._dark_mode,
                          tz=self.hass.config.time_zone)
 
-    def warnings_from_data(self, warning_data: list | None) -> List[WarningData] | None:
+    def warnings_from_data(self, warning_data: list | None) -> List[WarningData]:
         """Create a list of warning data instances based on the api data"""
         if warning_data is None or not isinstance(warning_data, list) or len(warning_data) == 0:
-            return None
+            return []
 
         result = list()
         for data in warning_data:
@@ -379,4 +379,4 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 )
             )
 
-        return result if len(result) > 0 else None
+        return result if len(result) > 0 else []

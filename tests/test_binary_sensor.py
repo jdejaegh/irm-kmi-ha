@@ -25,3 +25,8 @@ async def test_warning_data(
 
     assert warning.is_on
     assert len(warning.extra_state_attributes['warnings']) == 2
+
+    for w in warning.extra_state_attributes['warnings']:
+        assert w['is_active']
+
+    assert warning.extra_state_attributes['active_warnings_friendly_names'] == "Fog, Ice or snow"

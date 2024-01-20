@@ -63,4 +63,4 @@ class ProcessedCoordinatorData(TypedDict, total=False):
     hourly_forecast: List[Forecast] | None
     daily_forecast: List[IrmKmiForecast] | None
     animation: RadarAnimationData
-    warnings: List[WarningData] | None
+    warnings: List[WarningData]

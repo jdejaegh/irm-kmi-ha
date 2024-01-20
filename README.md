@@ -87,6 +87,7 @@ Each element in the list has the following attributes:
  * `text: str`: language specific additional information about the warning
  * `starts_at: datetime`: time at which the warning starts being relevant
  * `ends_at: datetime`: time at which the warning stops being relevant
+ * `is_active: bool`: `true` if `starts_at` < now < `ends_at`
 
 The following table summarizes the different known warning types.  Other warning types may be returned and will have `unknown` as slug.  Feel free to open an issue with the id and the English friendly name to have it added to this integration.
 
@@ -103,6 +104,9 @@ The following table summarizes the different known warning types.  Other warning
 | thunderstorm_large_rainfall | 14         | Thunderstorm & large rainfall, Orage et averses, Onweer en regen, Gewitter und Regen     |
 | storm_surge                 | 15         | Storm surge, Marée forte, Stormtij, Sturmflut                                            |
 | coldspell                   | 17         | Coldspell, Vague de froid, Koude, Koude                                                  |
+
+The sensor has an attribute called `active_warnings_friendly_names`, holding a comma separated list of the friendly names
+of the currently active warnings (e.g. `Fog, Ice or snow`).  There is no particular order for the list.
 
 ## Disclaimer
 
