@@ -71,7 +71,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(f"Error communicating with API: {err}")
 
         if api_data.get('cityName', None) in OUT_OF_BENELUX:
-            # TODO create a repair when this triggers
             _LOGGER.info(f"Config state: {self._config_entry.state}")
             _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux."
                           f"Associated device is now disabled.  Move the zone back in Benelux and re-enable to fix "
