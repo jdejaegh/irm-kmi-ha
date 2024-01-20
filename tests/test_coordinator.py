@@ -82,9 +82,14 @@ def test_current_weather_nl() -> None:
 
 
 @freeze_time(datetime.fromisoformat('2023-12-26T18:30:00.028724'))
-def test_daily_forecast() -> None:
+async def test_daily_forecast(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry
+) -> None:
     api_data = get_api_data("forecast.json").get('for', {}).get('daily')
-    result = IrmKmiCoordinator.daily_list_to_forecast(api_data)
+
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+    result = coordinator.daily_list_to_forecast(api_data)
 
     assert isinstance(result, list)
     assert len(result) == 8
@@ -100,8 +105,7 @@ def test_daily_forecast() -> None:
         precipitation_probability=0,
         wind_bearing='S',
         is_daytime=True,
-        text_fr='Bar',
-        text_nl='Foo'
+        text='Hey!',
     )
 
     assert result[1] == expected
