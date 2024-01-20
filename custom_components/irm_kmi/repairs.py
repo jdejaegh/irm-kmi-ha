@@ -39,7 +39,6 @@ class OutOfBeneluxRepairFlow(RepairsFlow):
         errors = {}
 
         config_entry = self.hass.config_entries.async_get_entry(self._data['config_entry_id'])
-        _LOGGER.info(f"State of config entry: {config_entry.state}")
 
         if user_input is not None:
             if user_input[REPAIR_SOLUTION] == REPAIR_OPT_MOVE:
