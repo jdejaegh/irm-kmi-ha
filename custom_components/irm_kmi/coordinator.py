@@ -71,7 +71,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(f"Error communicating with API: {err}")
 
         if api_data.get('cityName', None) in OUT_OF_BENELUX:
-            # TODO create a repair when this triggers
             _LOGGER.info(f"Config state: {self._config_entry.state}")
             _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux."
                           f"Associated device is now disabled.  Move the zone back in Benelux and re-enable to fix "
@@ -130,7 +129,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         """From the API data, create the object that will be used in the entities"""
         return ProcessedCoordinatorData(
             current_weather=IrmKmiCoordinator.current_weather_from_data(api_data),
-            daily_forecast=IrmKmiCoordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
+            daily_forecast=self.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
             hourly_forecast=IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
             animation=await self._async_animation_data(api_data=api_data),
             warnings=self.warnings_from_data(api_data.get('for', {}).get('warning'))
@@ -257,8 +256,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
         return forecasts
 
-    @staticmethod
-    def daily_list_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
+    def daily_list_to_forecast(self, data: List[dict] | None) -> List[Forecast] | None:
         """Parse data from the API to create a list of daily forecasts"""
         if data is None or not isinstance(data, list) or len(data) == 0:
             return None
@@ -295,8 +293,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 precipitation_probability=f.get('precipChance', None),
                 wind_bearing=f.get('wind', {}).get('dirText', {}).get('en'),
                 is_daytime=is_daytime,
-                text_fr=f.get('text', {}).get('fr'),
-                text_nl=f.get('text', {}).get('nl')
+                text=f.get('text', {}).get(self.hass.config.language, ""),
             )
             forecasts.append(forecast)
             if is_daytime or idx == 0:
@@ -347,10 +344,10 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                          dark_mode=self._dark_mode,
                          tz=self.hass.config.time_zone)
 
-    def warnings_from_data(self, warning_data: list | None) -> List[WarningData] | None:
+    def warnings_from_data(self, warning_data: list | None) -> List[WarningData]:
         """Create a list of warning data instances based on the api data"""
         if warning_data is None or not isinstance(warning_data, list) or len(warning_data) == 0:
-            return None
+            return []
 
         result = list()
         for data in warning_data:
@@ -379,4 +376,4 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 )
             )
 
-        return result if len(result) > 0 else None
+        return result if len(result) > 0 else []

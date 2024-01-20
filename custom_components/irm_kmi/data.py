@@ -9,9 +9,7 @@ class IrmKmiForecast(Forecast):
     """Forecast class with additional attributes for IRM KMI"""
 
     # TODO: add condition_2 as well and evolution to match data from the API?
-    # TODO: remove the _fr and _nl to have only one 'text' attribute
-    text_fr: str | None
-    text_nl: str | None
+    text: str | None
 
 
 class CurrentWeatherData(TypedDict, total=False):
@@ -63,4 +61,4 @@ class ProcessedCoordinatorData(TypedDict, total=False):
     hourly_forecast: List[Forecast] | None
     daily_forecast: List[IrmKmiForecast] | None
     animation: RadarAnimationData
-    warnings: List[WarningData] | None
+    warnings: List[WarningData]
