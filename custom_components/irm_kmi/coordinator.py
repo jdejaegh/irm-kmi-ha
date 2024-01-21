@@ -66,6 +66,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                      'long': zone.attributes[ATTR_LONGITUDE]}
                 )
                 _LOGGER.debug(f"Observation for {api_data.get('cityName', '')}: {api_data.get('obs', '{}')}")
+                _LOGGER.debug(f"Full data: {api_data}")
 
         except IrmKmiApiError as err:
             raise UpdateFailed(f"Error communicating with API: {err}")
