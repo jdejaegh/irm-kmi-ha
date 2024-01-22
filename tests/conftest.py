@@ -31,7 +31,7 @@ async def patched(url: str, params: dict | None = None) -> bytes:
     elif "getLocalizationLayerNL" in url:
         file_name = "tests/fixtures/loc_layer_nl.png"
     else:
-        raise ValueError("Not a valid parameter for the mock")
+        raise ValueError(f"Not a valid parameter for the mock: {url}")
 
     with open(file_name, "rb") as file:
         return file.read()
@@ -168,6 +168,22 @@ def mock_exception_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None
 def mock_image_and_nl_forecast_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
     """Return a mocked IrmKmi api client."""
     fixture: str = "forecast_nl.json"
+
+    forecast = json.loads(load_fixture(fixture))
+
+    with patch(
+            "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_image.side_effect = patched
+        irm_kmi.get_forecasts_coord.return_value = forecast
+        yield irm_kmi
+
+
+@pytest.fixture()
+def mock_image_and_high_temp_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    fixture: str = "high_low_temp.json"
 
     forecast = json.loads(load_fixture(fixture))
 

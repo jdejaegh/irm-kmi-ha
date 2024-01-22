@@ -295,6 +295,14 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 is_daytime=is_daytime,
                 text=f.get('text', {}).get(self.hass.config.language, ""),
             )
+            # Swap temperature and templow if needed
+            if (forecast['native_templow'] is not None
+                    and forecast['native_temperature'] is not None
+                    and forecast['native_templow'] > forecast['native_temperature']):
+                (forecast['native_templow'], forecast['native_temperature']) = \
+                    (forecast['native_temperature'], forecast['native_templow'])
+
+
             forecasts.append(forecast)
             if is_daytime or idx == 0:
                 n_days += 1
