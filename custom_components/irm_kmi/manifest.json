@@ -12,5 +12,5 @@
     "pytz==2023.3.post1",
     "svgwrite==1.4.3"
   ],
-  "version": "0.2.1"
+  "version": "0.2.2"
 }
