@@ -302,7 +302,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 (forecast['native_templow'], forecast['native_temperature']) = \
                     (forecast['native_temperature'], forecast['native_templow'])
 
-
             forecasts.append(forecast)
             if is_daytime or idx == 0:
                 n_days += 1
