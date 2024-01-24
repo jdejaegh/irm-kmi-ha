@@ -1,6 +1,6 @@
 aiohttp==3.9.1
 async_timeout==4.0.3
-homeassistant==2024.1.2
+homeassistant==2024.1.5
 voluptuous==0.13.1
 pytz==2023.3.post1
 svgwrite==1.4.3
