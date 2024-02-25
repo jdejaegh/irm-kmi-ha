@@ -57,7 +57,7 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict:
-        """Return the camera state attributes."""
+        """Return the warning sensor attributes."""
         attrs = {"warnings": self.coordinator.data.get('warnings', [])}
 
         now = datetime.datetime.now(tz=pytz.timezone(self.hass.config.time_zone))
