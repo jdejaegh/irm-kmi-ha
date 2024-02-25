@@ -65,6 +65,6 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
             warning['is_active'] = warning.get('starts_at') < now < warning.get('ends_at')
 
         attrs["active_warnings_friendly_names"] = ", ".join([warning['friendly_name'] for warning in attrs['warnings']
-                                                             if warning['is_active']])
+                                                             if warning['is_active'] and warning['friendly_name'] != ''])
 
         return attrs

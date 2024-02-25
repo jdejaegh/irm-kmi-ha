@@ -56,7 +56,6 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         """
         if (zone := self.hass.states.get(self._zone)) is None:
             raise UpdateFailed(f"Zone '{self._zone}' not found")
-
         try:
             # Note: asyncio.TimeoutError and aiohttp.ClientError are already
             # handled by the data update coordinator.
@@ -371,13 +370,14 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             except TypeError:
                 level = None
 
+            lang = self.hass.config.language if self.hass.config.language in LANGS else 'en'
             result.append(
                 WarningData(
                     slug=SLUG_MAP.get(warning_id, 'unknown'),
                     id=warning_id,
                     level=level,
-                    friendly_name=data.get('warningType', {}).get('name', {}).get(self.hass.config.language),
-                    text=data.get('text', {}).get(self.hass.config.language),
+                    friendly_name=data.get('warningType', {}).get('name', {}).get(lang, ''),
+                    text=data.get('text', {}).get(lang, ''),
                     starts_at=start,
                     ends_at=end
                 )
