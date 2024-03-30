@@ -2,6 +2,7 @@
 
 import base64
 import copy
+import logging
 from typing import List
 
 import pytz
@@ -10,7 +11,9 @@ from svgwrite.animate import Animate
 
 from custom_components.irm_kmi.data import (AnimationFrameData,
                                             RadarAnimationData)
+from custom_components.irm_kmi.font_fallback import font_data
 
+_LOGGER = logging.getLogger(__name__)
 
 class RainGraph:
     def __init__(self,
@@ -85,7 +88,13 @@ class RainGraph:
 
     def draw_svg_frame(self):
         """Create the global area to draw the other items"""
-        self._dwg.embed_font(name="Roboto Medium", filename='custom_components/irm_kmi/resources/roboto_medium.ttf')
+        try:
+            self._dwg.embed_font(name="Roboto Medium", filename='custom_components/irm_kmi/resources/roboto_medium.ttf')
+        except FileNotFoundError as err:
+            # Workaround for some cases where the font file cannot be opened.  The font_data contains the strings
+            # that must be embedded as a stylesheet for the roboto_medium.ttf font
+            _LOGGER.warning(f'Could not find font {err}.  Loading it using the fallback file.')
+            self._dwg.embed_stylesheet(font_data)
         self._dwg.embed_stylesheet("""
             .roboto {
                 font-family: "Roboto Medium";
