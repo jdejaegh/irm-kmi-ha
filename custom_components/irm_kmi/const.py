@@ -133,3 +133,5 @@ MAP_WARNING_ID_TO_SLUG: Final = {
     14: 'thunderstorm_large_rainfall',
     15: 'storm_surge',
     17: 'coldspell'}
+
+POLLEN_NAMES: Final = {'Alder', 'Ash', 'Birch', 'Grasses', 'Hazel', 'Mugwort', 'Oak'}
