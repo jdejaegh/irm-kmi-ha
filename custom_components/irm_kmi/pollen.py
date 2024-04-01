@@ -31,23 +31,31 @@ class PollenParser:
         return True
 
     @staticmethod
-    def extract_elements(root) -> List[ET.Element]:
+    def get_default_data() -> dict:
+        return {k.lower(): 'none' for k in POLLEN_NAMES}
+
+    @staticmethod
+    def get_option_values() -> List[str]:
+        return ['active', 'green', 'yellow', 'orange', 'red', 'purple', 'none']
+
+    @staticmethod
+    def _extract_elements(root) -> List[ET.Element]:
         elements = []
         for child in root:
             elements.append(child)
-            elements.extend(PollenParser.extract_elements(child))
+            elements.extend(PollenParser._extract_elements(child))
         return elements
 
     @staticmethod
-    def dot_to_color_value(dot: ET.Element) -> str | None:
+    def _dot_to_color_value(dot: ET.Element) -> str:
 
         try:
             cx = float(dot.attrib.get('cx'))
         except ValueError:
-            return None
+            return 'none'
 
         if cx > 155:
-            return None
+            return 'none'
         elif cx > 140:
             return 'purple'
         elif cx > 125:
@@ -59,20 +67,21 @@ class PollenParser:
         elif cx > 80:
             return 'green'
         else:
-            return None
+            return 'none'
 
-    def get_pollen_data(self):
+    def get_pollen_data(self) -> dict:
+        pollen_data = self.get_default_data()
         try:
-            root = ET.fromstring("self._xml")
+            root = ET.fromstring(self._xml)
         except ET.ParseError:
-            # TODO Handle with default case
-            return None
+            _LOGGER.warning("Could not parse SVG pollen XML")
+            return pollen_data
 
-        elements: List[ET.Element] = self.extract_elements(root)
+        elements: List[ET.Element] = self._extract_elements(root)
 
         if not self._validate_svg(elements):
-            # TODO return default value
-            return None
+            _LOGGER.warning("Could not validate SVG pollen data")
+            return pollen_data
 
         pollens = [e for e in elements if 'tspan' in e.tag and e.text in POLLEN_NAMES]
         active = [e for e in elements if 'tspan' in e.tag and e.text == 'active']
@@ -80,23 +89,19 @@ class PollenParser:
                 and 'fill:#ffffff' in e.attrib.get('style', '')
                 and 3 == float(e.attrib.get('rx', '0'))]
 
-        pollen_data = {k: None for k in POLLEN_NAMES}
-
         for pollen in pollens:
             try:
                 y = float(pollen.attrib.get('y'))
                 if y in [float(e.attrib.get('y')) for e in active]:
-                    pollen_data[pollen.text] = 'active'
+                    pollen_data[pollen.text.lower()] = 'active'
                 else:
                     dot = [d for d in dots if y - 3 <= float(d.attrib.get('cy', '0')) <= y + 3]
                     if len(dot) == 1:
                         dot = dot[0]
-                        pollen_data[pollen.text] = self.dot_to_color_value(dot)
+                        pollen_data[pollen.text.lower()] = self._dot_to_color_value(dot)
             except ValueError | NameError:
-                pass
+                _LOGGER.warning("Skipped some data in the pollen SVG")
 
-        print(pollen_data)
-        for e in pollens + active:
-            print(e.text)
-        for d in dots:
-            print(d.attrib)
+        _LOGGER.debug(f"Pollen data: {pollen_data}")
+        return pollen_data
+

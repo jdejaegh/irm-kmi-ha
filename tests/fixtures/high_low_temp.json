@@ -1326,18 +1326,6 @@
 	},
 	"module": [
 		{
-			"type": "svg",
-			"data": {
-				"url": {
-					"nl": "https:\/\/app.meteo.be\/services\/appv4\/?s=getSvg&ins=92094&e=pollen&l=nl&k=32003c7eac2900f3d73c50f9e27330ab",
-					"fr": "https:\/\/app.meteo.be\/services\/appv4\/?s=getSvg&ins=92094&e=pollen&l=fr&k=32003c7eac2900f3d73c50f9e27330ab",
-					"en": "https:\/\/app.meteo.be\/services\/appv4\/?s=getSvg&ins=92094&e=pollen&l=en&k=32003c7eac2900f3d73c50f9e27330ab",
-					"de": "https:\/\/app.meteo.be\/services\/appv4\/?s=getSvg&ins=92094&e=pollen&l=de&k=32003c7eac2900f3d73c50f9e27330ab"
-				},
-				"ratio": 3.0458333333333334
-			}
-		},
-		{
 			"type": "uv",
 			"data": {
 				"levelValue": 0.7,

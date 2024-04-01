@@ -23,6 +23,7 @@ from .const import MAP_WARNING_ID_TO_SLUG as SLUG_MAP
 from .const import OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
                    ProcessedCoordinatorData, RadarAnimationData, WarningData)
+from .pollen import PollenParser
 from .rain_graph import RainGraph
 from .utils import disable_from_config, get_config_value
 
@@ -65,7 +66,8 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                      'long': zone.attributes[ATTR_LONGITUDE]}
                 )
                 _LOGGER.debug(f"Observation for {api_data.get('cityName', '')}: {api_data.get('obs', '{}')}")
-                _LOGGER.debug(f"Full data: {api_data}")
+                # TODO re-enable logging here
+                # _LOGGER.debug(f"Full data: {api_data}")
 
         except IrmKmiApiError as err:
             raise UpdateFailed(f"Error communicating with API: {err}")
@@ -124,6 +126,28 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         radar_animation['svg_still'] = rain_graph.get_svg_string(still_image=True)
         return radar_animation
 
+    async def _async_pollen_data(self, api_data: dict) -> dict:
+        _LOGGER.debug("Getting pollen data from API")
+        svg_url = None
+        for module in api_data.get('module', []):
+            _LOGGER.debug(f"module: {module}")
+            if module.get('type', None) == 'svg':
+                url = module.get('data', {}).get('url', {}).get('en', '')
+                if 'pollen' in url:
+                    svg_url = url
+                    break
+        if svg_url is None:
+            return PollenParser.get_default_data()
+
+        try:
+            _LOGGER.debug(f"Requesting pollen SVG at url {svg_url}")
+            pollen_svg: str = await self._api_client.get_svg(svg_url)
+        except IrmKmiApiError:
+            _LOGGER.warning(f"Could not get pollen data from the API")
+            return PollenParser.get_default_data()
+
+        return PollenParser(pollen_svg).get_pollen_data()
+
     async def process_api_data(self, api_data: dict) -> ProcessedCoordinatorData:
         """From the API data, create the object that will be used in the entities"""
         return ProcessedCoordinatorData(
@@ -131,7 +155,8 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             daily_forecast=self.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
             hourly_forecast=IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
             animation=await self._async_animation_data(api_data=api_data),
-            warnings=self.warnings_from_data(api_data.get('for', {}).get('warning'))
+            warnings=self.warnings_from_data(api_data.get('for', {}).get('warning')),
+            pollen=await self._async_pollen_data(api_data=api_data)
         )
 
     async def download_images_from_api(self,

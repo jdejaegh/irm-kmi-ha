@@ -54,6 +54,11 @@ class IrmKmiApiClient:
         r: ClientResponse = await self._api_wrapper(base_url=url, params={} if params is None else params)
         return await r.read()
 
+    async def get_svg(self, url, params: dict | None = None) -> str:
+        """Get SVG as str at the specified url with the parameters"""
+        r: ClientResponse = await self._api_wrapper(base_url=url, params={} if params is None else params)
+        return await r.text()
+
     async def _api_wrapper(
             self,
             params: dict,
