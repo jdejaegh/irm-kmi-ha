@@ -3,6 +3,7 @@
 import base64
 import copy
 import logging
+import os
 from typing import List
 
 import pytz
@@ -11,15 +12,16 @@ from svgwrite.animate import Animate
 
 from custom_components.irm_kmi.data import (AnimationFrameData,
                                             RadarAnimationData)
-from custom_components.irm_kmi.font_fallback import font_data
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class RainGraph:
     def __init__(self,
                  animation_data: RadarAnimationData,
                  background_image_path: str,
                  background_size: (int, int),
+                 config_dir: str = '.',
                  dark_mode: bool = False,
                  tz: str = 'UTC',
                  svg_width: float = 640,
@@ -35,6 +37,7 @@ class RainGraph:
         self._animation_data: RadarAnimationData = animation_data
         self._background_image_path: str = background_image_path
         self._background_size: (int, int) = background_size
+        self._config_dir: str = config_dir
         self._dark_mode: bool = dark_mode
         self._tz = pytz.timezone(tz)
         self._svg_width: float = svg_width
@@ -88,13 +91,9 @@ class RainGraph:
 
     def draw_svg_frame(self):
         """Create the global area to draw the other items"""
-        try:
-            self._dwg.embed_font(name="Roboto Medium", filename='custom_components/irm_kmi/resources/roboto_medium.ttf')
-        except FileNotFoundError as err:
-            # Workaround for some cases where the font file cannot be opened.  The font_data contains the strings
-            # that must be embedded as a stylesheet for the roboto_medium.ttf font
-            _LOGGER.warning(f'Could not find font {err}.  Loading it using the fallback file.')
-            self._dwg.embed_stylesheet(font_data)
+        font_file = os.path.join(self._config_dir, 'custom_components/irm_kmi/resources/roboto_medium.ttf')
+        _LOGGER.debug(f"Opening font file at {font_file}")
+        self._dwg.embed_font(name="Roboto Medium", filename=font_file)
         self._dwg.embed_stylesheet("""
             .roboto {
                 font-family: "Roboto Medium";
@@ -301,7 +300,8 @@ class RainGraph:
         return self._dwg_still.tostring().encode() if still_image else self._dwg_animated.tostring().encode()
 
     def insert_background(self):
-        with open(self._background_image_path, 'rb') as f:
+        bg_image_path = os.path.join(self._config_dir, self._background_image_path)
+        with open(bg_image_path, 'rb') as f:
             png_data = base64.b64encode(f.read()).decode('utf-8')
         image = self._dwg.image("data:image/png;base64," + png_data, insert=(0, 0), size=self._background_size)
         self._dwg.add(image)

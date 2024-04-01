@@ -347,6 +347,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             bg_size = (640, 490)
 
         return RainGraph(radar_animation, image_path, bg_size,
+                         config_dir=self.hass.config.config_dir,
                          dark_mode=self._dark_mode,
                          tz=self.hass.config.time_zone)
 
