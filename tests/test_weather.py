@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from typing import List
 from unittest.mock import AsyncMock
@@ -21,6 +22,8 @@ async def test_weather_nl(
         0,
         {"latitude": 50.738681639, "longitude": 4.054077148},
     )
+    hass.config.config_dir = os.getcwd()
+
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     await coordinator.async_config_entry_first_refresh()
 
@@ -47,6 +50,8 @@ async def test_weather_higher_temp_at_night(
         0,
         {"latitude": 50.738681639, "longitude": 4.054077148},
     )
+    hass.config.config_dir = os.getcwd()
+
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     await coordinator.async_config_entry_first_refresh()
 
