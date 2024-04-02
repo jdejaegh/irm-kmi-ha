@@ -9,7 +9,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
-from custom_components.irm_kmi.const import POLLEN_NAMES
+from custom_components.irm_kmi.const import POLLEN_NAMES, POLLEN_TO_ICON_MAP
 from custom_components.irm_kmi.pollen import PollenParser
 
 _LOGGER = logging.getLogger(__name__)
@@ -39,6 +39,7 @@ class IrmKmiPollen(CoordinatorEntity, SensorEntity):
         self._attr_device_info = coordinator.shared_device_info
         self._pollen = pollen
         self._attr_translation_key = f"pollen_{pollen}"
+        self._attr_icon = POLLEN_TO_ICON_MAP[pollen]
 
     @property
     def native_value(self) -> str | None:
