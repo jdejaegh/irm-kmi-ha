@@ -12,6 +12,7 @@ from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE, CONF_ZONE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import issue_registry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
 
@@ -48,6 +49,12 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         self._dark_mode = get_config_value(entry, CONF_DARK_MODE)
         self._style = get_config_value(entry, CONF_STYLE)
         self._config_entry = entry
+        self.shared_device_info = DeviceInfo(
+            entry_type=DeviceEntryType.SERVICE,
+            identifiers={(DOMAIN, entry.entry_id)},
+            manufacturer="IRM KMI",
+            name=f"{entry.title}"
+        )
 
     async def _async_update_data(self) -> ProcessedCoordinatorData:
         """Fetch data from API endpoint.

@@ -8,7 +8,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (UnitOfPrecipitationDepth, UnitOfPressure,
                                  UnitOfSpeed, UnitOfTemperature)
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -39,12 +38,8 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         WeatherEntity.__init__(self)
         self._name = entry.title
         self._attr_unique_id = entry.entry_id
-        self._attr_device_info = DeviceInfo(
-            entry_type=DeviceEntryType.SERVICE,
-            identifiers={(DOMAIN, entry.entry_id)},
-            manufacturer="IRM KMI",
-            name=entry.title
-        )
+        self._attr_device_info = coordinator.shared_device_info
+
         self._deprecated_forecast_as = get_config_value(entry, CONF_USE_DEPRECATED_FORECAST)
 
     @property

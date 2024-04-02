@@ -2,11 +2,9 @@
 import logging
 
 from homeassistant.components import sensor
-
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -38,17 +36,9 @@ class IrmKmiPollen(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}-pollen-{pollen}"
         self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_{pollen}_level")
         self._attr_options = PollenParser.get_option_values()
-        self._attr_name = f"Pollen {pollen}"
-        self._attr_device_info = DeviceInfo(
-            entry_type=DeviceEntryType.SERVICE,
-            identifiers={(DOMAIN, entry.entry_id)},
-            manufacturer="IRM KMI",
-            name=f"Pollen {pollen}"
-        )
+        self._attr_device_info = coordinator.shared_device_info
         self._pollen = pollen
-        # TODO add translation for name
-        # self._attr_translation_key = f"pollen_{pollen}"
-        # _LOGGER.debug(f"translation key: {self._attr_translation_key}")
+        self._attr_translation_key = f"pollen_{pollen}"
 
     @property
     def native_value(self) -> str | None:

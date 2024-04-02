@@ -74,5 +74,93 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "pollen_alder": {
+        "name": "Alder pollen",
+        "state": {
+          "active": "Active",
+          "green": "Green",
+          "yellow": "Yellow",
+          "orange": "Orange",
+          "red": "Red",
+          "purple": "Purple",
+          "none": "None"
+        }
+      },
+      "pollen_ash": {
+        "name": "Ash pollen",
+        "state": {
+          "active": "Active",
+          "green": "Green",
+          "yellow": "Yellow",
+          "orange": "Orange",
+          "red": "Red",
+          "purple": "Purple",
+          "none": "None"
+        }
+      },
+      "pollen_birch": {
+        "name": "Birch pollen",
+        "state": {
+          "active": "Active",
+          "green": "Green",
+          "yellow": "Yellow",
+          "orange": "Orange",
+          "red": "Red",
+          "purple": "Purple",
+          "none": "None"
+        }
+      },
+      "pollen_grasses": {
+        "name": "Grass pollen",
+        "state": {
+          "active": "Active",
+          "green": "Green",
+          "yellow": "Yellow",
+          "orange": "Orange",
+          "red": "Red",
+          "purple": "Purple",
+          "none": "None"
+        }
+      },
+      "pollen_hazel": {
+        "name": "Hazel pollen",
+        "state": {
+          "active": "Active",
+          "green": "Green",
+          "yellow": "Yellow",
+          "orange": "Orange",
+          "red": "Red",
+          "purple": "Purple",
+          "none": "None"
+        }
+      },
+      "pollen_mugwort": {
+        "name": "Mugwort pollen",
+        "state": {
+          "active": "Active",
+          "green": "Green",
+          "yellow": "Yellow",
+          "orange": "Orange",
+          "red": "Red",
+          "purple": "Purple",
+          "none": "None"
+        }
+      },
+      "pollen_oak": {
+        "name": "Oak pollen",
+        "state": {
+          "active": "Active",
+          "green": "Green",
+          "yellow": "Yellow",
+          "orange": "Orange",
+          "red": "Red",
+          "purple": "Purple",
+          "none": "None"
+        }
+      }
+    }
   }
 }
