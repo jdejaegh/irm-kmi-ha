@@ -74,5 +74,93 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "pollen_alder": {
+        "name": "Elzenpollen",
+        "state": {
+          "active": "Actief",
+          "green": "Groen",
+          "yellow": "Geel",
+          "orange": "Oranje",
+          "red": "Rood",
+          "purple": "Paars",
+          "none": "Geen"
+        }
+      },
+      "pollen_ash": {
+        "name": "Essen pollen",
+        "state": {
+          "active": "Actief",
+          "green": "Groen",
+          "yellow": "Geel",
+          "orange": "Oranje",
+          "red": "Rood",
+          "purple": "Paars",
+          "none": "Geen"
+        }
+      },
+      "pollen_birch": {
+        "name": "Berken pollen",
+        "state": {
+          "active": "Actief",
+          "green": "Groen",
+          "yellow": "Geel",
+          "orange": "Oranje",
+          "red": "Rood",
+          "purple": "Paars",
+          "none": "Geen"
+        }
+      },
+      "pollen_grasses": {
+        "name": "Graspollen",
+        "state": {
+          "active": "Actief",
+          "green": "Groen",
+          "yellow": "Geel",
+          "orange": "Oranje",
+          "red": "Rood",
+          "purple": "Paars",
+          "none": "Geen"
+        }
+      },
+      "pollen_hazel": {
+        "name": "Hazelaar pollen",
+        "state": {
+          "active": "Actief",
+          "green": "Groen",
+          "yellow": "Geel",
+          "orange": "Oranje",
+          "red": "Rood",
+          "purple": "Paars",
+          "none": "Geen"
+        }
+      },
+      "pollen_mugwort": {
+        "name": "Alsem pollen",
+        "state": {
+          "active": "Actief",
+          "green": "Groen",
+          "yellow": "Geel",
+          "orange": "Oranje",
+          "red": "Rood",
+          "purple": "Paars",
+          "none": "Geen"
+        }
+      },
+      "pollen_oak": {
+        "name": "Eiken pollen",
+        "state": {
+          "active": "Actief",
+          "green": "Groen",
+          "yellow": "Geel",
+          "orange": "Oranje",
+          "red": "Rood",
+          "purple": "Paars",
+          "none": "Geen"
+        }
+      }
+    }
   }
 }

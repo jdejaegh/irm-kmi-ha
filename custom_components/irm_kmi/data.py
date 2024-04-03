@@ -62,3 +62,4 @@ class ProcessedCoordinatorData(TypedDict, total=False):
     daily_forecast: List[IrmKmiForecast] | None
     animation: RadarAnimationData
     warnings: List[WarningData]
+    pollen: dict

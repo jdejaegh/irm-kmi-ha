@@ -8,7 +8,6 @@ from homeassistant.components.binary_sensor import (BinarySensorDeviceClass,
                                                     BinarySensorEntity)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -36,12 +35,7 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
         self._attr_unique_id = entry.entry_id
         self.entity_id = binary_sensor.ENTITY_ID_FORMAT.format(f"weather_warning_{str(entry.title).lower()}")
         self._attr_name = f"Warning {entry.title}"
-        self._attr_device_info = DeviceInfo(
-            entry_type=DeviceEntryType.SERVICE,
-            identifiers={(DOMAIN, entry.entry_id)},
-            manufacturer="IRM KMI",
-            name=f"Warning {entry.title}"
-        )
+        self._attr_device_info = coordinator.shared_device_info
 
     @property
     def is_on(self) -> bool | None:

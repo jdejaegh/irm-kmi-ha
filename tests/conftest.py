@@ -197,6 +197,32 @@ def mock_image_and_high_temp_irm_kmi_api(request: pytest.FixtureRequest) -> Gene
 
 
 @pytest.fixture()
+def mock_svg_pollen(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    fixture: str = "pollen.svg"
+
+    svg_str = load_fixture(fixture)
+
+    with patch(
+            "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_svg.return_value = svg_str
+        yield irm_kmi
+
+
+@pytest.fixture()
+def mock_exception_irm_kmi_api_svg_pollen(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    with patch(
+            "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_svg.side_effect = IrmKmiApiParametersError
+        yield irm_kmi
+
+
+@pytest.fixture()
 def mock_coordinator(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
     """Return a mocked coordinator."""
     with patch(

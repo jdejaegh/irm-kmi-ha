@@ -74,5 +74,93 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "pollen_alder": {
+        "name": "Pollen d'aulne",
+        "state": {
+          "active": "Actif",
+          "green": "Vert",
+          "yellow": "Jaune",
+          "orange": "Orange",
+          "red": "Rouge",
+          "purple": "Violet",
+          "none": "Aucun"
+        }
+      },
+      "pollen_ash": {
+        "name": "Pollen de frêne",
+        "state": {
+          "active": "Actif",
+          "green": "Vert",
+          "yellow": "Jaune",
+          "orange": "Orange",
+          "red": "Rouge",
+          "purple": "Violet",
+          "none": "Aucun"
+        }
+      },
+      "pollen_birch": {
+        "name": "Pollen de bouleau",
+        "state": {
+          "active": "Actif",
+          "green": "Vert",
+          "yellow": "Jaune",
+          "orange": "Orange",
+          "red": "Rouge",
+          "purple": "Violet",
+          "none": "Aucun"
+        }
+      },
+      "pollen_grasses": {
+        "name": "Pollen de graminées",
+        "state": {
+          "active": "Actif",
+          "green": "Vert",
+          "yellow": "Jaune",
+          "orange": "Orange",
+          "red": "Rouge",
+          "purple": "Violet",
+          "none": "Aucun"
+        }
+      },
+      "pollen_hazel": {
+        "name": "Pollen de noisetier",
+        "state": {
+          "active": "Actif",
+          "green": "Vert",
+          "yellow": "Jaune",
+          "orange": "Orange",
+          "red": "Rouge",
+          "purple": "Violet",
+          "none": "Aucun"
+        }
+      },
+      "pollen_mugwort": {
+        "name": "Pollen d'armoise",
+        "state": {
+          "active": "Actif",
+          "green": "Vert",
+          "yellow": "Jaune",
+          "orange": "Orange",
+          "red": "Rouge",
+          "purple": "Violet",
+          "none": "Aucun"
+        }
+      },
+      "pollen_oak": {
+        "name": "Pollen de chêne",
+        "state": {
+          "active": "Actif",
+          "green": "Vert",
+          "yellow": "Jaune",
+          "orange": "Orange",
+          "red": "Rouge",
+          "purple": "Violet",
+          "none": "Aucun"
+        }
+      }
+    }
   }
 }

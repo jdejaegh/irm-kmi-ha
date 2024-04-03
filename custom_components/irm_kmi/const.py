@@ -14,7 +14,7 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
 from homeassistant.const import Platform
 
 DOMAIN: Final = 'irm_kmi'
-PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA, Platform.BINARY_SENSOR]
+PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA, Platform.BINARY_SENSOR, Platform.SENSOR]
 CONFIG_FLOW_VERSION = 3
 
 OUT_OF_BENELUX: Final = ["außerhalb der Benelux (Brussels)",
@@ -133,3 +133,10 @@ MAP_WARNING_ID_TO_SLUG: Final = {
     14: 'thunderstorm_large_rainfall',
     15: 'storm_surge',
     17: 'coldspell'}
+
+POLLEN_NAMES: Final = {'Alder', 'Ash', 'Birch', 'Grasses', 'Hazel', 'Mugwort', 'Oak'}
+
+POLLEN_TO_ICON_MAP: Final = {
+    'alder': 'mdi:tree', 'ash': 'mdi:tree', 'birch': 'mdi:tree', 'grasses': 'mdi:grass', 'hazel': 'mdi:tree',
+    'mugwort': 'mdi:sprout', 'oak': 'mdi:tree'
+}
