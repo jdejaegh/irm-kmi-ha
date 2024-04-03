@@ -95,6 +95,7 @@ class PollenParser:
         If an error occurs, return the default value"""
         pollen_data = self.get_default_data()
         try:
+            _LOGGER.debug(f"Full SVG: {self._xml}")
             root = ET.fromstring(self._xml)
         except ET.ParseError:
             _LOGGER.warning("Could not parse SVG pollen XML")
