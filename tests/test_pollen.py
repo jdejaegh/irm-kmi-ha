@@ -21,6 +21,11 @@ def test_svg_pollen_parsing():
     assert data == {'birch': 'purple', 'oak': 'active', 'hazel': 'none', 'mugwort': 'none', 'alder': 'active',
                     'grasses': 'none', 'ash': 'active'}
 
+    with open("tests/fixtures/pollen_three.svg", "r") as file:
+        svg_data = file.read()
+    data = PollenParser(svg_data).get_pollen_data()
+    assert data == {'birch': 'none', 'oak': 'active', 'hazel': 'none', 'mugwort': 'none', 'alder': 'active',
+                    'grasses': 'none', 'ash': 'active'}
 
 def test_pollen_options():
     assert PollenParser.get_option_values() == ['active', 'green', 'yellow', 'orange', 'red', 'purple', 'none']
