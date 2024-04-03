@@ -111,7 +111,7 @@ of the currently active warnings (e.g. `Fog, Ice or snow`).  There is no particu
 
 ## Pollen details
 
-One sensor per pollen is created and each sensor can have on of the following values: active, green, yellow, orange, 
+One sensor per pollen is created and each sensor can have one of the following values: active, green, yellow, orange, 
 red, purple or none.
 
 The exact meaning of each color can be found on the IRM KMI webpage: [Pollen allergy and hay fever](https://www.meteo.be/en/weather/forecasts/pollen-allergy-and-hay-fever)
