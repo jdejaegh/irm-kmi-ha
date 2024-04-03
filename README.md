@@ -22,6 +22,7 @@ This integration provides the following things:
 - Weather forecasts (hourly, daily and twice-daily) [using the service `weather.get_forecasts`](https://www.home-assistant.io/integrations/weather/#service-weatherget_forecasts)
 - A camera entity for rain radar and short-term rain previsions
 - A binary sensor for weather warnings
+- Sensors for active pollens
 
 The following options are available:
 
@@ -107,6 +108,18 @@ The following table summarizes the different known warning types.  Other warning
 
 The sensor has an attribute called `active_warnings_friendly_names`, holding a comma separated list of the friendly names
 of the currently active warnings (e.g. `Fog, Ice or snow`).  There is no particular order for the list.
+
+## Pollen details
+
+One sensor per pollen is created and each sensor can have on of the following values: active, green, yellow, orange, 
+red, purple or none.
+
+The exact meaning of each color can be found on the IRM KMI webpage: [Pollen allergy and hay fever](https://www.meteo.be/en/weather/forecasts/pollen-allergy-and-hay-fever)
+
+<img height="200" src="https://raw.githubusercontent.com/jdejaegh/irm-kmi-ha/686ee62df67d4d3aa37d8761b2a571f2eda2d9bc/tests/fixtures/pollen.svg" alt="Pollen data"/>
+
+This data sent to the app would result in oak and ash have the 'active' state, birch would be 'purple' and alder would be 'green'. 
+All the other pollens would be 'none'.
 
 ## Disclaimer
 
