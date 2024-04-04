@@ -13,7 +13,7 @@ jobs:
         python-version: ["3.12"]
 
     steps:
-      - uses: szenius/set-timezone@v1.2
+      - uses: MathRobin/timezone-action@v1.1
         with:
           timezoneLinux: "Europe/Brussels"
       - uses: actions/checkout@v4
