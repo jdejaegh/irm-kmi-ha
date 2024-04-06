@@ -34,7 +34,8 @@
       "options": {
         "do_not_use_deprecated_forecast": "Do not use (recommended)",
         "daily_in_deprecated_forecast": "Use for daily forecast",
-        "hourly_in_use_deprecated_forecast": "Use for hourly forecast"
+        "twice_daily_in_deprecated_forecast": "Use for daily forecast",
+        "hourly_in_deprecated_forecast": "Use for hourly forecast"
       }
     },
     "repair_solution": {
