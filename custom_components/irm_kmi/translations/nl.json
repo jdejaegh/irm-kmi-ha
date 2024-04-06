@@ -34,7 +34,8 @@
       "options": {
         "do_not_use_deprecated_forecast": "Niet gebruiken (aanbevolen)",
         "daily_in_deprecated_forecast": "Gebruik voor dagelijkse voorspellingen",
-        "hourly_in_use_deprecated_forecast": "Gebruik voor uurlijkse voorspellingen"
+        "twice_daily_in_deprecated_forecast": "Gebruik voor tweemaal daags voorspellingen",
+        "hourly_in_deprecated_forecast": "Gebruik voor uurlijkse voorspellingen"
       }
     },
     "repair_solution": {

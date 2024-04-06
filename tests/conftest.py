@@ -14,7 +14,7 @@ from custom_components.irm_kmi.api import (IrmKmiApiError,
                                            IrmKmiApiParametersError)
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_STYLE, CONF_USE_DEPRECATED_FORECAST, DOMAIN,
-    OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD)
+    OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD, OPTION_DEPRECATED_FORECAST_TWICE_DAILY)
 
 
 def get_api_data(fixture: str) -> dict:
@@ -52,6 +52,20 @@ def mock_config_entry() -> MockConfigEntry:
               CONF_STYLE: OPTION_STYLE_STD,
               CONF_DARK_MODE: True,
               CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED},
+        unique_id="zone.home",
+    )
+
+
+@pytest.fixture
+def mock_config_entry_with_deprecated() -> MockConfigEntry:
+    """Return the default mocked config entry."""
+    return MockConfigEntry(
+        title="Home",
+        domain=DOMAIN,
+        data={CONF_ZONE: "zone.home",
+              CONF_STYLE: OPTION_STYLE_STD,
+              CONF_DARK_MODE: True,
+              CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_TWICE_DAILY},
         unique_id="zone.home",
     )
 
@@ -192,6 +206,23 @@ def mock_image_and_high_temp_irm_kmi_api(request: pytest.FixtureRequest) -> Gene
     ) as irm_kmi_api_mock:
         irm_kmi = irm_kmi_api_mock.return_value
         irm_kmi.get_image.side_effect = patched
+        irm_kmi.get_forecasts_coord.return_value = forecast
+        yield irm_kmi
+
+
+@pytest.fixture()
+def mock_image_and_simple_forecast_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    fixture: str = "forecast.json"
+
+    forecast = json.loads(load_fixture(fixture))
+
+    with patch(
+            "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_image.side_effect = patched
+        irm_kmi.get_svg.return_value = ""
         irm_kmi.get_forecasts_coord.return_value = forecast
         yield irm_kmi
 

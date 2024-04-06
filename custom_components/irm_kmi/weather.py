@@ -1,4 +1,5 @@
 """Support for IRM KMI weather."""
+import copy
 import logging
 from typing import List
 
@@ -14,7 +15,8 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from . import CONF_USE_DEPRECATED_FORECAST, DOMAIN
 from .const import (OPTION_DEPRECATED_FORECAST_DAILY,
                     OPTION_DEPRECATED_FORECAST_HOURLY,
-                    OPTION_DEPRECATED_FORECAST_NOT_USED)
+                    OPTION_DEPRECATED_FORECAST_NOT_USED,
+                    OPTION_DEPRECATED_FORECAST_TWICE_DAILY)
 from .coordinator import IrmKmiCoordinator
 from .utils import get_config_value
 
@@ -41,6 +43,11 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         self._attr_device_info = coordinator.shared_device_info
 
         self._deprecated_forecast_as = get_config_value(entry, CONF_USE_DEPRECATED_FORECAST)
+
+        if self._deprecated_forecast_as != OPTION_DEPRECATED_FORECAST_NOT_USED:
+            _LOGGER.warning(f"You are using the forecast attribute for {entry.title} weather. Home Assistant deleted "
+                            f"that attribute in 2024.4. Consider using the service weather.get_forecasts instead "
+                            f"as the attribute will be delete from this integration in a future release.")
 
     @property
     def supported_features(self) -> WeatherEntityFeature:
@@ -98,17 +105,6 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
     def uv_index(self) -> float | None:
         return self.coordinator.data.get('current_weather', {}).get('uv_index')
 
-    @property
-    def forecast(self) -> list[Forecast] | None:
-        """This attribute is deprecated by Home Assistant by still implemented for compatibility
-        with older components.  Newer components should use the service weather.get_forecasts instead."""
-        if self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_NOT_USED:
-            return None
-        elif self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_HOURLY:
-            return self.coordinator.data.get('hourly_forecast')
-        elif self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_DAILY:
-            return self.daily_forecast()
-
     async def async_forecast_twice_daily(self) -> List[Forecast] | None:
         return self.coordinator.data.get('daily_forecast')
 
@@ -137,3 +133,26 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
                     (data[0]['native_temperature'], data[0]['native_templow'])
 
         return [f for f in data if f.get('is_daytime')]
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Here to keep the DEPRECATED forecast attribute.
+        This attribute is deprecated by Home Assistant by still implemented for compatibility
+        with older components.  Newer components should use the service weather.get_forecasts instead.
+        """
+        data: List[Forecast] = list()
+        if self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_NOT_USED:
+            return {}
+        elif self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_HOURLY:
+            data = self.coordinator.data.get('hourly_forecast')
+        elif self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_DAILY:
+            data = self.daily_forecast()
+        elif self._deprecated_forecast_as == OPTION_DEPRECATED_FORECAST_TWICE_DAILY:
+            data = self.coordinator.data.get('daily_forecast')
+
+        for forecast in data:
+            for k in list(forecast.keys()):
+                if k.startswith('native_'):
+                    forecast[k[7:]] = forecast[k]
+
+        return {'forecast': data}
