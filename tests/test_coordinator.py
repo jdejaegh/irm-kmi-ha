@@ -55,7 +55,7 @@ def test_current_weather_be() -> None:
         temperature=7,
         wind_speed=5,
         wind_gust_speed=None,
-        wind_bearing='WSW',
+        wind_bearing=248,
         pressure=1020,
         uv_index=.7
     )
@@ -73,7 +73,7 @@ def test_current_weather_nl() -> None:
         temperature=11,
         wind_speed=40,
         wind_gust_speed=None,
-        wind_bearing='SW',
+        wind_bearing=225,
         pressure=1008,
         uv_index=1
     )
@@ -103,7 +103,7 @@ async def test_daily_forecast(
         native_wind_gust_speed=50,
         native_wind_speed=20,
         precipitation_probability=0,
-        wind_bearing='S',
+        wind_bearing=180,
         is_daytime=True,
         text='Hey!',
     )
@@ -128,7 +128,7 @@ def test_hourly_forecast() -> None:
         native_wind_gust_speed=None,
         native_wind_speed=15,
         precipitation_probability=70,
-        wind_bearing='S',
+        wind_bearing=180,
         native_pressure=1020,
         is_daytime=False
     )

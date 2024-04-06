@@ -209,37 +209,52 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
         try:
             pressure = float(now_hourly.get('pressure', None)) if now_hourly is not None else None
-        except TypeError:
+        except (TypeError, ValueError):
             pressure = None
 
         try:
             wind_speed = float(now_hourly.get('windSpeedKm', None)) if now_hourly is not None else None
-        except TypeError:
+        except (TypeError, ValueError):
             wind_speed = None
 
         try:
             wind_gust_speed = float(now_hourly.get('windPeakSpeedKm', None)) if now_hourly is not None else None
-        except TypeError:
+        except (TypeError, ValueError):
             wind_gust_speed = None
 
         try:
             temperature = float(api_data.get('obs', {}).get('temp'))
-        except TypeError:
+        except (TypeError, ValueError):
             temperature = None
+
+        try:
+            dir_cardinal = now_hourly.get('windDirectionText', {}).get('en') if now_hourly is not None else None
+            if dir_cardinal == 'VAR' or now_hourly is None:
+                wind_bearing = None
+            else:
+                wind_bearing = (float(now_hourly.get('windDirection')) + 180) % 360
+        except (TypeError, ValueError):
+            wind_bearing = None
 
         current_weather = CurrentWeatherData(
             condition=CDT_MAP.get((api_data.get('obs', {}).get('ww'), api_data.get('obs', {}).get('dayNight')), None),
             temperature=temperature,
             wind_speed=wind_speed,
             wind_gust_speed=wind_gust_speed,
-            wind_bearing=now_hourly.get('windDirectionText', {}).get('en') if now_hourly is not None else None,
+            wind_bearing=wind_bearing,
             pressure=pressure,
             uv_index=uv_index
         )
 
         if api_data.get('country', '') == 'NL':
             current_weather['wind_speed'] = api_data.get('obs', {}).get('windSpeedKm')
-            current_weather['wind_bearing'] = api_data.get('obs', {}).get('windDirectionText', {}).get('en')
+            if api_data.get('obs', {}).get('windDirectionText', {}).get('en') == 'VAR':
+                current_weather['wind_bearing'] = None
+            else:
+                try:
+                    current_weather['wind_bearing'] = (float(api_data.get('obs', {}).get('windDirection')) + 180) % 360
+                except ValueError:
+                    current_weather['wind_bearing'] = None
 
         return current_weather
 
@@ -268,6 +283,13 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             if f.get('ww', None) is not None:
                 ww = int(f.get('ww'))
 
+            wind_bearing = None
+            if f.get('windDirectionText', {}).get('en') != 'VAR':
+                try:
+                    wind_bearing = (float(f.get('windDirection')) + 180) % 360
+                except (TypeError, ValueError):
+                    pass
+
             forecast = Forecast(
                 datetime=day.strftime(f'%Y-%m-%dT{hour}:00:00'),
                 condition=CDT_MAP.get((ww, f.get('dayNight', None)), None),
@@ -277,7 +299,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 native_wind_gust_speed=f.get('windPeakSpeedKm', None),
                 native_wind_speed=f.get('windSpeedKm', None),
                 precipitation_probability=precipitation_probability,
-                wind_bearing=f.get('windDirectionText', {}).get('en'),
+                wind_bearing=wind_bearing,
                 native_pressure=f.get('pressure', None),
                 is_daytime=f.get('dayNight', None) == 'd'
             )
@@ -299,14 +321,21 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             if f.get('precipQuantity', None) is not None:
                 try:
                     precipitation = float(f.get('precipQuantity'))
-                except TypeError:
+                except (TypeError, ValueError):
                     pass
 
             native_wind_gust_speed = None
             if f.get('wind', {}).get('peakSpeed') is not None:
                 try:
                     native_wind_gust_speed = int(f.get('wind', {}).get('peakSpeed'))
-                except TypeError:
+                except (TypeError, ValueError):
+                    pass
+
+            wind_bearing = None
+            if f.get('wind', {}).get('dirText', {}).get('en') != 'VAR':
+                try:
+                    wind_bearing = (float(f.get('wind', {}).get('dir')) + 180) % 360
+                except (TypeError, ValueError):
                     pass
 
             is_daytime = f.get('dayNight', None) == 'd'
@@ -321,7 +350,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 native_wind_gust_speed=native_wind_gust_speed,
                 native_wind_speed=f.get('wind', {}).get('speed'),
                 precipitation_probability=f.get('precipChance', None),
-                wind_bearing=f.get('wind', {}).get('dirText', {}).get('en'),
+                wind_bearing=wind_bearing,
                 is_daytime=is_daytime,
                 text=f.get('text', {}).get(self.hass.config.language, ""),
             )
@@ -393,7 +422,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 warning_id = int(data.get('warningType', {}).get('id'))
                 start = datetime.fromisoformat(data.get('fromTimestamp', None))
                 end = datetime.fromisoformat(data.get('toTimestamp', None))
-            except TypeError | ValueError:
+            except (TypeError, ValueError):
                 # Without this data, the warning is useless
                 continue
 
