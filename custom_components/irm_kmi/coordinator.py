@@ -13,8 +13,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import issue_registry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
+from homeassistant.helpers.update_coordinator import (TimestampDataUpdateCoordinator,
                                                       UpdateFailed)
+from homeassistant.util.dt import utcnow
 
 from .api import IrmKmiApiClient, IrmKmiApiError
 from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN
@@ -30,9 +31,8 @@ from .utils import disable_from_config, get_config_value
 
 _LOGGER = logging.getLogger(__name__)
 
-# TODO inherit from TimestampDataUpdateCoordinator and use the last update time to avoid having
-#  entities unavailable if API is down for a few minutes only (like 3x the update interval)
-class IrmKmiCoordinator(DataUpdateCoordinator):
+
+class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
     """Coordinator to update data from IRM KMI"""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
@@ -77,7 +77,13 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 _LOGGER.debug(f"Full data: {api_data}")
 
         except IrmKmiApiError as err:
-            raise UpdateFailed(f"Error communicating with API: {err}")
+            if self.last_update_success_time is not None \
+                    and self.last_update_success_time - utcnow() < 2.5 * self.update_interval:
+                _LOGGER.warning(f"Error communicating with API for general forecast: {err}. Keeping the old data.")
+                return self.data
+            else:
+                raise UpdateFailed(f"Error communicating with API for general forecast: {err}. "
+                                   f"Last success time is: {self.last_update_success_time}")
 
         if api_data.get('cityName', None) in OUT_OF_BENELUX:
             _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux."
