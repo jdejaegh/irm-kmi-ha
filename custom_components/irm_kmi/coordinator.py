@@ -116,10 +116,8 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         try:
             images_from_api = await self.download_images_from_api(animation_data, country, localisation_layer_url)
         except IrmKmiApiError as err:
-            _LOGGER.warning(f"Could not get images for weather radar: {err}")
-            # TODO idea return self.data.get('animation', RadarAnimationData())
-            #  this way, when we cannot update, we keep the old data
-            return RadarAnimationData()
+            _LOGGER.warning(f"Could not get images for weather radar: {err}.  Keep the existing radar data.")
+            return self.data.get('animation', RadarAnimationData()) if self.data is not None else RadarAnimationData()
 
         localisation = images_from_api[0]
         images_from_api = images_from_api[1:]
@@ -152,8 +150,9 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             _LOGGER.debug(f"Requesting pollen SVG at url {svg_url}")
             pollen_svg: str = await self._api_client.get_svg(svg_url)
         except IrmKmiApiError as err:
-            _LOGGER.warning(f"Could not get pollen data from the API: {err}")
-            return PollenParser.get_default_data()
+            _LOGGER.warning(f"Could not get pollen data from the API: {err}. Keeping the same data.")
+            return self.data.get('pollen', PollenParser.get_unavailable_data()) \
+                if self.data is not None else PollenParser.get_unavailable_data()
 
         return PollenParser(pollen_svg).get_pollen_data()
 

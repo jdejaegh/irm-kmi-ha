@@ -27,6 +27,7 @@ def test_svg_pollen_parsing():
     assert data == {'birch': 'none', 'oak': 'active', 'hazel': 'none', 'mugwort': 'none', 'alder': 'active',
                     'grasses': 'none', 'ash': 'active'}
 
+
 def test_pollen_options():
     assert PollenParser.get_option_values() == ['active', 'green', 'yellow', 'orange', 'red', 'purple', 'none']
 
@@ -50,7 +51,7 @@ async def test_pollen_data_from_api(
     assert result == expected
 
 
-async def test_pollen_error_leads_to_default_values(
+async def test_pollen_error_leads_to_unavailable_on_first_call(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry,
         mock_exception_irm_kmi_api_svg_pollen: AsyncMock
@@ -59,5 +60,5 @@ async def test_pollen_error_leads_to_default_values(
     api_data = get_api_data("be_forecast_warning.json")
 
     result = await coordinator._async_pollen_data(api_data)
-    expected = PollenParser.get_default_data()
+    expected = PollenParser.get_unavailable_data()
     assert result == expected
