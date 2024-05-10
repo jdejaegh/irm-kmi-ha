@@ -71,7 +71,7 @@ class IrmKmiApiClient:
         """Get information from the API."""
 
         try:
-            async with async_timeout.timeout(10):
+            async with async_timeout.timeout(60):
                 response = await self._session.request(
                     method=method,
                     url=f"{self._base_url if base_url is None else base_url}{path}",

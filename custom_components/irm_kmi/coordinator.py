@@ -30,7 +30,8 @@ from .utils import disable_from_config, get_config_value
 
 _LOGGER = logging.getLogger(__name__)
 
-
+# TODO inherit from TimestampDataUpdateCoordinator and use the last update time to avoid having
+#  entities unavailable if API is down for a few minutes only (like 3x the update interval)
 class IrmKmiCoordinator(DataUpdateCoordinator):
     """Coordinator to update data from IRM KMI"""
 
@@ -67,7 +68,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         try:
             # Note: asyncio.TimeoutError and aiohttp.ClientError are already
             # handled by the data update coordinator.
-            async with async_timeout.timeout(10):
+            async with async_timeout.timeout(60):
                 api_data = await self._api_client.get_forecasts_coord(
                     {'lat': zone.attributes[ATTR_LATITUDE],
                      'long': zone.attributes[ATTR_LONGITUDE]}
@@ -114,8 +115,10 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
         try:
             images_from_api = await self.download_images_from_api(animation_data, country, localisation_layer_url)
-        except IrmKmiApiError:
-            _LOGGER.warning(f"Could not get images for weather radar")
+        except IrmKmiApiError as err:
+            _LOGGER.warning(f"Could not get images for weather radar: {err}")
+            # TODO idea return self.data.get('animation', RadarAnimationData())
+            #  this way, when we cannot update, we keep the old data
             return RadarAnimationData()
 
         localisation = images_from_api[0]
@@ -148,8 +151,8 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         try:
             _LOGGER.debug(f"Requesting pollen SVG at url {svg_url}")
             pollen_svg: str = await self._api_client.get_svg(svg_url)
-        except IrmKmiApiError:
-            _LOGGER.warning(f"Could not get pollen data from the API")
+        except IrmKmiApiError as err:
+            _LOGGER.warning(f"Could not get pollen data from the API: {err}")
             return PollenParser.get_default_data()
 
         return PollenParser(pollen_svg).get_pollen_data()
