@@ -8,7 +8,9 @@ from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
-from custom_components.irm_kmi.data import CurrentWeatherData, IrmKmiForecast
+from custom_components.irm_kmi.data import CurrentWeatherData, IrmKmiForecast, ProcessedCoordinatorData, \
+    RadarAnimationData
+from custom_components.irm_kmi.pollen import PollenParser
 from tests.conftest import get_api_data
 
 
@@ -134,3 +136,44 @@ def test_hourly_forecast() -> None:
     )
 
     assert result[8] == expected
+
+
+async def test_refresh_succeed_even_when_pollen_and_radar_fail(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry,
+        mock_irm_kmi_api_works_but_pollen_and_radar_fail
+):
+    hass.states.async_set(
+        "zone.home",
+        0,
+        {"latitude": 50.738681639, "longitude": 4.054077148},
+    )
+
+    mock_config_entry.add_to_hass(hass)
+
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+
+    result = await coordinator._async_update_data()
+
+    assert result.get('current_weather').get('condition') == ATTR_CONDITION_CLOUDY
+
+    assert result.get('animation') == dict()
+
+    assert result.get('pollen') == PollenParser.get_unavailable_data()
+
+    existing_data = ProcessedCoordinatorData(
+            current_weather=CurrentWeatherData(),
+            daily_forecast=[],
+            hourly_forecast=[],
+            animation=RadarAnimationData(hint="This will remain unchanged"),
+            warnings=[],
+            pollen={'foo': 'bar'}
+        )
+    coordinator.data = existing_data
+    result = await coordinator._async_update_data()
+
+    assert result.get('current_weather').get('condition') == ATTR_CONDITION_CLOUDY
+
+    assert result.get('animation').get('hint') == "This will remain unchanged"
+
+    assert result.get('pollen') == {'foo': 'bar'}

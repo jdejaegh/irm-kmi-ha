@@ -262,3 +262,20 @@ def mock_coordinator(request: pytest.FixtureRequest) -> Generator[None, MagicMoc
         coord = coordinator_mock.return_value
         coord._async_animation_data.return_value = {'animation': None}
         yield coord
+
+
+@pytest.fixture()
+def mock_irm_kmi_api_works_but_pollen_and_radar_fail(request: pytest.FixtureRequest) -> Generator[
+    None, MagicMock, None]:
+    """Return a mocked IrmKmi api client."""
+    fixture: str = "forecast.json"
+
+    forecast = json.loads(load_fixture(fixture))
+    with patch(
+            "custom_components.irm_kmi.coordinator.IrmKmiApiClient", autospec=True
+    ) as irm_kmi_api_mock:
+        irm_kmi = irm_kmi_api_mock.return_value
+        irm_kmi.get_forecasts_coord.return_value = forecast
+        irm_kmi.get_svg.side_effect = IrmKmiApiError
+        irm_kmi.get_image.side_effect = IrmKmiApiError
+        yield irm_kmi
