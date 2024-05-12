@@ -187,7 +187,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             if frame.get('uri', None) is not None:
                 coroutines.append(
                     self._api_client.get_image(frame.get('uri'), params={'rs': STYLE_TO_PARAM_MAP[self._style]}))
-        async with async_timeout.timeout(20):
+        async with async_timeout.timeout(60):
             images_from_api = await asyncio.gather(*coroutines)
 
         _LOGGER.debug(f"Just downloaded {len(images_from_api)} images")
