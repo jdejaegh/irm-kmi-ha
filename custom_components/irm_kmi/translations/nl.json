@@ -78,6 +78,9 @@
   },
   "entity": {
     "sensor": {
+      "next_warning": {
+        "name": "Volgende waarschuwing"
+      },
       "pollen_alder": {
         "name": "Elzenpollen",
         "state": {
