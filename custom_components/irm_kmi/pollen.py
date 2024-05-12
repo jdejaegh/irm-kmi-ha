@@ -8,6 +8,11 @@ from custom_components.irm_kmi.const import POLLEN_NAMES
 _LOGGER = logging.getLogger(__name__)
 
 
+def get_unavailable_data() -> dict:
+    """Return all the known pollen with 'none' value"""
+    return {k.lower(): 'none' for k in POLLEN_NAMES}
+
+
 class PollenParser:
     """
     The SVG looks as follows (see test fixture for a real example)
@@ -25,6 +30,7 @@ class PollenParser:
     For the color scale, look for a white dot (nearly) at the same level as the pollen name.  From the white dot
     horizontal position, determine the level
     """
+
     def __init__(
             self,
             xml_string: str
@@ -52,6 +58,11 @@ class PollenParser:
     def get_default_data() -> dict:
         """Return all the known pollen with 'none' value"""
         return {k.lower(): 'none' for k in POLLEN_NAMES}
+
+    @staticmethod
+    def get_unavailable_data() -> dict:
+        """Return all the known pollen with 'none' value"""
+        return {k.lower(): None for k in POLLEN_NAMES}
 
     @staticmethod
     def get_option_values() -> List[str]:
@@ -128,4 +139,3 @@ class PollenParser:
 
         _LOGGER.debug(f"Pollen data: {pollen_data}")
         return pollen_data
-

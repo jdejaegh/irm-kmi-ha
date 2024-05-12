@@ -13,8 +13,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import issue_registry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
+from homeassistant.helpers.update_coordinator import (TimestampDataUpdateCoordinator,
                                                       UpdateFailed)
+from homeassistant.util.dt import utcnow
 
 from .api import IrmKmiApiClient, IrmKmiApiError
 from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN
@@ -31,7 +32,7 @@ from .utils import disable_from_config, get_config_value
 _LOGGER = logging.getLogger(__name__)
 
 
-class IrmKmiCoordinator(DataUpdateCoordinator):
+class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
     """Coordinator to update data from IRM KMI"""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
@@ -67,7 +68,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         try:
             # Note: asyncio.TimeoutError and aiohttp.ClientError are already
             # handled by the data update coordinator.
-            async with async_timeout.timeout(10):
+            async with async_timeout.timeout(60):
                 api_data = await self._api_client.get_forecasts_coord(
                     {'lat': zone.attributes[ATTR_LATITUDE],
                      'long': zone.attributes[ATTR_LONGITUDE]}
@@ -76,7 +77,13 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
                 _LOGGER.debug(f"Full data: {api_data}")
 
         except IrmKmiApiError as err:
-            raise UpdateFailed(f"Error communicating with API: {err}")
+            if self.last_update_success_time is not None \
+                    and self.last_update_success_time - utcnow() < 2.5 * self.update_interval:
+                _LOGGER.warning(f"Error communicating with API for general forecast: {err}. Keeping the old data.")
+                return self.data
+            else:
+                raise UpdateFailed(f"Error communicating with API for general forecast: {err}. "
+                                   f"Last success time is: {self.last_update_success_time}")
 
         if api_data.get('cityName', None) in OUT_OF_BENELUX:
             _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux."
@@ -114,9 +121,9 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
 
         try:
             images_from_api = await self.download_images_from_api(animation_data, country, localisation_layer_url)
-        except IrmKmiApiError:
-            _LOGGER.warning(f"Could not get images for weather radar")
-            return RadarAnimationData()
+        except IrmKmiApiError as err:
+            _LOGGER.warning(f"Could not get images for weather radar: {err}.  Keep the existing radar data.")
+            return self.data.get('animation', RadarAnimationData()) if self.data is not None else RadarAnimationData()
 
         localisation = images_from_api[0]
         images_from_api = images_from_api[1:]
@@ -148,9 +155,10 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
         try:
             _LOGGER.debug(f"Requesting pollen SVG at url {svg_url}")
             pollen_svg: str = await self._api_client.get_svg(svg_url)
-        except IrmKmiApiError:
-            _LOGGER.warning(f"Could not get pollen data from the API")
-            return PollenParser.get_default_data()
+        except IrmKmiApiError as err:
+            _LOGGER.warning(f"Could not get pollen data from the API: {err}. Keeping the same data.")
+            return self.data.get('pollen', PollenParser.get_unavailable_data()) \
+                if self.data is not None else PollenParser.get_unavailable_data()
 
         return PollenParser(pollen_svg).get_pollen_data()
 
@@ -179,7 +187,7 @@ class IrmKmiCoordinator(DataUpdateCoordinator):
             if frame.get('uri', None) is not None:
                 coroutines.append(
                     self._api_client.get_image(frame.get('uri'), params={'rs': STYLE_TO_PARAM_MAP[self._style]}))
-        async with async_timeout.timeout(20):
+        async with async_timeout.timeout(60):
             images_from_api = await asyncio.gather(*coroutines)
 
         _LOGGER.debug(f"Just downloaded {len(images_from_api)} images")
