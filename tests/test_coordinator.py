@@ -113,7 +113,7 @@ async def test_daily_forecast(
     assert result[1] == expected
 
 
-@freeze_time(datetime.fromisoformat('2023-12-26T18:30:00.028724'))
+@freeze_time(datetime.fromisoformat('2023-12-26T18:30:00+01:00'))
 def test_hourly_forecast() -> None:
     api_data = get_api_data("forecast.json").get('for', {}).get('hourly')
     result = IrmKmiCoordinator.hourly_list_to_forecast(api_data)
@@ -122,7 +122,7 @@ def test_hourly_forecast() -> None:
     assert len(result) == 49
 
     expected = Forecast(
-        datetime='2023-12-27T02:00:00',
+        datetime='2023-12-27T02:00:00+01:00',
         condition=ATTR_CONDITION_RAINY,
         native_precipitation=.98,
         native_temperature=8,

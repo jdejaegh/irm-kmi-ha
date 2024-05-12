@@ -78,6 +78,9 @@
   },
   "entity": {
     "sensor": {
+      "next_warning": {
+        "name": "Next warning"
+      },
       "pollen_alder": {
         "name": "Alder pollen",
         "state": {

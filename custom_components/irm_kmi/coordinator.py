@@ -273,7 +273,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             return None
 
         forecasts = list()
-        day = datetime.now()
+        day = datetime.now(tz=pytz.timezone('Europe/Brussels')).replace(hour=0, minute=0, second=0, microsecond=0)
 
         for f in data:
             if 'dateShow' in f:
@@ -282,6 +282,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             hour = f.get('hour', None)
             if hour is None:
                 continue
+            day = day.replace(hour=int(hour))
 
             precipitation_probability = None
             if f.get('precipChance', None) is not None:
@@ -299,7 +300,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                     pass
 
             forecast = Forecast(
-                datetime=day.strftime(f'%Y-%m-%dT{hour}:00:00'),
+                datetime=day.isoformat(),
                 condition=CDT_MAP.get((ww, f.get('dayNight', None)), None),
                 native_precipitation=f.get('precipQuantity', None),
                 native_temperature=f.get('temp', None),
@@ -347,10 +348,10 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                     pass
 
             is_daytime = f.get('dayNight', None) == 'd'
-
+            now = datetime.now(pytz.timezone('Europe/Brussels'))
             forecast = IrmKmiForecast(
-                datetime=(datetime.now() + timedelta(days=n_days)).strftime('%Y-%m-%d')
-                if is_daytime else datetime.now().strftime('%Y-%m-%d'),
+                datetime=(now + timedelta(days=n_days)).strftime('%Y-%m-%d')
+                if is_daytime else now.strftime('%Y-%m-%d'),
                 condition=CDT_MAP.get((f.get('ww1', None), f.get('dayNight', None)), None),
                 native_precipitation=precipitation,
                 native_temperature=f.get('tempMax', None),
