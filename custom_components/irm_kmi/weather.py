@@ -1,16 +1,20 @@
 """Support for IRM KMI weather."""
-import copy
 import logging
+from datetime import datetime
 from typing import List
 
+import voluptuous as vol
 from homeassistant.components.weather import (Forecast, WeatherEntity,
                                               WeatherEntityFeature)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (UnitOfPrecipitationDepth, UnitOfPressure,
                                  UnitOfSpeed, UnitOfTemperature)
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, SupportsResponse
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt
 
 from . import CONF_USE_DEPRECATED_FORECAST, DOMAIN
 from .const import (OPTION_DEPRECATED_FORECAST_DAILY,
@@ -25,9 +29,23 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     """Set up the weather entry."""
+    add_services()
 
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([IrmKmiWeather(coordinator, entry)])
+
+
+def add_services() -> None:
+    platform = entity_platform.async_get_current_platform()
+
+    platform.async_register_entity_service(
+        "get_forecasts_radar",
+        cv.make_entity_service_schema({
+            vol.Optional("include_past_forecasts"): vol.Boolean()
+        }),
+        IrmKmiWeather.get_forecasts_radar_service.__name__,
+        supports_response=SupportsResponse.ONLY
+    )
 
 
 class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
@@ -41,7 +59,6 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         self._name = entry.title
         self._attr_unique_id = entry.entry_id
         self._attr_device_info = coordinator.shared_device_info
-
         self._deprecated_forecast_as = get_config_value(entry, CONF_USE_DEPRECATED_FORECAST)
 
         if self._deprecated_forecast_as != OPTION_DEPRECATED_FORECAST_NOT_USED:
@@ -133,6 +150,20 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
                     (data[0]['native_temperature'], data[0]['native_templow'])
 
         return [f for f in data if f.get('is_daytime')]
+
+    def get_forecasts_radar_service(self, include_past_forecasts: bool) -> List[Forecast] | None:
+        """
+        Forecast service based on data from the radar.  Only contains datetime and precipitation amount.
+        The result always include the current 10 minutes interval, even if include_past_forecast is false.
+        :param include_past_forecasts: whether to include data points that are in the past
+        :return: ordered list of forecasts
+        """
+        # now = datetime.now(tz=pytz.timezone(self.hass.config.time_zone))
+        now = dt.now()
+        now = now.replace(minute=(now.minute // 10) * 10, second=0, microsecond=0)
+
+        return [f for f in self.coordinator.data.get('radar_forecast')
+                if include_past_forecasts or datetime.fromisoformat(f.get('datetime')) >= now]
 
     @property
     def extra_state_attributes(self) -> dict:

@@ -166,5 +166,17 @@
         }
       }
     }
+  },
+  "services": {
+    "get_forecasts_radar": {
+      "name": "Get forecast from the  radar",
+      "description": "Weersverwachting van radar ophalen. Alleen neerslag is beschikbaar.",
+      "fields": {
+        "include_past_forecasts": {
+          "name": "Verleden weersvoorspellingen opnemen",
+          "description": "Geeft ook weersvoorspellingen uit het verleden."
+        }
+      }
+    }
   }
 }

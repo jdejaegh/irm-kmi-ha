@@ -60,6 +60,7 @@ class ProcessedCoordinatorData(TypedDict, total=False):
     current_weather: CurrentWeatherData
     hourly_forecast: List[Forecast] | None
     daily_forecast: List[IrmKmiForecast] | None
+    radar_forecast: List[Forecast] | None
     animation: RadarAnimationData
     warnings: List[WarningData]
     pollen: dict
