@@ -20,8 +20,10 @@ This integration provides the following things:
 
 - A weather entity with current weather conditions
 - Weather forecasts (hourly, daily and twice-daily) [using the service `weather.get_forecasts`](https://www.home-assistant.io/integrations/weather/#service-weatherget_forecasts)
+- Short-term rain forecasts using the radar data using the custom service `ìrm_kmi.get_forecasts_radar`
 - A camera entity for rain radar and short-term rain previsions
 - A binary sensor for weather warnings
+- A sensor with the timestamp for the start of the next warning
 - Sensors for active pollens
 
 The following options are available:
@@ -74,6 +76,12 @@ Mapping was established based on my own interpretation of the icons and conditio
 
 ## Warning details
 
+Warnings are represented with two sensors: 
+ - a binary sensor showing if any warning is currently active
+ - a timestamp sensor with the start time of the next warning (if any, else `unknown`)
+
+### Binary sensor for ongoing warnings
+
 The warning binary sensor is on if a warning is currently relevant (i.e. warning start time < current time < warning end time). 
 Warnings may be issued by the IRM KMI ahead of time but the binary sensor is only on when at least one of the issued warnings is relevant.
 
@@ -109,6 +117,15 @@ The following table summarizes the different known warning types.  Other warning
 The sensor has an attribute called `active_warnings_friendly_names`, holding a comma separated list of the friendly names
 of the currently active warnings (e.g. `Fog, Ice or snow`).  There is no particular order for the list.
 
+### Timestamp sensor for upcoming warnings
+
+The state is the start time of the earliest next warning, if any; else `unknown`.
+
+The sensor has two additional attributes:
+ - `next_warnings`: a list of all the upcoming warnings, with the same data as the `warnings` attribute of the binary sensor (see above)
+ - `next_warning_friendly_names` holding a comma separated list of the friendly names of the currently active warnings (e.g. `Fog, Ice or snow`).  There is no particular order for the list.
+
+
 ## Pollen details
 
 One sensor per pollen is created and each sensor can have one of the following values: active, green, yellow, orange, 
@@ -120,6 +137,29 @@ The exact meaning of each color can be found on the IRM KMI webpage: [Pollen all
 
 This data sent to the app would result in oak and ash have the 'active' state, birch would be 'purple' and alder would be 'green'. 
 All the other pollens would be 'none'.
+
+## Custom service `irm_kmi.get_forecasts_radar`
+
+The service returns a list of Forecast objects (similar to `weather.get_forecasts`) but only data about precipitation is available. 
+The data is taken from the radar forecast: it is useful for very short-term rain forecast.
+
+The service can optionally include data from the past (like shown on the radar).
+
+Here is an example of service call:
+
+```yaml
+service: irm_kmi.get_forecasts_radar
+target:
+  entity_id: weather.home
+data:
+  include_past_forecasts: true 
+```
+
+The data is optional and defaults to `false`. 
+
+Even when `include_past_forecasts` is `false`, the current 10 minutes interval is returned so the first item in the 
+response is in the past (at most 10 minutes in the past).  This can be useful to determine if rain is currently falling 
+and how strong it is.
 
 ## Disclaimer
 
