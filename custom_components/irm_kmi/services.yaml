@@ -5,7 +5,7 @@ get_forecasts_radar:
       domain: weather
   fields:
     include_past_forecasts:
-      required: true
+      required: false
       default: false
       selector:
         boolean:
