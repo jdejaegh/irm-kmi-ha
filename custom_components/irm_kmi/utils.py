@@ -28,16 +28,13 @@ def modify_from_config(hass: HomeAssistant, config_entry_id: str, enable: bool):
 
 
 def get_config_value(config_entry: ConfigEntry, key: str) -> Any:
-    try:
-        if config_entry.options and key in config_entry.options:
-            return config_entry.options[key]
-        return config_entry.data[key]
-    except KeyError:
-        return None
+    if config_entry.options and key in config_entry.options:
+        return config_entry.options[key]
+    return config_entry.data[key]
 
 
 def preferred_language(hass: HomeAssistant, config_entry: ConfigEntry) -> str:
-    if get_config_value(config_entry, CONF_LANGUAGE_OVERRIDE) is None:
+    if get_config_value(config_entry, CONF_LANGUAGE_OVERRIDE) == 'none':
         return hass.config.language if hass.config.language in LANGS else 'en'
 
     return get_config_value(config_entry, CONF_LANGUAGE_OVERRIDE)

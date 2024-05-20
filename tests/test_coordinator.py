@@ -92,7 +92,7 @@ async def test_daily_forecast(
 ) -> None:
     api_data = get_api_data("forecast.json").get('for', {}).get('daily')
 
-    mock_config_entry.data = {CONF_LANGUAGE_OVERRIDE: 'fr'}
+    mock_config_entry.data = mock_config_entry.data | {CONF_LANGUAGE_OVERRIDE: 'fr'}
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     result = coordinator.daily_list_to_forecast(api_data)
 

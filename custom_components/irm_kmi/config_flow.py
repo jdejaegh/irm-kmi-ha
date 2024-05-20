@@ -41,9 +41,6 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input:
-            if CONF_LANGUAGE_OVERRIDE in user_input:
-                user_input[CONF_LANGUAGE_OVERRIDE] = None if user_input[CONF_LANGUAGE_OVERRIDE] == 'none' \
-                    else user_input[CONF_LANGUAGE_OVERRIDE]
             _LOGGER.debug(f"Provided config user is: {user_input}")
 
             if (zone := self.hass.states.get(user_input[CONF_ZONE])) is None:
@@ -115,9 +112,6 @@ class IrmKmiOptionFlow(OptionsFlow):
     async def async_step_init(self, user_input: dict | None = None) -> FlowResult:
         """Manage the options."""
         if user_input is not None:
-            if CONF_LANGUAGE_OVERRIDE in user_input:
-                user_input[CONF_LANGUAGE_OVERRIDE] = None if user_input[CONF_LANGUAGE_OVERRIDE] == 'none' \
-                    else user_input[CONF_LANGUAGE_OVERRIDE]
             _LOGGER.debug(user_input)
             return self.async_create_entry(data=user_input)
 
@@ -139,7 +133,7 @@ class IrmKmiOptionFlow(OptionsFlow):
                                                             translation_key=CONF_USE_DEPRECATED_FORECAST)),
 
                     vol.Optional(CONF_LANGUAGE_OVERRIDE,
-                                 default=str(get_config_value(self.config_entry, CONF_LANGUAGE_OVERRIDE)).lower()):
+                                 default=get_config_value(self.config_entry, CONF_LANGUAGE_OVERRIDE)):
                         SelectSelector(SelectSelectorConfig(options=CONF_LANGUAGE_OVERRIDE_OPTIONS,
                                                             mode=SelectSelectorMode.DROPDOWN,
                                                             translation_key=CONF_LANGUAGE_OVERRIDE))

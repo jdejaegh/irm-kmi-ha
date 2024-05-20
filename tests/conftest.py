@@ -15,7 +15,7 @@ from custom_components.irm_kmi.api import (IrmKmiApiError,
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_STYLE, CONF_USE_DEPRECATED_FORECAST, DOMAIN,
     OPTION_DEPRECATED_FORECAST_NOT_USED,
-    OPTION_DEPRECATED_FORECAST_TWICE_DAILY, OPTION_STYLE_STD)
+    OPTION_DEPRECATED_FORECAST_TWICE_DAILY, OPTION_STYLE_STD, CONF_LANGUAGE_OVERRIDE)
 
 
 def get_api_data(fixture: str) -> dict:
@@ -52,7 +52,8 @@ def mock_config_entry() -> MockConfigEntry:
         data={CONF_ZONE: "zone.home",
               CONF_STYLE: OPTION_STYLE_STD,
               CONF_DARK_MODE: True,
-              CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED},
+              CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
+              CONF_LANGUAGE_OVERRIDE: 'none'},
         unique_id="zone.home",
     )
 
@@ -66,7 +67,8 @@ def mock_config_entry_with_deprecated() -> MockConfigEntry:
         data={CONF_ZONE: "zone.home",
               CONF_STYLE: OPTION_STYLE_STD,
               CONF_DARK_MODE: True,
-              CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_TWICE_DAILY},
+              CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_TWICE_DAILY,
+              CONF_LANGUAGE_OVERRIDE: 'none'},
         unique_id="zone.home",
     )
 

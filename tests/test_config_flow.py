@@ -42,7 +42,7 @@ async def test_full_user_flow(
                                    CONF_STYLE: OPTION_STYLE_STD,
                                    CONF_DARK_MODE: False,
                                    CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
-                                   CONF_LANGUAGE_OVERRIDE: None}
+                                   CONF_LANGUAGE_OVERRIDE: 'none'}
 
 
 async def test_config_flow_out_benelux_zone(
@@ -131,7 +131,7 @@ async def test_option_flow(
         CONF_STYLE: OPTION_STYLE_SATELLITE,
         CONF_DARK_MODE: True,
         CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
-        CONF_LANGUAGE_OVERRIDE: None
+        CONF_LANGUAGE_OVERRIDE: 'none'
     }
 
 

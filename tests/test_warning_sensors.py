@@ -66,7 +66,7 @@ async def test_next_warning_when_data_available(
         mock_config_entry: MockConfigEntry
 ) -> None:
     api_data = get_api_data("be_forecast_warning.json")
-    mock_config_entry.data = {CONF_LANGUAGE_OVERRIDE: 'de'}
+    mock_config_entry.data = mock_config_entry.data | {CONF_LANGUAGE_OVERRIDE: 'de'}
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
