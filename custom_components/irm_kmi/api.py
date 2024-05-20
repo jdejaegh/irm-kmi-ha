@@ -69,6 +69,10 @@ class IrmKmiApiClient:
             headers: dict | None = None,
     ) -> any:
         """Get information from the API."""
+        if headers is None:
+            headers = {'User-Agent': 'github.com/jdejaegh/irm-kmi-ha'}
+        else:
+            headers['User-Agent'] = 'github.com/jdejaegh/irm-kmi-ha'
 
         try:
             async with async_timeout.timeout(60):
