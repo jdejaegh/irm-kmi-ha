@@ -5,6 +5,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry
 
+from .const import CONF_LANGUAGE_OVERRIDE, LANGS
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -26,6 +28,16 @@ def modify_from_config(hass: HomeAssistant, config_entry_id: str, enable: bool):
 
 
 def get_config_value(config_entry: ConfigEntry, key: str) -> Any:
-    if config_entry.options and key in config_entry.options:
-        return config_entry.options[key]
-    return config_entry.data[key]
+    try:
+        if config_entry.options and key in config_entry.options:
+            return config_entry.options[key]
+        return config_entry.data[key]
+    except KeyError:
+        return None
+
+
+def preferred_language(hass: HomeAssistant, config_entry: ConfigEntry) -> str:
+    if get_config_value(config_entry, CONF_LANGUAGE_OVERRIDE) is None:
+        return hass.config.language if hass.config.language in LANGS else 'en'
+
+    return get_config_value(config_entry, CONF_LANGUAGE_OVERRIDE)

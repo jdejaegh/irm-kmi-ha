@@ -9,9 +9,11 @@
       "user": {
         "title": "Instellingen",
         "data": {
+          "zone": "Zone",
           "style": "Radarstijl",
           "dark_mode": "Radar in donkere modus",
-          "use_deprecated_forecast_attribute": "Gebruik het forecat attribuut (afgeschaft)"
+          "use_deprecated_forecast_attribute": "Gebruik het forecat attribuut (afgeschaft)",
+          "language_override": "Taal"
         }
       }
     },
@@ -43,6 +45,15 @@
         "repair_option_move": "Ik heb de zone verplaats naar de Benelux",
         "repair_option_delete": "Deze configuratie verwijderen"
       }
+    },
+    "language_override": {
+      "options": {
+        "None": "Zelfde als Home Assistant server taal",
+        "fr": "Frans",
+        "nl": "Nederlands",
+        "de": "Duits",
+        "en": "Engels"
+      }
     }
   },
   "options": {
@@ -52,7 +63,8 @@
         "data": {
           "style": "Radarstijl",
           "dark_mode": "Radar in donkere modus",
-          "use_deprecated_forecast_attribute": "Gebruik het forecat attribuut (afgeschaft)"
+          "use_deprecated_forecast_attribute": "Gebruik het forecat attribuut (afgeschaft)",
+          "language_override": "Taal"
         }
       }
     }

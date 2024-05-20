@@ -162,6 +162,8 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         now = dt.now()
         now = now.replace(minute=(now.minute // 10) * 10, second=0, microsecond=0)
 
+        # TODO adapt the return value to match the weather.get_forecasts in next breaking change release
+        #  return { 'forecast': [...] }
         return [f for f in self.coordinator.data.get('radar_forecast')
                 if include_past_forecasts or datetime.fromisoformat(f.get('datetime')) >= now]
 

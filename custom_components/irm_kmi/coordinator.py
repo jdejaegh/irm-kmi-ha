@@ -27,7 +27,7 @@ from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
                    ProcessedCoordinatorData, RadarAnimationData, WarningData)
 from .pollen import PollenParser
 from .rain_graph import RainGraph
-from .utils import disable_from_config, get_config_value
+from .utils import disable_from_config, get_config_value, preferred_language
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -128,7 +128,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         localisation = images_from_api[0]
         images_from_api = images_from_api[1:]
 
-        lang = self.hass.config.language if self.hass.config.language in LANGS else 'en'
+        lang = preferred_language(self.hass, self._config_entry)
         radar_animation = RadarAnimationData(
             hint=api_data.get('animation', {}).get('sequenceHint', {}).get(lang),
             unit=api_data.get('animation', {}).get('unit', {}).get(lang),
@@ -340,6 +340,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
 
         forecasts = list()
         n_days = 0
+        lang = preferred_language(self.hass, self._config_entry)
 
         for (idx, f) in enumerate(data):
             precipitation = None
@@ -377,7 +378,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                 precipitation_probability=f.get('precipChance', None),
                 wind_bearing=wind_bearing,
                 is_daytime=is_daytime,
-                text=f.get('text', {}).get(self.hass.config.language, ""),
+                text=f.get('text', {}).get(lang, ""),
             )
             # Swap temperature and templow if needed
             if (forecast['native_templow'] is not None
@@ -441,6 +442,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         if warning_data is None or not isinstance(warning_data, list) or len(warning_data) == 0:
             return []
 
+        lang = preferred_language(self.hass, self._config_entry)
         result = list()
         for data in warning_data:
             try:
@@ -456,7 +458,6 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             except TypeError:
                 level = None
 
-            lang = self.hass.config.language if self.hass.config.language in LANGS else 'en'
             result.append(
                 WarningData(
                     slug=SLUG_MAP.get(warning_id, 'unknown'),

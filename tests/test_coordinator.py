@@ -7,6 +7,7 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLOUDY,
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
 from custom_components.irm_kmi.data import (CurrentWeatherData, IrmKmiForecast,
                                             ProcessedCoordinatorData,
@@ -91,6 +92,7 @@ async def test_daily_forecast(
 ) -> None:
     api_data = get_api_data("forecast.json").get('for', {}).get('daily')
 
+    mock_config_entry.data = {CONF_LANGUAGE_OVERRIDE: 'fr'}
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     result = coordinator.daily_list_to_forecast(api_data)
 
@@ -108,7 +110,7 @@ async def test_daily_forecast(
         precipitation_probability=0,
         wind_bearing=180,
         is_daytime=True,
-        text='Hey!',
+        text='Bar',
     )
 
     assert result[1] == expected
@@ -163,13 +165,13 @@ async def test_refresh_succeed_even_when_pollen_and_radar_fail(
     assert result.get('pollen') == PollenParser.get_unavailable_data()
 
     existing_data = ProcessedCoordinatorData(
-            current_weather=CurrentWeatherData(),
-            daily_forecast=[],
-            hourly_forecast=[],
-            animation=RadarAnimationData(hint="This will remain unchanged"),
-            warnings=[],
-            pollen={'foo': 'bar'}
-        )
+        current_weather=CurrentWeatherData(),
+        daily_forecast=[],
+        hourly_forecast=[],
+        animation=RadarAnimationData(hint="This will remain unchanged"),
+        warnings=[],
+        pollen={'foo': 'bar'}
+    )
     coordinator.data = existing_data
     result = await coordinator._async_update_data()
 

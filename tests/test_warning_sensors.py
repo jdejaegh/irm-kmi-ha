@@ -6,6 +6,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import IrmKmiCoordinator
 from custom_components.irm_kmi.binary_sensor import IrmKmiWarning
+from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
 from custom_components.irm_kmi.sensor import IrmKmiNextWarning
 from tests.conftest import get_api_data
 
@@ -65,6 +66,8 @@ async def test_next_warning_when_data_available(
         mock_config_entry: MockConfigEntry
 ) -> None:
     api_data = get_api_data("be_forecast_warning.json")
+    mock_config_entry.data = {CONF_LANGUAGE_OVERRIDE: 'de'}
+
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
     result = coordinator.warnings_from_data(api_data.get('for', {}).get('warning'))
@@ -76,7 +79,7 @@ async def test_next_warning_when_data_available(
     assert warning.state == "2024-01-12T06:00:00+00:00"
     assert len(warning.extra_state_attributes['next_warnings']) == 2
 
-    assert warning.extra_state_attributes['next_warnings_friendly_names'] == "Fog, Ice or snow"
+    assert warning.extra_state_attributes['next_warnings_friendly_names'] == "Nebel, Glätte"
 
 
 @freeze_time(datetime.fromisoformat('2024-01-12T07:30:00+01:00'))
