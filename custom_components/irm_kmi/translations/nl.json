@@ -48,7 +48,7 @@
     },
     "language_override": {
       "options": {
-        "None": "Zelfde als Home Assistant server taal",
+        "none": "Zelfde als Home Assistant server taal",
         "fr": "Frans",
         "nl": "Nederlands",
         "de": "Duits",

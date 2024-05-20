@@ -48,7 +48,7 @@
     },
     "language_override": {
       "options": {
-        "None": "Follow Home Assistant server language",
+        "none": "Follow Home Assistant server language",
         "fr": "French",
         "nl": "Dutch",
         "de": "German",

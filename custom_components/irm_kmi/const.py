@@ -61,7 +61,7 @@ CONF_USE_DEPRECATED_FORECAST_OPTIONS: Final = [
 CONF_LANGUAGE_OVERRIDE: Final = 'language_override'
 
 CONF_LANGUAGE_OVERRIDE_OPTIONS: Final = [
-    'None', "fr", "nl", "de", "en"
+    'none', "fr", "nl", "de", "en"
 ]
 
 REPAIR_SOLUTION: Final = "repair_solution"

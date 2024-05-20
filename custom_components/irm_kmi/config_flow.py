@@ -42,7 +42,7 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
 
         if user_input:
             if CONF_LANGUAGE_OVERRIDE in user_input:
-                user_input[CONF_LANGUAGE_OVERRIDE] = None if user_input[CONF_LANGUAGE_OVERRIDE] == 'None' \
+                user_input[CONF_LANGUAGE_OVERRIDE] = None if user_input[CONF_LANGUAGE_OVERRIDE] == 'none' \
                     else user_input[CONF_LANGUAGE_OVERRIDE]
             _LOGGER.debug(f"Provided config user is: {user_input}")
 
@@ -99,7 +99,7 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
                                                         mode=SelectSelectorMode.DROPDOWN,
                                                         translation_key=CONF_USE_DEPRECATED_FORECAST)),
 
-                vol.Optional(CONF_LANGUAGE_OVERRIDE, default='None'):
+                vol.Optional(CONF_LANGUAGE_OVERRIDE, default='none'):
                     SelectSelector(SelectSelectorConfig(options=CONF_LANGUAGE_OVERRIDE_OPTIONS,
                                                         mode=SelectSelectorMode.DROPDOWN,
                                                         translation_key=CONF_LANGUAGE_OVERRIDE))
@@ -116,7 +116,7 @@ class IrmKmiOptionFlow(OptionsFlow):
         """Manage the options."""
         if user_input is not None:
             if CONF_LANGUAGE_OVERRIDE in user_input:
-                user_input[CONF_LANGUAGE_OVERRIDE] = None if user_input[CONF_LANGUAGE_OVERRIDE] == 'None' \
+                user_input[CONF_LANGUAGE_OVERRIDE] = None if user_input[CONF_LANGUAGE_OVERRIDE] == 'none' \
                     else user_input[CONF_LANGUAGE_OVERRIDE]
             _LOGGER.debug(user_input)
             return self.async_create_entry(data=user_input)
@@ -139,7 +139,7 @@ class IrmKmiOptionFlow(OptionsFlow):
                                                             translation_key=CONF_USE_DEPRECATED_FORECAST)),
 
                     vol.Optional(CONF_LANGUAGE_OVERRIDE,
-                                 default=str(get_config_value(self.config_entry, CONF_LANGUAGE_OVERRIDE))):
+                                 default=str(get_config_value(self.config_entry, CONF_LANGUAGE_OVERRIDE)).lower()):
                         SelectSelector(SelectSelectorConfig(options=CONF_LANGUAGE_OVERRIDE_OPTIONS,
                                                             mode=SelectSelectorMode.DROPDOWN,
                                                             translation_key=CONF_LANGUAGE_OVERRIDE))
