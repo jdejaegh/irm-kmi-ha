@@ -7,11 +7,22 @@ Although the provider is Belgian, the data is available for Belgium 🇧🇪, Lu
 
 ## Installing via HACS
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jdejaegh&repository=irm-kmi-ha&category=integration)
+
+or
+
 1. Go to HACS > Integrations
 2. Add this repo into your [HACS custom repositories](https://hacs.xyz/docs/faq/custom_repositories/)
 3. Search for IRM KMI and download it
 4. Restart Home Assistant
-5. Configure the integration via the UI (search for 'IRM KMI')
+
+## Set up the integration
+
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=irm_kmi)
+
+or
+
+1. Configure the integration via the UI (search for 'IRM KMI')
 
 
 ## Features
