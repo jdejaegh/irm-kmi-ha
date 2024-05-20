@@ -8,8 +8,9 @@ from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
-from custom_components.irm_kmi.data import CurrentWeatherData, IrmKmiForecast, ProcessedCoordinatorData, \
-    RadarAnimationData
+from custom_components.irm_kmi.data import (CurrentWeatherData, IrmKmiForecast,
+                                            ProcessedCoordinatorData,
+                                            RadarAnimationData)
 from custom_components.irm_kmi.pollen import PollenParser
 from tests.conftest import get_api_data
 
@@ -177,3 +178,24 @@ async def test_refresh_succeed_even_when_pollen_and_radar_fail(
     assert result.get('animation').get('hint') == "This will remain unchanged"
 
     assert result.get('pollen') == {'foo': 'bar'}
+
+
+def test_radar_forecast() -> None:
+    api_data = get_api_data("forecast.json")
+    result = IrmKmiCoordinator.radar_list_to_forecast(api_data.get('animation'))
+
+    expected = [
+        Forecast(datetime="2023-12-26T17:00:00+01:00", native_precipitation=0),
+        Forecast(datetime="2023-12-26T17:10:00+01:00", native_precipitation=0),
+        Forecast(datetime="2023-12-26T17:20:00+01:00", native_precipitation=0),
+        Forecast(datetime="2023-12-26T17:30:00+01:00", native_precipitation=0),
+        Forecast(datetime="2023-12-26T17:40:00+01:00", native_precipitation=0.1),
+        Forecast(datetime="2023-12-26T17:50:00+01:00", native_precipitation=0.01),
+        Forecast(datetime="2023-12-26T18:00:00+01:00", native_precipitation=0.12),
+        Forecast(datetime="2023-12-26T18:10:00+01:00", native_precipitation=1.2),
+        Forecast(datetime="2023-12-26T18:20:00+01:00", native_precipitation=2),
+        Forecast(datetime="2023-12-26T18:30:00+01:00", native_precipitation=0),
+        Forecast(datetime="2023-12-26T18:40:00+01:00", native_precipitation=0)
+    ]
+
+    assert expected == result

@@ -166,5 +166,17 @@
         }
       }
     }
+  },
+  "services": {
+    "get_forecasts_radar": {
+      "name": "Get forecast from the radar",
+      "description": "Get weather forecast from the radar.  Only precipitation is available.",
+      "fields": {
+        "include_past_forecasts": {
+          "name": "Include past forecasts",
+          "description": "Also return forecasts for that are in the past."
+        }
+      }
+    }
   }
 }

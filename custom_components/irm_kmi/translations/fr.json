@@ -166,5 +166,17 @@
         }
       }
     }
+  },
+  "services": {
+    "get_forecasts_radar": {
+      "name": "Obtenir les prévisions du radar",
+      "description": "Obtenez les prévisions météorologiques depuis le radar. Seules les précipitations sont disponibles.",
+      "fields": {
+        "include_past_forecasts": {
+          "name": "Inclure les prévisions passées",
+          "description": "Retourne également les prévisions qui sont dans le passé."
+        }
+      }
+    }
   }
 }

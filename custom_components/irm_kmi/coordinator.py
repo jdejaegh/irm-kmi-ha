@@ -13,8 +13,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import issue_registry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.update_coordinator import (TimestampDataUpdateCoordinator,
-                                                      UpdateFailed)
+from homeassistant.helpers.update_coordinator import (
+    TimestampDataUpdateCoordinator, UpdateFailed)
 from homeassistant.util.dt import utcnow
 
 from .api import IrmKmiApiClient, IrmKmiApiError
@@ -168,6 +168,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             current_weather=IrmKmiCoordinator.current_weather_from_data(api_data),
             daily_forecast=self.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
             hourly_forecast=IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
+            radar_forecast=IrmKmiCoordinator.radar_list_to_forecast(api_data.get('animation', {})),
             animation=await self._async_animation_data(api_data=api_data),
             warnings=self.warnings_from_data(api_data.get('for', {}).get('warning')),
             pollen=await self._async_pollen_data(api_data=api_data)
@@ -316,6 +317,21 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             forecasts.append(forecast)
 
         return forecasts
+
+    @staticmethod
+    def radar_list_to_forecast(data: dict | None) -> List[Forecast] | None:
+        if data is None:
+            return None
+
+        forecast = list()
+        for f in data.get("sequence", []):
+            forecast.append(
+                Forecast(
+                    datetime=f.get("time"),
+                    native_precipitation=f.get('value')
+                )
+            )
+        return forecast
 
     def daily_list_to_forecast(self, data: List[dict] | None) -> List[Forecast] | None:
         """Parse data from the API to create a list of daily forecasts"""
