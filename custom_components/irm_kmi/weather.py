@@ -151,7 +151,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
         return [f for f in data if f.get('is_daytime')]
 
-    def get_forecasts_radar_service(self, include_past_forecasts: bool) -> List[Forecast] | None:
+    def get_forecasts_radar_service(self, include_past_forecasts: bool = False) -> List[Forecast] | None:
         """
         Forecast service based on data from the radar.  Only contains datetime and precipitation amount.
         The result always include the current 10 minutes interval, even if include_past_forecast is false.
