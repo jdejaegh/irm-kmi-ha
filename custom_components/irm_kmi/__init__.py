@@ -7,8 +7,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
 
-from .const import (CONF_DARK_MODE, CONF_STYLE, CONF_USE_DEPRECATED_FORECAST,
-                    CONFIG_FLOW_VERSION, DOMAIN,
+from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
+                    CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
                     OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD,
                     PLATFORMS)
 from .coordinator import IrmKmiCoordinator
@@ -66,6 +66,11 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     if config_entry.version == 2:
         new = new | {CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED}
         config_entry.version = 3
+        hass.config_entries.async_update_entry(config_entry, data=new)
+
+    if config_entry.version == 3:
+        new = new | {CONF_LANGUAGE_OVERRIDE: None}
+        config_entry.version = 4
         hass.config_entries.async_update_entry(config_entry, data=new)
 
     _LOGGER.debug(f"Migration to version {config_entry.version} successful")

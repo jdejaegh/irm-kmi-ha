@@ -15,7 +15,7 @@ from homeassistant.const import Platform
 
 DOMAIN: Final = 'irm_kmi'
 PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA, Platform.BINARY_SENSOR, Platform.SENSOR]
-CONFIG_FLOW_VERSION = 3
+CONFIG_FLOW_VERSION = 4
 
 OUT_OF_BENELUX: Final = ["außerhalb der Benelux (Brussels)",
                          "Hors de Belgique (Bxl)",
@@ -56,6 +56,12 @@ CONF_USE_DEPRECATED_FORECAST_OPTIONS: Final = [
     OPTION_DEPRECATED_FORECAST_DAILY,
     OPTION_DEPRECATED_FORECAST_TWICE_DAILY,
     OPTION_DEPRECATED_FORECAST_HOURLY
+]
+
+CONF_LANGUAGE_OVERRIDE: Final = 'language_override'
+
+CONF_LANGUAGE_OVERRIDE_OPTIONS: Final = [
+    'none', "fr", "nl", "de", "en"
 ]
 
 REPAIR_SOLUTION: Final = "repair_solution"

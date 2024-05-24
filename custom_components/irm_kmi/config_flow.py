@@ -16,8 +16,9 @@ from homeassistant.helpers.selector import (EntitySelector,
                                             SelectSelectorMode)
 
 from .api import IrmKmiApiClient
-from .const import (CONF_DARK_MODE, CONF_STYLE, CONF_STYLE_OPTIONS,
-                    CONF_USE_DEPRECATED_FORECAST,
+from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE,
+                    CONF_LANGUAGE_OVERRIDE_OPTIONS, CONF_STYLE,
+                    CONF_STYLE_OPTIONS, CONF_USE_DEPRECATED_FORECAST,
                     CONF_USE_DEPRECATED_FORECAST_OPTIONS, CONFIG_FLOW_VERSION,
                     DOMAIN, OPTION_DEPRECATED_FORECAST_NOT_USED,
                     OPTION_STYLE_STD, OUT_OF_BENELUX)
@@ -49,7 +50,7 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
             if not errors:
                 api_data = {}
                 try:
-                    async with async_timeout.timeout(10):
+                    async with async_timeout.timeout(60):
                         api_data = await IrmKmiApiClient(
                             session=async_get_clientsession(self.hass)).get_forecasts_coord(
                             {'lat': zone.attributes[ATTR_LATITUDE],
@@ -71,7 +72,8 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
                         data={CONF_ZONE: user_input[CONF_ZONE],
                               CONF_STYLE: user_input[CONF_STYLE],
                               CONF_DARK_MODE: user_input[CONF_DARK_MODE],
-                              CONF_USE_DEPRECATED_FORECAST: user_input[CONF_USE_DEPRECATED_FORECAST]},
+                              CONF_USE_DEPRECATED_FORECAST: user_input[CONF_USE_DEPRECATED_FORECAST],
+                              CONF_LANGUAGE_OVERRIDE: user_input[CONF_LANGUAGE_OVERRIDE]},
                     )
 
         return self.async_show_form(
@@ -92,7 +94,12 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
                 vol.Optional(CONF_USE_DEPRECATED_FORECAST, default=OPTION_DEPRECATED_FORECAST_NOT_USED):
                     SelectSelector(SelectSelectorConfig(options=CONF_USE_DEPRECATED_FORECAST_OPTIONS,
                                                         mode=SelectSelectorMode.DROPDOWN,
-                                                        translation_key=CONF_USE_DEPRECATED_FORECAST))
+                                                        translation_key=CONF_USE_DEPRECATED_FORECAST)),
+
+                vol.Optional(CONF_LANGUAGE_OVERRIDE, default='none'):
+                    SelectSelector(SelectSelectorConfig(options=CONF_LANGUAGE_OVERRIDE_OPTIONS,
+                                                        mode=SelectSelectorMode.DROPDOWN,
+                                                        translation_key=CONF_LANGUAGE_OVERRIDE))
 
             }))
 
@@ -105,6 +112,7 @@ class IrmKmiOptionFlow(OptionsFlow):
     async def async_step_init(self, user_input: dict | None = None) -> FlowResult:
         """Manage the options."""
         if user_input is not None:
+            _LOGGER.debug(user_input)
             return self.async_create_entry(data=user_input)
 
         return self.async_show_form(
@@ -122,7 +130,13 @@ class IrmKmiOptionFlow(OptionsFlow):
                                  default=get_config_value(self.config_entry, CONF_USE_DEPRECATED_FORECAST)):
                         SelectSelector(SelectSelectorConfig(options=CONF_USE_DEPRECATED_FORECAST_OPTIONS,
                                                             mode=SelectSelectorMode.DROPDOWN,
-                                                            translation_key=CONF_USE_DEPRECATED_FORECAST))
+                                                            translation_key=CONF_USE_DEPRECATED_FORECAST)),
+
+                    vol.Optional(CONF_LANGUAGE_OVERRIDE,
+                                 default=get_config_value(self.config_entry, CONF_LANGUAGE_OVERRIDE)):
+                        SelectSelector(SelectSelectorConfig(options=CONF_LANGUAGE_OVERRIDE_OPTIONS,
+                                                            mode=SelectSelectorMode.DROPDOWN,
+                                                            translation_key=CONF_LANGUAGE_OVERRIDE))
                 }
             ),
         )

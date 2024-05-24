@@ -9,9 +9,11 @@
       "user": {
         "title": "Configuration",
         "data": {
+          "zone": "Zone",
           "style": "Style du radar",
           "dark_mode": "Radar en mode sombre",
-          "use_deprecated_forecast_attribute": "Utiliser l'attribut forecat (déprécié)"
+          "use_deprecated_forecast_attribute": "Utiliser l'attribut forecat (déprécié)",
+          "language_override": "Langue"
         }
       }
     },
@@ -43,6 +45,15 @@
         "repair_option_move": "J'ai déplacé la zone dans le Benelux",
         "repair_option_delete": "Supprimer cette configuration"
       }
+    },
+    "language_override": {
+      "options": {
+        "none": "Langue du serveur Home Assistant",
+        "fr": "Français",
+        "nl": "Néerlandais",
+        "de": "Allemand",
+        "en": "Anglais"
+      }
     }
   },
   "options": {
@@ -52,7 +63,8 @@
         "data": {
           "style": "Style du radar",
           "dark_mode": "Radar en mode sombre",
-          "use_deprecated_forecast_attribute": "Utiliser l'attribut forecat (déprécié)"
+          "use_deprecated_forecast_attribute": "Utiliser l'attribut forecat (déprécié)",
+          "language_override": "Langue"
         }
       }
     }

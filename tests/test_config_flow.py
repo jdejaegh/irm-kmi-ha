@@ -11,9 +11,10 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import async_migrate_entry
 from custom_components.irm_kmi.const import (
-    CONF_DARK_MODE, CONF_STYLE, CONF_USE_DEPRECATED_FORECAST,
-    CONFIG_FLOW_VERSION, DOMAIN, OPTION_DEPRECATED_FORECAST_NOT_USED,
-    OPTION_STYLE_SATELLITE, OPTION_STYLE_STD)
+    CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
+    CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
+    OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_SATELLITE,
+    OPTION_STYLE_STD)
 
 
 async def test_full_user_flow(
@@ -40,7 +41,8 @@ async def test_full_user_flow(
     assert result2.get("data") == {CONF_ZONE: ENTITY_ID_HOME,
                                    CONF_STYLE: OPTION_STYLE_STD,
                                    CONF_DARK_MODE: False,
-                                   CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED}
+                                   CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
+                                   CONF_LANGUAGE_OVERRIDE: 'none'}
 
 
 async def test_config_flow_out_benelux_zone(
@@ -128,7 +130,8 @@ async def test_option_flow(
     assert result["data"] == {
         CONF_STYLE: OPTION_STYLE_SATELLITE,
         CONF_DARK_MODE: True,
-        CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED
+        CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
+        CONF_LANGUAGE_OVERRIDE: 'none'
     }
 
 
