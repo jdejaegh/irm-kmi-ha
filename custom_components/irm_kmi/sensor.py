@@ -28,6 +28,7 @@ class IrmKmiPollen(CoordinatorEntity, SensorEntity):
     """Representation of a pollen sensor"""
     _attr_has_entity_name = True
     _attr_device_class = SensorDeviceClass.ENUM
+    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
 
     def __init__(self,
                  coordinator: IrmKmiCoordinator,
@@ -55,6 +56,7 @@ class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
 
     _attr_has_entity_name = True
     _attr_device_class = SensorDeviceClass.TIMESTAMP
+    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
 
     def __init__(self,
                  coordinator: IrmKmiCoordinator,

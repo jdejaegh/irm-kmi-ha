@@ -49,6 +49,7 @@ def add_services() -> None:
 
 
 class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
+    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
 
     def __init__(self,
                  coordinator: IrmKmiCoordinator,

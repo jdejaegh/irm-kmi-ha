@@ -25,6 +25,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
     """Representation of a weather warning binary sensor"""
 
+    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+
     def __init__(self,
                  coordinator: IrmKmiCoordinator,
                  entry: ConfigEntry
