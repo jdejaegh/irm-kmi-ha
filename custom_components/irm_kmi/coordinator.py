@@ -20,7 +20,6 @@ from homeassistant.util.dt import utcnow
 from .api import IrmKmiApiClient, IrmKmiApiError
 from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
-from .const import LANGS
 from .const import MAP_WARNING_ID_TO_SLUG as SLUG_MAP
 from .const import OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
