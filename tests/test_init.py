@@ -8,7 +8,9 @@ from homeassistant.const import CONF_ZONE
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.irm_kmi.const import DOMAIN
+from custom_components.irm_kmi import async_migrate_entry
+from custom_components.irm_kmi.const import DOMAIN, CONFIG_FLOW_VERSION, CONF_LANGUAGE_OVERRIDE, \
+    CONF_USE_DEPRECATED_FORECAST, OPTION_DEPRECATED_FORECAST_NOT_USED, CONF_DARK_MODE, CONF_STYLE, OPTION_STYLE_STD
 
 
 async def test_load_unload_config_entry(
@@ -74,3 +76,29 @@ async def test_config_entry_zone_removed(
 
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
     assert "Zone 'zone.castle' not found" in caplog.text
+
+
+async def test_config_entry_migration(
+        hass: HomeAssistant,
+) -> None:
+    """Test the IRM KMI configuration entry not ready."""
+    mock_config_entry = MockConfigEntry(
+        title="My Castle",
+        domain=DOMAIN,
+        data={CONF_ZONE: "zone.castle"},
+        unique_id="zone.castle",
+    )
+    mock_config_entry.add_to_hass(hass)
+
+    success = await async_migrate_entry(hass, mock_config_entry)
+    assert success
+
+    assert mock_config_entry.data == {
+        CONF_ZONE: "zone.castle",
+        CONF_STYLE: OPTION_STYLE_STD,
+        CONF_DARK_MODE: True,
+        CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
+        CONF_LANGUAGE_OVERRIDE: 'none'
+    }
+
+    assert mock_config_entry.version == CONFIG_FLOW_VERSION

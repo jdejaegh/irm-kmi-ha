@@ -55,6 +55,8 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
 
     if config_entry.version > CONFIG_FLOW_VERSION - 1:
         # This means the user has downgraded from a future version
+        _LOGGER.error(f"Downgrading configuration is not supported: your config version is {config_entry.version}, "
+                      f"the current version used by the integration is {CONFIG_FLOW_VERSION}")
         return False
 
     new = {**config_entry.data}
@@ -71,6 +73,11 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     if config_entry.version == 3:
         new = new | {CONF_LANGUAGE_OVERRIDE: None}
         config_entry.version = 4
+        hass.config_entries.async_update_entry(config_entry, data=new)
+
+    if config_entry.version == 4:
+        new[CONF_LANGUAGE_OVERRIDE] = 'none' if new[CONF_LANGUAGE_OVERRIDE] is None else new[CONF_LANGUAGE_OVERRIDE]
+        config_entry.version = 5
         hass.config_entries.async_update_entry(config_entry, data=new)
 
     _LOGGER.debug(f"Migration to version {config_entry.version} successful")
