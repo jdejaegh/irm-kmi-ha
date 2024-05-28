@@ -18,7 +18,7 @@ from homeassistant.helpers.update_coordinator import (
 from homeassistant.util.dt import utcnow
 
 from .api import IrmKmiApiClient, IrmKmiApiError
-from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN
+from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN, IRM_KMI_NAME
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import MAP_WARNING_ID_TO_SLUG as SLUG_MAP
 from .const import OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
@@ -52,7 +52,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         self.shared_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, entry.entry_id)},
-            manufacturer="IRM KMI",
+            manufacturer=IRM_KMI_NAME.get(preferred_language(self.hass, self._config_entry)),
             name=f"{entry.title}"
         )
 

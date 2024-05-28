@@ -148,3 +148,10 @@ POLLEN_TO_ICON_MAP: Final = {
     'alder': 'mdi:tree', 'ash': 'mdi:tree', 'birch': 'mdi:tree', 'grasses': 'mdi:grass', 'hazel': 'mdi:tree',
     'mugwort': 'mdi:sprout', 'oak': 'mdi:tree'
 }
+
+IRM_KMI_NAME: Final = {
+    'fr': 'Institut Royal Météorologique de Belgique',
+    'nl': 'Koninklijk Meteorologisch Instituut van België',
+    'de': 'Königliche Meteorologische Institut von Belgien',
+    'en': 'Royal Meteorological Institute of Belgium'
+}
