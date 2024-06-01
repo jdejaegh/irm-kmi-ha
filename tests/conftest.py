@@ -22,7 +22,7 @@ def get_api_data(fixture: str) -> dict:
     return json.loads(load_fixture(fixture))
 
 
-async def patched(url: str, params: dict | None = None) -> bytes:
+async def patched(url: str, _params: dict | None = None) -> bytes:
     if "cdn.knmi.nl" in url:
         file_name = "tests/fixtures/clouds_nl.png"
     elif "app.meteo.be/services/appv4/?s=getIncaImage" in url:

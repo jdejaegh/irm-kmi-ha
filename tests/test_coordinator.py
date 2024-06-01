@@ -142,9 +142,9 @@ async def test_hourly_forecast() -> None:
 
 
 @freeze_time(datetime.fromisoformat('2024-05-31T01:50:00+02:00'))
-def test_hourly_forecast_bis() -> None:
+async def test_hourly_forecast_bis() -> None:
     api_data = get_api_data("no-midnight-bug-31-05-2024T01-55.json").get('for', {}).get('hourly')
-    result = IrmKmiCoordinator.hourly_list_to_forecast(api_data)
+    result = await IrmKmiCoordinator.hourly_list_to_forecast(api_data)
 
     assert isinstance(result, list)
 
@@ -158,10 +158,10 @@ def test_hourly_forecast_bis() -> None:
 
 
 @freeze_time(datetime.fromisoformat('2024-05-31T00:10:00+02:00'))
-def test_hourly_forecast_midnight_bug() -> None:
+async def test_hourly_forecast_midnight_bug() -> None:
     # Related to https://github.com/jdejaegh/irm-kmi-ha/issues/38
     api_data = get_api_data("midnight-bug-31-05-2024T00-13.json").get('for', {}).get('hourly')
-    result = IrmKmiCoordinator.hourly_list_to_forecast(api_data)
+    result = await IrmKmiCoordinator.hourly_list_to_forecast(api_data)
 
     assert isinstance(result, list)
 
