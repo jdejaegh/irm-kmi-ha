@@ -2,6 +2,7 @@
 import asyncio
 import logging
 from datetime import datetime, timedelta
+from statistics import mean
 from typing import Any, List, Tuple
 
 import async_timeout
@@ -23,7 +24,7 @@ from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import MAP_WARNING_ID_TO_SLUG as SLUG_MAP
 from .const import OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
-                   ProcessedCoordinatorData, RadarAnimationData, WarningData)
+                   ProcessedCoordinatorData, RadarAnimationData, WarningData, IrmKmiRadarForecast)
 from .pollen import PollenParser
 from .rain_graph import RainGraph
 from .utils import disable_from_config, get_config_value, preferred_language
@@ -322,16 +323,26 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         return forecasts
 
     @staticmethod
-    def radar_list_to_forecast(data: dict | None) -> List[Forecast] | None:
+    def radar_list_to_forecast(data: dict | None) -> List[IrmKmiRadarForecast] | None:
         if data is None:
             return None
+        sequence = data.get("sequence", [])
+        ratios = [f['value'] / f['position'] for f in sequence if f['position'] > 0]
+
+        if len(ratios) > 0:
+            ratio = mean(ratios)
+        else:
+            ratio = 0
 
         forecast = list()
-        for f in data.get("sequence", []):
+        for f in sequence:
             forecast.append(
-                Forecast(
+                IrmKmiRadarForecast(
                     datetime=f.get("time"),
-                    native_precipitation=f.get('value')
+                    native_precipitation=f.get('value'),
+                    rain_forecast_max=round(f.get('positionHigher')*ratio, 2),
+                    rain_forecast_min=round(f.get('positionLower')*ratio, 2),
+                    might_rain=f.get('positionHigher') > 0
                 )
             )
         return forecast
