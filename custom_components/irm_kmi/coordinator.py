@@ -141,6 +141,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         return radar_animation
 
     async def _async_pollen_data(self, api_data: dict) -> dict:
+        """Get SVG pollen info from the API, return the pollen data dict"""
         _LOGGER.debug("Getting pollen data from API")
         svg_url = None
         for module in api_data.get('module', []):
@@ -324,6 +325,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
 
     @staticmethod
     def radar_list_to_forecast(data: dict | None) -> List[IrmKmiRadarForecast] | None:
+        """Create a list of short term forecasts for rain based on the data provided by the rain radar"""
         if data is None:
             return None
         sequence = data.get("sequence", [])

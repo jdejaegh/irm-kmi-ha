@@ -69,6 +69,7 @@ class RainGraph:
         self._dwg_still: Drawing = Drawing()
 
     async def build(self) -> Self:
+        """Build the rain graph by calling all the method in the right order.  Returns self when done"""
         await self.draw_svg_frame()
         self.draw_hour_bars()
         self.draw_chances_path()
