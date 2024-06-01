@@ -9,8 +9,10 @@ from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import async_migrate_entry
-from custom_components.irm_kmi.const import DOMAIN, CONFIG_FLOW_VERSION, CONF_LANGUAGE_OVERRIDE, \
-    CONF_USE_DEPRECATED_FORECAST, OPTION_DEPRECATED_FORECAST_NOT_USED, CONF_DARK_MODE, CONF_STYLE, OPTION_STYLE_STD
+from custom_components.irm_kmi.const import (
+    CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
+    CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
+    OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD)
 
 
 async def test_load_unload_config_entry(

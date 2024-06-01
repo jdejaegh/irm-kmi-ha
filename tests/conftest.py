@@ -13,9 +13,9 @@ from pytest_homeassistant_custom_component.common import (MockConfigEntry,
 from custom_components.irm_kmi.api import (IrmKmiApiError,
                                            IrmKmiApiParametersError)
 from custom_components.irm_kmi.const import (
-    CONF_DARK_MODE, CONF_STYLE, CONF_USE_DEPRECATED_FORECAST, DOMAIN,
-    OPTION_DEPRECATED_FORECAST_NOT_USED,
-    OPTION_DEPRECATED_FORECAST_TWICE_DAILY, OPTION_STYLE_STD, CONF_LANGUAGE_OVERRIDE)
+    CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
+    CONF_USE_DEPRECATED_FORECAST, DOMAIN, OPTION_DEPRECATED_FORECAST_NOT_USED,
+    OPTION_DEPRECATED_FORECAST_TWICE_DAILY, OPTION_STYLE_STD)
 
 
 def get_api_data(fixture: str) -> dict:

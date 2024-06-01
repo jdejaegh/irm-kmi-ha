@@ -2,13 +2,13 @@
 import datetime
 import logging
 
-import pytz
 from homeassistant.components import sensor
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt
 
 from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
 from custom_components.irm_kmi.const import POLLEN_NAMES, POLLEN_TO_ICON_MAP
@@ -75,7 +75,7 @@ class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
         if self.coordinator.data.get('warnings') is None:
             return None
 
-        now = datetime.datetime.now(tz=pytz.timezone(self.hass.config.time_zone))
+        now = dt.now()
         earliest_next = None
         for item in self.coordinator.data.get('warnings'):
             if now < item.get('starts_at'):
@@ -89,7 +89,7 @@ class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         """Return the attributes related to all the future warnings."""
-        now = datetime.datetime.now(tz=pytz.timezone(self.hass.config.time_zone))
+        now = dt.now()
         attrs = {"next_warnings": [w for w in self.coordinator.data.get('warnings', []) if now < w.get('starts_at')]}
 
         attrs["next_warnings_friendly_names"] = ", ".join(

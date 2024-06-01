@@ -159,7 +159,6 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         :param include_past_forecasts: whether to include data points that are in the past
         :return: ordered list of forecasts
         """
-        # now = datetime.now(tz=pytz.timezone(self.hass.config.time_zone))
         now = dt.now()
         now = now.replace(minute=(now.minute // 10) * 10, second=0, microsecond=0)
 
