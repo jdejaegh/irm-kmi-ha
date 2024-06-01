@@ -35,7 +35,7 @@ async def test_warning_data(
 
 
 @freeze_time(datetime.fromisoformat('2024-01-12T07:55:00+01:00'))
-async def test_warning_data(
+async def test_warning_data_unknown_lang(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
