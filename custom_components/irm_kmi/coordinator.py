@@ -24,7 +24,8 @@ from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import MAP_WARNING_ID_TO_SLUG as SLUG_MAP
 from .const import OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
-                   ProcessedCoordinatorData, RadarAnimationData, WarningData, IrmKmiRadarForecast)
+                   IrmKmiRadarForecast, ProcessedCoordinatorData,
+                   RadarAnimationData, WarningData)
 from .pollen import PollenParser
 from .rain_graph import RainGraph
 from .utils import disable_from_config, get_config_value, preferred_language

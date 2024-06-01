@@ -10,8 +10,9 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
 from custom_components.irm_kmi.data import (CurrentWeatherData, IrmKmiForecast,
+                                            IrmKmiRadarForecast,
                                             ProcessedCoordinatorData,
-                                            RadarAnimationData, IrmKmiRadarForecast)
+                                            RadarAnimationData)
 from custom_components.irm_kmi.pollen import PollenParser
 from tests.conftest import get_api_data
 
