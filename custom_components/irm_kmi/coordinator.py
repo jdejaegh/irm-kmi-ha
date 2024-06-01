@@ -279,8 +279,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         tz = await dt.async_get_time_zone('Europe/Brussels')
         day = dt.now(time_zone=tz).replace(hour=0, minute=0, second=0, microsecond=0)
 
-        for f in data:
-            if 'dateShow' in f:
+        for idx, f in enumerate(data):
+            if 'dateShow' in f and idx > 0:
                 day = day + timedelta(days=1)
 
             hour = f.get('hour', None)
