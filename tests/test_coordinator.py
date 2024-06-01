@@ -25,7 +25,7 @@ async def test_jules_forgot_to_revert_update_interval_before_pushing(
     assert timedelta(minutes=5) <= coordinator.update_interval
 
 
-@freeze_time(datetime.fromisoformat('2024-01-12T07:10:00'))
+@freeze_time(datetime.fromisoformat('2024-01-12T07:10:00+00:00'))
 async def test_warning_data(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
@@ -49,10 +49,10 @@ async def test_warning_data(
     assert first.get('level') == 1
 
 
-@freeze_time(datetime.fromisoformat('2023-12-26T18:30:00'))
-def test_current_weather_be() -> None:
+@freeze_time(datetime.fromisoformat('2023-12-26T17:30:00+00:00'))
+async def test_current_weather_be() -> None:
     api_data = get_api_data("forecast.json")
-    result = IrmKmiCoordinator.current_weather_from_data(api_data)
+    result = await IrmKmiCoordinator.current_weather_from_data(api_data)
 
     expected = CurrentWeatherData(
         condition=ATTR_CONDITION_CLOUDY,
@@ -68,9 +68,9 @@ def test_current_weather_be() -> None:
 
 
 @freeze_time(datetime.fromisoformat("2023-12-28T15:30:00"))
-def test_current_weather_nl() -> None:
+async def test_current_weather_nl() -> None:
     api_data = get_api_data("forecast_nl.json")
-    result = IrmKmiCoordinator.current_weather_from_data(api_data)
+    result = await IrmKmiCoordinator.current_weather_from_data(api_data)
 
     expected = CurrentWeatherData(
         condition=ATTR_CONDITION_CLOUDY,
@@ -94,7 +94,7 @@ async def test_daily_forecast(
 
     mock_config_entry.data = mock_config_entry.data | {CONF_LANGUAGE_OVERRIDE: 'fr'}
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
-    result = coordinator.daily_list_to_forecast(api_data)
+    result = await coordinator.daily_list_to_forecast(api_data)
 
     assert isinstance(result, list)
     assert len(result) == 8
@@ -117,9 +117,9 @@ async def test_daily_forecast(
 
 
 @freeze_time(datetime.fromisoformat('2023-12-26T18:30:00+01:00'))
-def test_hourly_forecast() -> None:
+async def test_hourly_forecast() -> None:
     api_data = get_api_data("forecast.json").get('for', {}).get('hourly')
-    result = IrmKmiCoordinator.hourly_list_to_forecast(api_data)
+    result = await IrmKmiCoordinator.hourly_list_to_forecast(api_data)
 
     assert isinstance(result, list)
     assert len(result) == 49

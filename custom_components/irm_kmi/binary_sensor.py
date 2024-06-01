@@ -1,8 +1,6 @@
 """Sensor to signal weather warning from the IRM KMI"""
-import datetime
 import logging
 
-import pytz
 from homeassistant.components import binary_sensor
 from homeassistant.components.binary_sensor import (BinarySensorDeviceClass,
                                                     BinarySensorEntity)
@@ -10,6 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt
 
 from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
 
@@ -44,7 +43,7 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
         if self.coordinator.data.get('warnings') is None:
             return False
 
-        now = datetime.datetime.now(tz=pytz.timezone(self.hass.config.time_zone))
+        now = dt.now()
         for item in self.coordinator.data.get('warnings'):
             if item.get('starts_at') < now < item.get('ends_at'):
                 return True
@@ -56,7 +55,7 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
         """Return the warning sensor attributes."""
         attrs = {"warnings": self.coordinator.data.get('warnings', [])}
 
-        now = datetime.datetime.now(tz=pytz.timezone(self.hass.config.time_zone))
+        now = dt.now()
         for warning in attrs['warnings']:
             warning['is_active'] = warning.get('starts_at') < now < warning.get('ends_at')
 

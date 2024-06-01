@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from typing import Any, List, Tuple
 
 import async_timeout
-import pytz
 from homeassistant.components.weather import Forecast
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE, CONF_ZONE
@@ -15,6 +14,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import (
     TimestampDataUpdateCoordinator, UpdateFailed)
+from homeassistant.util import dt
 from homeassistant.util.dt import utcnow
 
 from .api import IrmKmiApiClient, IrmKmiApiError
@@ -133,7 +133,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             unit=api_data.get('animation', {}).get('unit', {}).get(lang),
             location=localisation
         )
-        rain_graph = self.create_rain_graph(radar_animation, animation_data, country, images_from_api)
+        rain_graph = await self.create_rain_graph(radar_animation, animation_data, country, images_from_api)
+        print(rain_graph)
         radar_animation['svg_animated'] = rain_graph.get_svg_string()
         radar_animation['svg_still'] = rain_graph.get_svg_string(still_image=True)
         return radar_animation
@@ -164,9 +165,9 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
     async def process_api_data(self, api_data: dict) -> ProcessedCoordinatorData:
         """From the API data, create the object that will be used in the entities"""
         return ProcessedCoordinatorData(
-            current_weather=IrmKmiCoordinator.current_weather_from_data(api_data),
-            daily_forecast=self.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
-            hourly_forecast=IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
+            current_weather=await IrmKmiCoordinator.current_weather_from_data(api_data),
+            daily_forecast=await self.daily_list_to_forecast(api_data.get('for', {}).get('daily')),
+            hourly_forecast=await IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
             radar_forecast=IrmKmiCoordinator.radar_list_to_forecast(api_data.get('animation', {})),
             animation=await self._async_animation_data(api_data=api_data),
             warnings=self.warnings_from_data(api_data.get('for', {}).get('warning')),
@@ -194,17 +195,19 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         return images_from_api
 
     @staticmethod
-    def current_weather_from_data(api_data: dict) -> CurrentWeatherData:
+    async def current_weather_from_data(api_data: dict) -> CurrentWeatherData:
         """Parse the API data to build a CurrentWeatherData."""
         # Process data to get current hour forecast
         now_hourly = None
         hourly_forecast_data = api_data.get('for', {}).get('hourly')
+        tz = await dt.async_get_time_zone('Europe/Brussels')
+        now = dt.now(time_zone=tz)
         if not (hourly_forecast_data is None
                 or not isinstance(hourly_forecast_data, list)
                 or len(hourly_forecast_data) == 0):
 
             for current in hourly_forecast_data[:2]:
-                if datetime.now().strftime('%H') == current['hour']:
+                if now.strftime('%H') == current['hour']:
                     now_hourly = current
                     break
         # Get UV index
@@ -267,13 +270,14 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         return current_weather
 
     @staticmethod
-    def hourly_list_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
+    async def hourly_list_to_forecast(data: List[dict] | None) -> List[Forecast] | None:
         """Parse data from the API to create a list of hourly forecasts"""
         if data is None or not isinstance(data, list) or len(data) == 0:
             return None
 
         forecasts = list()
-        day = datetime.now(tz=pytz.timezone('Europe/Brussels')).replace(hour=0, minute=0, second=0, microsecond=0)
+        tz = await dt.async_get_time_zone('Europe/Brussels')
+        day = dt.now(time_zone=tz).replace(hour=0, minute=0, second=0, microsecond=0)
 
         for f in data:
             if 'dateShow' in f:
@@ -332,7 +336,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             )
         return forecast
 
-    def daily_list_to_forecast(self, data: List[dict] | None) -> List[Forecast] | None:
+    async def daily_list_to_forecast(self, data: List[dict] | None) -> List[Forecast] | None:
         """Parse data from the API to create a list of daily forecasts"""
         if data is None or not isinstance(data, list) or len(data) == 0:
             return None
@@ -340,6 +344,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         forecasts = list()
         n_days = 0
         lang = preferred_language(self.hass, self._config_entry)
+        tz = await dt.async_get_time_zone('Europe/Brussels')
+        now = dt.now(tz)
 
         for (idx, f) in enumerate(data):
             precipitation = None
@@ -364,10 +370,9 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                     pass
 
             is_daytime = f.get('dayNight', None) == 'd'
-            now = datetime.now(pytz.timezone('Europe/Brussels'))
             forecast = IrmKmiForecast(
-                datetime=(now + timedelta(days=n_days)).strftime('%Y-%m-%d')
-                if is_daytime else now.strftime('%Y-%m-%d'),
+                datetime=(now + timedelta(days=n_days)).strftime('%Y-%m-%d') if is_daytime else now.strftime(
+                    '%Y-%m-%d'),
                 condition=CDT_MAP.get((f.get('ww1', None), f.get('dayNight', None)), None),
                 native_precipitation=precipitation,
                 native_temperature=f.get('tempMax', None),
@@ -392,16 +397,17 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
 
         return forecasts
 
-    def create_rain_graph(self,
-                          radar_animation: RadarAnimationData,
-                          api_animation_data: List[dict],
-                          country: str,
-                          images_from_api: Tuple[bytes],
-                          ) -> RainGraph:
+    async def create_rain_graph(self,
+                                radar_animation: RadarAnimationData,
+                                api_animation_data: List[dict],
+                                country: str,
+                                images_from_api: Tuple[bytes],
+                                ) -> RainGraph:
         """Create a RainGraph object that is ready to output animated and still SVG images"""
         sequence: List[AnimationFrameData] = list()
-        tz = pytz.timezone(self.hass.config.time_zone)
-        current_time = datetime.now(tz=tz)
+
+        tz = await dt.async_get_time_zone(self.hass.config.time_zone)
+        current_time = dt.now(time_zone=tz)
         most_recent_frame = None
 
         for idx, item in enumerate(api_animation_data):
@@ -431,10 +437,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                           f"{'satellite' if satellite_mode else 'black' if self._dark_mode else 'white'}.png")
             bg_size = (640, 490)
 
-        return RainGraph(radar_animation, image_path, bg_size,
-                         config_dir=self.hass.config.config_dir,
-                         dark_mode=self._dark_mode,
-                         tz=self.hass.config.time_zone)
+        return await RainGraph(radar_animation, image_path, bg_size, tz=tz, config_dir=self.hass.config.config_dir,
+                               dark_mode=self._dark_mode).build()
 
     def warnings_from_data(self, warning_data: list | None) -> List[WarningData]:
         """Create a list of warning data instances based on the api data"""
