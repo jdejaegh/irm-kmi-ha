@@ -19,7 +19,7 @@ from homeassistant.util import dt
 from homeassistant.util.dt import utcnow
 
 from .api import IrmKmiApiClient, IrmKmiApiError
-from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN, IRM_KMI_NAME
+from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN, IRM_KMI_NAME, WEEKDAYS
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import MAP_WARNING_ID_TO_SLUG as SLUG_MAP
 from .const import OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
@@ -28,7 +28,7 @@ from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
                    RadarAnimationData, WarningData)
 from .pollen import PollenParser
 from .rain_graph import RainGraph
-from .utils import disable_from_config, get_config_value, preferred_language
+from .utils import disable_from_config, get_config_value, preferred_language, next_weekday
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -356,10 +356,9 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             return None
 
         forecasts = list()
-        n_days = 0
         lang = preferred_language(self.hass, self._config_entry)
         tz = await dt.async_get_time_zone('Europe/Brussels')
-        now = dt.now(tz)
+        forecast_day = dt.now(tz)
 
         for (idx, f) in enumerate(data):
             precipitation = None
@@ -384,9 +383,12 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                     pass
 
             is_daytime = f.get('dayNight', None) == 'd'
+            day_name = f.get('dayName', {}).get('en', None)
+            if day_name in WEEKDAYS:
+                forecast_day = next_weekday(forecast_day, WEEKDAYS.index(day_name))
+
             forecast = IrmKmiForecast(
-                datetime=(now + timedelta(days=n_days)).strftime('%Y-%m-%d') if is_daytime else now.strftime(
-                    '%Y-%m-%d'),
+                datetime=(forecast_day.strftime('%Y-%m-%d')),
                 condition=CDT_MAP.get((f.get('ww1', None), f.get('dayNight', None)), None),
                 native_precipitation=precipitation,
                 native_temperature=f.get('tempMax', None),
@@ -406,8 +408,6 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                     (forecast['native_temperature'], forecast['native_templow'])
 
             forecasts.append(forecast)
-            if is_daytime or idx == 0:
-                n_days += 1
 
         return forecasts
 

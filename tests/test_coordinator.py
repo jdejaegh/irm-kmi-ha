@@ -86,7 +86,7 @@ async def test_current_weather_nl() -> None:
     assert expected == result
 
 
-@freeze_time(datetime.fromisoformat('2023-12-26T18:30:00.028724'))
+@freeze_time(datetime.fromisoformat('2023-12-26T18:30:00+01:00'))
 async def test_daily_forecast(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
@@ -99,6 +99,8 @@ async def test_daily_forecast(
 
     assert isinstance(result, list)
     assert len(result) == 8
+    assert result[0]['datetime'] == '2023-12-26'
+    assert not result[0]['is_daytime']
 
     expected = IrmKmiForecast(
         datetime='2023-12-27',
@@ -191,6 +193,29 @@ async def test_hourly_forecast_midnight_bug() -> None:
     assert actual == times
 
     assert result[24]['datetime'] == '2024-06-01T00:00:00+02:00'
+
+
+@freeze_time(datetime.fromisoformat('2024-05-31T00:10:00+02:00'))
+async def test_daily_forecast_midnight_bug(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry
+) -> None:
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+
+    api_data = get_api_data("midnight-bug-31-05-2024T00-13.json").get('for', {}).get('daily')
+    result = await coordinator.daily_list_to_forecast(api_data)
+
+    assert result[0]['datetime'] == '2024-05-31'
+    assert not result[0]['is_daytime']
+
+    assert result[1]['datetime'] == '2024-05-31'
+    assert result[1]['is_daytime']
+
+    assert result[2]['datetime'] == '2024-06-01'
+    assert result[2]['is_daytime']
+
+    assert result[3]['datetime'] == '2024-06-02'
+    assert result[3]['is_daytime']
 
 
 async def test_refresh_succeed_even_when_pollen_and_radar_fail(
