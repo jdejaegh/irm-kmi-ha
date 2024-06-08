@@ -155,3 +155,5 @@ IRM_KMI_NAME: Final = {
     'de': 'Königliche Meteorologische Institut von Belgien',
     'en': 'Royal Meteorological Institute of Belgium'
 }
+
+WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
