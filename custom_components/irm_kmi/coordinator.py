@@ -270,6 +270,14 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                 except ValueError:
                     current_weather['wind_bearing'] = None
 
+        # Since June 2024, the NL weather does not include the condition in the 'ww' key, so we get it from the current
+        # hourly forecast instead if it is missing
+        if current_weather['condition'] is None:
+            try:
+                current_weather['condition'] = CDT_MAP.get((int(now_hourly.get('ww')), now_hourly.get('dayNight')))
+            except (TypeError, ValueError):
+                current_weather['condition'] = None
+
         return current_weather
 
     @staticmethod
@@ -383,9 +391,17 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                     pass
 
             is_daytime = f.get('dayNight', None) == 'd'
+
             day_name = f.get('dayName', {}).get('en', None)
-            if day_name in WEEKDAYS:
+            timestamp = f.get('timestamp', None)
+            if timestamp is not None:
+                forecast_day = datetime.fromisoformat(timestamp)
+            elif day_name in WEEKDAYS:
                 forecast_day = next_weekday(forecast_day, WEEKDAYS.index(day_name))
+            elif day_name in ['Today', 'Tonight']:
+                forecast_day = dt.now(tz)
+            elif day_name == 'Tomorrow':
+                forecast_day = dt.now(tz) + timedelta(days=1)
 
             forecast = IrmKmiForecast(
                 datetime=(forecast_day.strftime('%Y-%m-%d')),

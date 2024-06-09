@@ -313,3 +313,40 @@ def test_radar_forecast_rain_interval() -> None:
 
     assert result[12] == _12
     assert result[13] == _13
+
+
+@freeze_time("2024-06-09T13:40:00+00:00")
+async def test_datetime_daily_forecast_nl(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry
+) -> None:
+    api_data = get_api_data("forecast_ams_no_ww.json").get('for', {}).get('daily')
+
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+    result = await coordinator.daily_list_to_forecast(api_data)
+
+    assert result[0]['datetime'] == '2024-06-09'
+    assert result[0]['is_daytime']
+
+    assert result[1]['datetime'] == '2024-06-10'
+    assert not result[1]['is_daytime']
+
+    assert result[2]['datetime'] == '2024-06-10'
+    assert result[2]['is_daytime']
+
+
+@freeze_time("2024-06-09T13:40:00+00:00")
+async def test_current_condition_forecast_nl() -> None:
+    api_data = get_api_data("forecast_ams_no_ww.json")
+    result = await IrmKmiCoordinator.current_weather_from_data(api_data)
+
+    expected = CurrentWeatherData(
+        condition=ATTR_CONDITION_PARTLYCLOUDY,
+        temperature=15,
+        wind_speed=26,
+        wind_gust_speed=None,
+        wind_bearing=270,
+        pressure=1010,
+        uv_index=6
+    )
+    assert result == expected
