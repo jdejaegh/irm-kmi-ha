@@ -10,6 +10,8 @@ class IrmKmiForecast(Forecast):
 
     # TODO: add condition_2 as well and evolution to match data from the API?
     text: str | None
+    sunrise: datetime | None
+    sunset: datetime | None
 
 
 class IrmKmiRadarForecast(Forecast):

@@ -19,16 +19,18 @@ from homeassistant.util import dt
 from homeassistant.util.dt import utcnow
 
 from .api import IrmKmiApiClient, IrmKmiApiError
-from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN, IRM_KMI_NAME, WEEKDAYS
+from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN, IRM_KMI_NAME
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import MAP_WARNING_ID_TO_SLUG as SLUG_MAP
-from .const import OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP
+from .const import (OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP,
+                    WEEKDAYS)
 from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
                    IrmKmiRadarForecast, ProcessedCoordinatorData,
                    RadarAnimationData, WarningData)
 from .pollen import PollenParser
 from .rain_graph import RainGraph
-from .utils import disable_from_config, get_config_value, preferred_language, next_weekday
+from .utils import (disable_from_config, get_config_value, next_weekday,
+                    preferred_language)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -351,14 +353,14 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                 IrmKmiRadarForecast(
                     datetime=f.get("time"),
                     native_precipitation=f.get('value'),
-                    rain_forecast_max=round(f.get('positionHigher')*ratio, 2),
-                    rain_forecast_min=round(f.get('positionLower')*ratio, 2),
+                    rain_forecast_max=round(f.get('positionHigher') * ratio, 2),
+                    rain_forecast_min=round(f.get('positionLower') * ratio, 2),
                     might_rain=f.get('positionHigher') > 0
                 )
             )
         return forecast
 
-    async def daily_list_to_forecast(self, data: List[dict] | None) -> List[Forecast] | None:
+    async def daily_list_to_forecast(self, data: List[dict] | None) -> List[IrmKmiForecast] | None:
         """Parse data from the API to create a list of daily forecasts"""
         if data is None or not isinstance(data, list) or len(data) == 0:
             return None
@@ -403,6 +405,28 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             elif day_name == 'Tomorrow':
                 forecast_day = dt.now(tz) + timedelta(days=1)
 
+            sunrise_sec = f.get('dawnRiseSeconds', None)
+            if sunrise_sec is None:
+                sunrise_sec = f.get('sunRise', None)
+            sunrise = None
+            if sunrise_sec is not None:
+                try:
+                    sunrise = (forecast_day.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=tz)
+                               + timedelta(seconds=float(sunrise_sec)))
+                except (TypeError, ValueError):
+                    pass
+
+            sunset_sec = f.get('dawnSetSeconds', None)
+            if sunset_sec is None:
+                sunset_sec = f.get('sunSet', None)
+            sunset = None
+            if sunset_sec is not None:
+                try:
+                    sunset = (forecast_day.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=tz)
+                              + timedelta(seconds=float(sunset_sec)))
+                except (TypeError, ValueError):
+                    pass
+
             forecast = IrmKmiForecast(
                 datetime=(forecast_day.strftime('%Y-%m-%d')),
                 condition=CDT_MAP.get((f.get('ww1', None), f.get('dayNight', None)), None),
@@ -415,6 +439,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                 wind_bearing=wind_bearing,
                 is_daytime=is_daytime,
                 text=f.get('text', {}).get(lang, ""),
+                sunrise=sunrise,
+                sunset=sunset
             )
             # Swap temperature and templow if needed
             if (forecast['native_templow'] is not None
