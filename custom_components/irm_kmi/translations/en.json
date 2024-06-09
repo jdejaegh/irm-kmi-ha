@@ -93,6 +93,12 @@
       "next_warning": {
         "name": "Next warning"
       },
+      "next_sunrise": {
+        "name": "Next sunrise"
+      },
+      "next_sunset": {
+        "name": "Next sunset"
+      },
       "pollen_alder": {
         "name": "Alder pollen",
         "state": {

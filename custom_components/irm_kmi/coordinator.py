@@ -176,7 +176,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             radar_forecast=IrmKmiCoordinator.radar_list_to_forecast(api_data.get('animation', {})),
             animation=await self._async_animation_data(api_data=api_data),
             warnings=self.warnings_from_data(api_data.get('for', {}).get('warning')),
-            pollen=await self._async_pollen_data(api_data=api_data)
+            pollen=await self._async_pollen_data(api_data=api_data),
+            country=api_data.get('country')
         )
 
     async def download_images_from_api(self,
