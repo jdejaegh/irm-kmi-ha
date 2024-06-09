@@ -73,3 +73,4 @@ class ProcessedCoordinatorData(TypedDict, total=False):
     animation: RadarAnimationData
     warnings: List[WarningData]
     pollen: dict
+    country: str

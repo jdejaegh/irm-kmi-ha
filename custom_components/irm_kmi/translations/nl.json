@@ -93,6 +93,12 @@
       "next_warning": {
         "name": "Volgende waarschuwing"
       },
+      "next_sunrise": {
+        "name": "Volgende zonsopkomst"
+      },
+      "next_sunset": {
+        "name": "Volgende zonsondergang"
+      },
       "pollen_alder": {
         "name": "Elzenpollen",
         "state": {

@@ -12,6 +12,7 @@ from homeassistant.util import dt
 
 from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
 from custom_components.irm_kmi.const import POLLEN_NAMES, POLLEN_TO_ICON_MAP
+from custom_components.irm_kmi.data import IrmKmiForecast
 from custom_components.irm_kmi.pollen import PollenParser
 
 _LOGGER = logging.getLogger(__name__)
@@ -22,6 +23,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([IrmKmiPollen(coordinator, entry, pollen.lower()) for pollen in POLLEN_NAMES])
     async_add_entities([IrmKmiNextWarning(coordinator, entry),])
+
+    if coordinator.data.get('country') != 'NL':
+        async_add_entities([IrmKmiNextSunMove(coordinator, entry, move) for move in ['sunset', 'sunrise']])
 
 
 class IrmKmiPollen(CoordinatorEntity, SensorEntity):
@@ -96,3 +100,37 @@ class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
             [warning['friendly_name'] for warning in attrs['next_warnings'] if warning['friendly_name'] != ''])
 
         return attrs
+
+
+class IrmKmiNextSunMove(CoordinatorEntity, SensorEntity):
+    """Representation of the next sunrise or sunset"""
+
+    _attr_has_entity_name = True
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+
+    def __init__(self,
+                 coordinator: IrmKmiCoordinator,
+                 entry: ConfigEntry,
+                 move: str) -> None:
+        assert move in ['sunset', 'sunrise']
+        super().__init__(coordinator)
+        SensorEntity.__init__(self)
+        self._attr_unique_id = f"{entry.entry_id}-next-{move}"
+        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_next_{move}")
+        self._attr_device_info = coordinator.shared_device_info
+        self._attr_translation_key = f"next_{move}"
+        self._move: str = move
+        self._attr_icon = 'mdi:weather-sunset-down' if move == 'sunset' else 'mdi:weather-sunset-up'
+
+    @property
+    def native_value(self) -> datetime.datetime | None:
+        """Return the timestamp for the next sunrise or sunset"""
+        now = dt.now()
+        data: list[IrmKmiForecast] = self.coordinator.data.get('daily_forecast')
+
+        upcoming = [f.get(self._move) for f in data if f.get(self._move) >= now]
+
+        if len(upcoming) > 0:
+            return upcoming[0]
+        return None

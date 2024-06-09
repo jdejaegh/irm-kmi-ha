@@ -7,7 +7,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.irm_kmi import IrmKmiCoordinator
 from custom_components.irm_kmi.binary_sensor import IrmKmiWarning
 from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
-from custom_components.irm_kmi.sensor import IrmKmiNextWarning
+from custom_components.irm_kmi.sensor import IrmKmiNextWarning, IrmKmiNextSunMove
 from tests.conftest import get_api_data
 
 
@@ -126,3 +126,43 @@ async def test_next_warning_none_when_no_warnings(
     assert len(warning.extra_state_attributes['next_warnings']) == 0
 
     assert warning.extra_state_attributes['next_warnings_friendly_names'] == ""
+
+
+@freeze_time(datetime.fromisoformat('2023-12-26T18:30:00+01:00'))
+async def test_next_sunrise_sunset(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry
+) -> None:
+    api_data = get_api_data("forecast.json")
+
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+
+    result = await coordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily'))
+
+    coordinator.data = {'daily_forecast': result}
+
+    sunset = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunset')
+    sunrise = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunrise')
+
+    assert datetime.fromisoformat(sunrise.state) == datetime.fromisoformat('2023-12-27T08:44:00+01:00')
+    assert datetime.fromisoformat(sunset.state) == datetime.fromisoformat('2023-12-27T16:43:00+01:00')
+
+
+@freeze_time(datetime.fromisoformat('2023-12-26T15:30:00+01:00'))
+async def test_next_sunrise_sunset_bis(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry
+) -> None:
+    api_data = get_api_data("forecast.json")
+
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+
+    result = await coordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily'))
+
+    coordinator.data = {'daily_forecast': result}
+
+    sunset = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunset')
+    sunrise = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunrise')
+
+    assert datetime.fromisoformat(sunrise.state) == datetime.fromisoformat('2023-12-27T08:44:00+01:00')
+    assert datetime.fromisoformat(sunset.state) == datetime.fromisoformat('2023-12-26T16:42:00+01:00')

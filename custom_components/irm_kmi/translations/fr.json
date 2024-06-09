@@ -93,6 +93,12 @@
       "next_warning": {
         "name": "Prochain avertissement"
       },
+      "next_sunrise": {
+        "name": "Prochain lever de soleil"
+      },
+      "next_sunset": {
+        "name": "Prochain coucher de soleil"
+      },
       "pollen_alder": {
         "name": "Pollen d'aulne",
         "state": {
