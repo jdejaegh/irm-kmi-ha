@@ -1,5 +1,5 @@
-homeassistant==2024.6.1
-pytest_homeassistant_custom_component==0.13.133
+homeassistant==2024.6.3
+pytest_homeassistant_custom_component==0.13.135
 pytest
 freezegun
 isort
