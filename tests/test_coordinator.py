@@ -102,7 +102,6 @@ async def test_daily_forecast(
     assert len(result) == 8
     assert result[0]['datetime'] == '2023-12-26'
     assert not result[0]['is_daytime']
-    tz = zoneinfo.ZoneInfo(key='Europe/Brussels')
     expected = IrmKmiForecast(
         datetime='2023-12-27',
         condition=ATTR_CONDITION_PARTLYCLOUDY,
@@ -115,8 +114,8 @@ async def test_daily_forecast(
         wind_bearing=180,
         is_daytime=True,
         text='Bar',
-        sunrise=datetime.fromisoformat("2023-12-27T08:44:00+01:00").astimezone(tz),
-        sunset=datetime.fromisoformat("2023-12-27T16:43:00+01:00").astimezone(tz)
+        sunrise="2023-12-27T08:44:00+01:00",
+        sunset="2023-12-27T16:43:00+01:00"
     )
 
     assert result[1] == expected
@@ -365,14 +364,14 @@ async def test_sunrise_sunset_nl(
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     result = await coordinator.daily_list_to_forecast(api_data)
 
-    assert result[0]['sunrise'].isoformat() == '2024-06-09T05:19:28+02:00'
-    assert result[0]['sunset'].isoformat() == '2024-06-09T22:01:09+02:00'
+    assert result[0]['sunrise'] == '2024-06-09T05:19:28+02:00'
+    assert result[0]['sunset'] == '2024-06-09T22:01:09+02:00'
 
     assert result[1]['sunrise'] is None
     assert result[1]['sunset'] is None
 
-    assert result[2]['sunrise'].isoformat() == '2024-06-10T05:19:08+02:00'
-    assert result[2]['sunset'].isoformat() == '2024-06-10T22:01:53+02:00'
+    assert result[2]['sunrise'] == '2024-06-10T05:19:08+02:00'
+    assert result[2]['sunset'] == '2024-06-10T22:01:53+02:00'
 
 
 @freeze_time("2023-12-26T18:30:00+01:00")
@@ -385,8 +384,8 @@ async def test_sunrise_sunset_be(
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     result = await coordinator.daily_list_to_forecast(api_data)
 
-    assert result[1]['sunrise'].isoformat() == '2023-12-27T08:44:00+01:00'
-    assert result[1]['sunset'].isoformat() == '2023-12-27T16:43:00+01:00'
+    assert result[1]['sunrise'] == '2023-12-27T08:44:00+01:00'
+    assert result[1]['sunset'] == '2023-12-27T16:43:00+01:00'
 
-    assert result[2]['sunrise'].isoformat() == '2023-12-28T08:45:00+01:00'
-    assert result[2]['sunset'].isoformat() == '2023-12-28T16:43:00+01:00'
+    assert result[2]['sunrise'] == '2023-12-28T08:45:00+01:00'
+    assert result[2]['sunset'] == '2023-12-28T16:43:00+01:00'

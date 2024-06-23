@@ -440,8 +440,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                 wind_bearing=wind_bearing,
                 is_daytime=is_daytime,
                 text=f.get('text', {}).get(lang, ""),
-                sunrise=sunrise,
-                sunset=sunset
+                sunrise=sunrise.isoformat() if sunrise is not None else None,
+                sunset=sunset.isoformat() if sunset is not None else None
             )
             # Swap temperature and templow if needed
             if (forecast['native_templow'] is not None
