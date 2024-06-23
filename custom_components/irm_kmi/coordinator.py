@@ -212,7 +212,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                 or not isinstance(hourly_forecast_data, list)
                 or len(hourly_forecast_data) == 0):
 
-            for current in hourly_forecast_data[:2]:
+            for current in hourly_forecast_data[:4]:
                 if now.strftime('%H') == current['hour']:
                     now_hourly = current
                     break
@@ -278,7 +278,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         if current_weather['condition'] is None:
             try:
                 current_weather['condition'] = CDT_MAP.get((int(now_hourly.get('ww')), now_hourly.get('dayNight')))
-            except (TypeError, ValueError):
+            except (TypeError, ValueError, AttributeError):
                 current_weather['condition'] = None
 
         return current_weather
@@ -440,8 +440,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                 wind_bearing=wind_bearing,
                 is_daytime=is_daytime,
                 text=f.get('text', {}).get(lang, ""),
-                sunrise=sunrise,
-                sunset=sunset
+                sunrise=sunrise.isoformat() if sunrise is not None else None,
+                sunset=sunset.isoformat() if sunset is not None else None
             )
             # Swap temperature and templow if needed
             if (forecast['native_templow'] is not None

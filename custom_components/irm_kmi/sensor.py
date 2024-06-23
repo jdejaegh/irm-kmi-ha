@@ -1,5 +1,5 @@
 """Sensor for pollen from the IRM KMI"""
-import datetime
+from datetime import datetime
 import logging
 
 from homeassistant.components import sensor
@@ -74,7 +74,7 @@ class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
         self._attr_translation_key = f"next_warning"
 
     @property
-    def native_value(self) -> datetime.datetime | None:
+    def native_value(self) -> datetime | None:
         """Return the timestamp for the start of the next warning.  Is None when no future warning are available"""
         if self.coordinator.data.get('warnings') is None:
             return None
@@ -124,12 +124,13 @@ class IrmKmiNextSunMove(CoordinatorEntity, SensorEntity):
         self._attr_icon = 'mdi:weather-sunset-down' if move == 'sunset' else 'mdi:weather-sunset-up'
 
     @property
-    def native_value(self) -> datetime.datetime | None:
+    def native_value(self) -> datetime | None:
         """Return the timestamp for the next sunrise or sunset"""
         now = dt.now()
         data: list[IrmKmiForecast] = self.coordinator.data.get('daily_forecast')
 
-        upcoming = [f.get(self._move) for f in data if f.get(self._move) >= now]
+        upcoming = [datetime.fromisoformat(f.get(self._move)) for f in data
+                    if f.get(self._move) is not None and datetime.fromisoformat(f.get(self._move)) >= now]
 
         if len(upcoming) > 0:
             return upcoming[0]
