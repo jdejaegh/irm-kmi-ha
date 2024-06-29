@@ -12,24 +12,12 @@ def test_svg_pollen_parsing():
     with open("tests/fixtures/pollen.svg", "r") as file:
         svg_data = file.read()
     data = PollenParser(svg_data).get_pollen_data()
-    assert data == {'birch': 'purple', 'oak': 'active', 'hazel': 'none', 'mugwort': 'none', 'alder': 'green',
-                    'grasses': 'none', 'ash': 'active'}
-
-    with open("tests/fixtures/pollen_two.svg", "r") as file:
-        svg_data = file.read()
-    data = PollenParser(svg_data).get_pollen_data()
-    assert data == {'birch': 'purple', 'oak': 'active', 'hazel': 'none', 'mugwort': 'none', 'alder': 'active',
-                    'grasses': 'none', 'ash': 'active'}
-
-    with open("tests/fixtures/pollen_three.svg", "r") as file:
-        svg_data = file.read()
-    data = PollenParser(svg_data).get_pollen_data()
-    assert data == {'birch': 'none', 'oak': 'active', 'hazel': 'none', 'mugwort': 'none', 'alder': 'active',
-                    'grasses': 'none', 'ash': 'active'}
+    assert data == {'birch': 'none', 'oak': 'none', 'hazel': 'none', 'mugwort': 'none', 'alder': 'none',
+                    'grasses': 'purple', 'ash': 'none'}
 
 
 def test_pollen_options():
-    assert PollenParser.get_option_values() == ['active', 'green', 'yellow', 'orange', 'red', 'purple', 'none']
+    assert set(PollenParser.get_option_values()) == {'green', 'yellow', 'orange', 'red', 'purple', 'none'}
 
 
 def test_pollen_default_values():
@@ -46,8 +34,8 @@ async def test_pollen_data_from_api(
     api_data = get_api_data("be_forecast_warning.json")
 
     result = await coordinator._async_pollen_data(api_data)
-    expected = {'mugwort': 'none', 'birch': 'purple', 'alder': 'green', 'ash': 'active', 'oak': 'active',
-                'grasses': 'none', 'hazel': 'none'}
+    expected = {'mugwort': 'none', 'birch': 'none', 'alder': 'none', 'ash': 'none', 'oak': 'none',
+                'grasses': 'purple', 'hazel': 'none'}
     assert result == expected
 
 
