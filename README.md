@@ -139,15 +139,17 @@ The sensor has two additional attributes:
 
 ## Pollen details
 
-One sensor per pollen is created and each sensor can have one of the following values: active, green, yellow, orange, 
+One sensor per pollen is created and each sensor can have one of the following values: green, yellow, orange, 
 red, purple or none.
 
 The exact meaning of each color can be found on the IRM KMI webpage: [Pollen allergy and hay fever](https://www.meteo.be/en/weather/forecasts/pollen-allergy-and-hay-fever)
 
 <img height="200" src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/pollens.png" alt="Pollen data"/>
 
-This data sent to the app would result in oak and ash have the 'active' state, birch would be 'purple' and alder would be 'green'. 
+This data sent to the app would result in grasses have the 'purple' state. 
 All the other pollens would be 'none'.
+
+Due to a recent update in the pollen SVG format, there may have some edge cases that are not handled by the integration.
 
 ## Custom service `irm_kmi.get_forecasts_radar`
 
