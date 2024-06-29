@@ -1,6 +1,6 @@
 """Sensor for pollen from the IRM KMI"""
-from datetime import datetime
 import logging
+from datetime import datetime
 
 from homeassistant.components import sensor
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
