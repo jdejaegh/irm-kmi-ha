@@ -62,23 +62,19 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     new = {**config_entry.data}
     if config_entry.version == 1:
         new = new | {CONF_STYLE: OPTION_STYLE_STD, CONF_DARK_MODE: True}
-        config_entry.version = 2
-        hass.config_entries.async_update_entry(config_entry, data=new)
+        hass.config_entries.async_update_entry(config_entry, data=new, version=2)
 
     if config_entry.version == 2:
         new = new | {CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED}
-        config_entry.version = 3
-        hass.config_entries.async_update_entry(config_entry, data=new)
+        hass.config_entries.async_update_entry(config_entry, data=new, version=3)
 
     if config_entry.version == 3:
         new = new | {CONF_LANGUAGE_OVERRIDE: None}
-        config_entry.version = 4
-        hass.config_entries.async_update_entry(config_entry, data=new)
+        hass.config_entries.async_update_entry(config_entry, data=new, version=4)
 
     if config_entry.version == 4:
         new[CONF_LANGUAGE_OVERRIDE] = 'none' if new[CONF_LANGUAGE_OVERRIDE] is None else new[CONF_LANGUAGE_OVERRIDE]
-        config_entry.version = 5
-        hass.config_entries.async_update_entry(config_entry, data=new)
+        hass.config_entries.async_update_entry(config_entry, data=new, version=5)
 
     _LOGGER.debug(f"Migration to version {config_entry.version} successful")
 

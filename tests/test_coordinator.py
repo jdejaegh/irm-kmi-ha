@@ -93,8 +93,8 @@ async def test_daily_forecast(
         mock_config_entry: MockConfigEntry
 ) -> None:
     api_data = get_api_data("forecast.json").get('for', {}).get('daily')
-
-    mock_config_entry.data = mock_config_entry.data | {CONF_LANGUAGE_OVERRIDE: 'fr'}
+    await hass.config_entries.async_add(mock_config_entry)
+    hass.config_entries.async_update_entry(mock_config_entry, data=mock_config_entry.data | {CONF_LANGUAGE_OVERRIDE: 'fr'})
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     result = await coordinator.daily_list_to_forecast(api_data)
 

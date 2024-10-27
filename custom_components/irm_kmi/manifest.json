@@ -10,7 +10,7 @@
   "issue_tracker": "https://github.com/jdejaegh/irm-kmi-ha/issues",
   "requirements": [
     "svgwrite==1.4.3",
-    "aiofile==3.8.8"
+    "aiofile==3.9.0"
   ],
   "version": "0.2.19"
 }
