@@ -143,7 +143,8 @@ MAP_WARNING_ID_TO_SLUG: Final = {
     17: 'coldspell'}
 
 POLLEN_NAMES: Final = {'Alder', 'Ash', 'Birch', 'Grasses', 'Hazel', 'Mugwort', 'Oak'}
-POLLEN_LEVEL_TO_COLOR = {'null': 'green', 'low': 'yellow', 'moderate': 'orange', 'high': 'red', 'very high': 'purple'}
+POLLEN_LEVEL_TO_COLOR = {'null': 'green', 'low': 'yellow', 'moderate': 'orange', 'high': 'red', 'very high': 'purple',
+                         'active': 'active'}
 
 POLLEN_TO_ICON_MAP: Final = {
     'alder': 'mdi:tree', 'ash': 'mdi:tree', 'birch': 'mdi:tree', 'grasses': 'mdi:grass', 'hazel': 'mdi:tree',

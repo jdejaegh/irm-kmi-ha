@@ -58,8 +58,8 @@ class PollenParser:
         try:
             _LOGGER.debug(f"Full SVG: {self._xml}")
             root = ET.fromstring(self._xml)
-        except ET.ParseError:
-            _LOGGER.warning("Could not parse SVG pollen XML")
+        except ET.ParseError as e:
+            _LOGGER.warning(f"Could not parse SVG pollen XML: {e}")
             return pollen_data
 
         elements: List[ET.Element] = self._extract_elements(root)
