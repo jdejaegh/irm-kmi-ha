@@ -1,0 +1,200 @@
+{
+  "title": "Instituto Real Meteorológico da Bélgica",
+  "config": {
+    "abort": {
+      "already_configured": "O clima para esta zona já está configurado",
+      "unknown": "Erro desconhecido"
+    },
+    "step": {
+      "user": {
+        "title": "Configuração",
+        "data": {
+          "zone": "Zona",
+          "style": "Estilo do radar",
+          "dark_mode": "Modo escuro do radar",
+          "use_deprecated_forecast_attribute": "Usar o atributo de previsão descontinuado",
+          "language_override": "Idioma"
+        }
+      }
+    },
+    "error": {
+      "out_of_benelux": "{zone} está fora do Benelux. Escolha uma zona no Benelux.",
+      "api_error": "Não foi possível obter dados da API",
+      "zone_not_exist": "{zone} não existe"
+    }
+  },
+  "selector": {
+    "style": {
+      "options": {
+        "standard_style": "Padrão",
+        "contrast_style": "Alto contraste",
+        "yellow_red_style": "Amarelo-Vermelho",
+        "satellite_style": "Mapa de satélite"
+      }
+    },
+    "use_deprecated_forecast_attribute": {
+      "options": {
+        "do_not_use_deprecated_forecast": "Não usar (recomendado)",
+        "daily_in_deprecated_forecast": "Usar para previsão diária",
+        "twice_daily_in_deprecated_forecast": "Usar para previsão duas vezes ao dia",
+        "hourly_in_deprecated_forecast": "Usar para previsão horária"
+      }
+    },
+    "repair_solution": {
+      "options": {
+        "repair_option_move": "Mudei a zona para o Benelux",
+        "repair_option_delete": "Apagar essa entrada de configuração"
+      }
+    },
+    "language_override": {
+      "options": {
+        "none": "Seguir o idioma do servidor do Home Assistant",
+        "fr": "Francês",
+        "nl": "Neerlandês",
+        "de": "Alemão",
+        "en": "Inglês"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opções",
+        "data": {
+          "style": "Estilo do radar",
+          "dark_mode": "Modo escuro do radar",
+          "use_deprecated_forecast_attribute": "Usar o atributo de previsão descontinuado",
+          "language_override": "Idioma"
+        }
+      }
+    }
+  },
+  "issues": {
+    "zone_moved": {
+      "title": "{zone} está fora do Benelux",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Reparação: {zone} está fora do Benelux",
+            "description": "Esta integração só pode obter dados para locais no Benelux. Mova a zona ou apague esta entrada de configuração."
+          }
+        },
+        "error": {
+          "out_of_benelux": "{zone} está fora do Benelux. Mova-a para dentro do Benelux primeiro.",
+          "api_error": "Não foi possível obter dados da API",
+          "zone_not_exist": "{zone} não existe",
+          "invalid_choice": "A escolha não é válida"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "next_warning": {
+        "name": "Próximo aviso"
+      },
+      "next_sunrise": {
+        "name": "Próximo nascer do sol"
+      },
+      "next_sunset": {
+        "name": "Próximo pôr do sol"
+      },
+      "pollen_alder": {
+        "name": "Pólen de amieiro",
+        "state": {
+          "active": "Ativo",
+          "green": "Verde",
+          "yellow": "Amarelo",
+          "orange": "Laranja",
+          "red": "Vermelho",
+          "purple": "Roxo",
+          "none": "Nenhum"
+        }
+      },
+      "pollen_ash": {
+        "name": "Pólen de freixo",
+        "state": {
+          "active": "Ativo",
+          "green": "Verde",
+          "yellow": "Amarelo",
+          "orange": "Laranja",
+          "red": "Vermelho",
+          "purple": "Roxo",
+          "none": "Nenhum"
+        }
+      },
+      "pollen_birch": {
+        "name": "Pólen de bétula",
+        "state": {
+          "active": "Ativo",
+          "green": "Verde",
+          "yellow": "Amarelo",
+          "orange": "Laranja",
+          "red": "Vermelho",
+          "purple": "Roxo",
+          "none": "Nenhum"
+        }
+      },
+      "pollen_grasses": {
+        "name": "Pólen de gramíneas",
+        "state": {
+          "active": "Ativo",
+          "green": "Verde",
+          "yellow": "Amarelo",
+          "orange": "Laranja",
+          "red": "Vermelho",
+          "purple": "Roxo",
+          "none": "Nenhum"
+        }
+      },
+      "pollen_hazel": {
+        "name": "Pólen de aveleira",
+        "state": {
+          "active": "Ativo",
+          "green": "Verde",
+          "yellow": "Amarelo",
+          "orange": "Laranja",
+          "red": "Vermelho",
+          "purple": "Roxo",
+          "none": "Nenhum"
+        }
+      },
+      "pollen_mugwort": {
+        "name": "Pólen de artemísia",
+        "state": {
+          "active": "Ativo",
+          "green": "Verde",
+          "yellow": "Amarelo",
+          "orange": "Laranja",
+          "red": "Vermelho",
+          "purple": "Roxo",
+          "none": "Nenhum"
+        }
+      },
+      "pollen_oak": {
+        "name": "Pólen de carvalho",
+        "state": {
+          "active": "Ativo",
+          "green": "Verde",
+          "yellow": "Amarelo",
+          "orange": "Laranja",
+          "red": "Vermelho",
+          "purple": "Roxo",
+          "none": "Nenhum"
+        }
+      }
+    }
+  },
+  "services": {
+    "get_forecasts_radar": {
+      "name": "Obter previsão do radar",
+      "description": "Obter previsão do tempo do radar. Apenas precipitação está disponível.",
+      "fields": {
+        "include_past_forecasts": {
+          "name": "Incluir previsões passadas",
+          "description": "Também retornar previsões que estão no passado."
+        }
+      }
+    }
+  }
+}
