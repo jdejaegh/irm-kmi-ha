@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock
 
 from freezegun import freeze_time
 from homeassistant.components.weather import Forecast
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -28,7 +29,7 @@ async def test_weather_nl(
     hass.config.config_dir = os.getcwd()
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
-    await coordinator.async_config_entry_first_refresh()
+    await coordinator.async_refresh()
 
     weather = IrmKmiWeather(coordinator, mock_config_entry)
     result = await weather.async_forecast_daily()
@@ -56,7 +57,7 @@ async def test_weather_higher_temp_at_night(
     hass.config.config_dir = os.getcwd()
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
-    await coordinator.async_config_entry_first_refresh()
+    await coordinator.async_refresh()
 
     weather = IrmKmiWeather(coordinator, mock_config_entry)
     result: List[Forecast] = await weather.async_forecast_daily()
@@ -86,7 +87,7 @@ async def test_forecast_attribute_same_as_service_call(
     hass.config.config_dir = os.getcwd()
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry_with_deprecated)
-    await coordinator.async_config_entry_first_refresh()
+    await coordinator.async_refresh()
 
     weather = IrmKmiWeather(coordinator, mock_config_entry_with_deprecated)
 
