@@ -78,6 +78,11 @@ async def test_next_warning_when_data_available(
     warning = IrmKmiNextWarning(coordinator, mock_config_entry)
     warning.hass = hass
 
+    # This somehow fixes the following error that popped since 2024.12.0
+    # ValueError: Entity <class 'custom_components.irm_kmi.sensor.IrmKmiNextWarning'> cannot have a translation key for
+    # unit of measurement before being added to the entity platform
+    warning._attr_translation_key = None
+
     assert warning.state == "2024-01-12T06:00:00+00:00"
     assert len(warning.extra_state_attributes['next_warnings']) == 2
 
@@ -98,6 +103,11 @@ async def test_next_warning_none_when_only_active_warnings(
     warning = IrmKmiNextWarning(coordinator, mock_config_entry)
     warning.hass = hass
 
+    # This somehow fixes the following error that popped since 2024.12.0
+    # ValueError: Entity <class 'custom_components.irm_kmi.sensor.IrmKmiNextWarning'> cannot have a translation key for
+    # unit of measurement before being added to the entity platform
+    warning._attr_translation_key = None
+
     assert warning.state is None
     assert len(warning.extra_state_attributes['next_warnings']) == 0
 
@@ -115,6 +125,11 @@ async def test_next_warning_none_when_no_warnings(
     warning = IrmKmiNextWarning(coordinator, mock_config_entry)
     warning.hass = hass
 
+    # This somehow fixes the following error that popped since 2024.12.0
+    # ValueError: Entity <class 'custom_components.irm_kmi.sensor.IrmKmiNextWarning'> cannot have a translation key for
+    # unit of measurement before being added to the entity platform
+    warning._attr_translation_key = None
+
     assert warning.state is None
     assert len(warning.extra_state_attributes['next_warnings']) == 0
 
@@ -123,6 +138,11 @@ async def test_next_warning_none_when_no_warnings(
     coordinator.data = dict()
     warning = IrmKmiNextWarning(coordinator, mock_config_entry)
     warning.hass = hass
+
+    # This somehow fixes the following error that popped since 2024.12.0
+    # ValueError: Entity <class 'custom_components.irm_kmi.sensor.IrmKmiNextWarning'> cannot have a translation key for
+    # unit of measurement before being added to the entity platform
+    warning._attr_translation_key = None
 
     assert warning.state is None
     assert len(warning.extra_state_attributes['next_warnings']) == 0
@@ -146,6 +166,12 @@ async def test_next_sunrise_sunset(
     sunset = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunset')
     sunrise = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunrise')
 
+    # This somehow fixes the following error that popped since 2024.12.0
+    # ValueError: Entity <class 'custom_components.irm_kmi.sensor.IrmKmiNextSunMove'> cannot have a translation key for
+    # unit of measurement before being added to the entity platform
+    sunrise._attr_translation_key = None
+    sunset._attr_translation_key = None
+
     assert datetime.fromisoformat(sunrise.state) == datetime.fromisoformat('2023-12-27T08:44:00+01:00')
     assert datetime.fromisoformat(sunset.state) == datetime.fromisoformat('2023-12-27T16:43:00+01:00')
 
@@ -165,6 +191,12 @@ async def test_next_sunrise_sunset_bis(
 
     sunset = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunset')
     sunrise = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunrise')
+
+    # This somehow fixes the following error that popped since 2024.12.0
+    # ValueError: Entity <class 'custom_components.irm_kmi.sensor.IrmKmiNextSunMove'> cannot have a translation key for
+    # unit of measurement before being added to the entity platform
+    sunrise._attr_translation_key = None
+    sunset._attr_translation_key = None
 
     assert datetime.fromisoformat(sunrise.state) == datetime.fromisoformat('2023-12-27T08:44:00+01:00')
     assert datetime.fromisoformat(sunset.state) == datetime.fromisoformat('2023-12-26T16:42:00+01:00')
