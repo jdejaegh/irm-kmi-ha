@@ -43,6 +43,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         super().__init__(
             hass,
             _LOGGER,
+            config_entry=entry,
             # Name of the data. For logging purposes.
             name="IRM KMI weather",
             # Polling interval. Will only be polled if there are subscribers.
@@ -52,11 +53,10 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         self._zone = get_config_value(entry, CONF_ZONE)
         self._dark_mode = get_config_value(entry, CONF_DARK_MODE)
         self._style = get_config_value(entry, CONF_STYLE)
-        self._config_entry = entry
         self.shared_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, entry.entry_id)},
-            manufacturer=IRM_KMI_NAME.get(preferred_language(self.hass, self._config_entry)),
+            manufacturer=IRM_KMI_NAME.get(preferred_language(self.hass, self.config_entry)),
             name=f"{entry.title}"
         )
 
@@ -92,7 +92,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux."
                           f"Associated device is now disabled.  Move the zone back in Benelux and re-enable to fix "
                           f"this")
-            disable_from_config(self.hass, self._config_entry)
+            disable_from_config(self.hass, self.config_entry)
 
             issue_registry.async_create_issue(
                 self.hass,
@@ -101,7 +101,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                 is_fixable=True,
                 severity=issue_registry.IssueSeverity.ERROR,
                 translation_key='zone_moved',
-                data={'config_entry_id': self._config_entry.entry_id, 'zone': self._zone},
+                data={'config_entry_id': self.config_entry.entry_id, 'zone': self._zone},
                 translation_placeholders={'zone': self._zone}
             )
             return ProcessedCoordinatorData()
@@ -131,7 +131,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         localisation = images_from_api[0]
         images_from_api = images_from_api[1:]
 
-        lang = preferred_language(self.hass, self._config_entry)
+        lang = preferred_language(self.hass, self.config_entry)
         radar_animation = RadarAnimationData(
             hint=api_data.get('animation', {}).get('sequenceHint', {}).get(lang),
             unit=api_data.get('animation', {}).get('unit', {}).get(lang),
@@ -367,7 +367,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             return None
 
         forecasts = list()
-        lang = preferred_language(self.hass, self._config_entry)
+        lang = preferred_language(self.hass, self.config_entry)
         tz = await dt.async_get_time_zone('Europe/Brussels')
         forecast_day = dt.now(tz)
 
@@ -502,7 +502,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         if warning_data is None or not isinstance(warning_data, list) or len(warning_data) == 0:
             return []
 
-        lang = preferred_language(self.hass, self._config_entry)
+        lang = preferred_language(self.hass, self.config_entry)
         result = list()
         for data in warning_data:
             try:
