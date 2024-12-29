@@ -89,7 +89,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                                    f"Last success time is: {self.last_update_success_time}")
 
         if api_data.get('cityName', None) in OUT_OF_BENELUX:
-            _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux."
+            _LOGGER.error(f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux. "
                           f"Associated device is now disabled.  Move the zone back in Benelux and re-enable to fix "
                           f"this")
             disable_from_config(self.hass, self.config_entry)
