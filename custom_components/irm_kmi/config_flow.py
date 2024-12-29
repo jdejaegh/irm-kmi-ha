@@ -107,7 +107,7 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
 class IrmKmiOptionFlow(OptionsFlow):
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialize options flow."""
-        self.config_entry = config_entry
+        self.current_config_entry = config_entry
 
     async def async_step_init(self, user_input: dict | None = None) -> FlowResult:
         """Manage the options."""
@@ -119,21 +119,21 @@ class IrmKmiOptionFlow(OptionsFlow):
             step_id="init",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(CONF_STYLE, default=get_config_value(self.config_entry, CONF_STYLE)):
+                    vol.Optional(CONF_STYLE, default=get_config_value(self.current_config_entry, CONF_STYLE)):
                         SelectSelector(SelectSelectorConfig(options=CONF_STYLE_OPTIONS,
                                                             mode=SelectSelectorMode.DROPDOWN,
                                                             translation_key=CONF_STYLE)),
 
-                    vol.Optional(CONF_DARK_MODE, default=get_config_value(self.config_entry, CONF_DARK_MODE)): bool,
+                    vol.Optional(CONF_DARK_MODE, default=get_config_value(self.current_config_entry, CONF_DARK_MODE)): bool,
 
                     vol.Optional(CONF_USE_DEPRECATED_FORECAST,
-                                 default=get_config_value(self.config_entry, CONF_USE_DEPRECATED_FORECAST)):
+                                 default=get_config_value(self.current_config_entry, CONF_USE_DEPRECATED_FORECAST)):
                         SelectSelector(SelectSelectorConfig(options=CONF_USE_DEPRECATED_FORECAST_OPTIONS,
                                                             mode=SelectSelectorMode.DROPDOWN,
                                                             translation_key=CONF_USE_DEPRECATED_FORECAST)),
 
                     vol.Optional(CONF_LANGUAGE_OVERRIDE,
-                                 default=get_config_value(self.config_entry, CONF_LANGUAGE_OVERRIDE)):
+                                 default=get_config_value(self.current_config_entry, CONF_LANGUAGE_OVERRIDE)):
                         SelectSelector(SelectSelectorConfig(options=CONF_LANGUAGE_OVERRIDE_OPTIONS,
                                                             mode=SelectSelectorMode.DROPDOWN,
                                                             translation_key=CONF_LANGUAGE_OVERRIDE))
