@@ -1,0 +1,712 @@
+[
+  {
+    "icon_country": "BE",
+    "warningType": {
+      "id": "2",
+      "name": {
+        "nl": "Gladheid",
+        "fr": "Conditions glissantes",
+        "de": "Gl\u00e4tte",
+        "en": "Ice or snow"
+      }
+    },
+    "text": {
+      "nl": "Vanochtend vriest het op de meeste plaatsen. Na de neerslag van gisteren zijn de wegen nog voldoende vochtig en ligt er nog plaatselijk sneeuw die kan bevriezen en eveneens voor gladde plekken zorgen.\n",
+      "fr": "Ce matin, le gel concernera la plupart des r\u00e9gions. Le risque de plaque de glace sera assez \u00e9lev\u00e9 avec de nombreuses routes glissantes.\n"
+    },
+    "legendUri": {
+      "nl": "https:\/\/app.meteo.be\/services\/appv4\/?s=getWarningLegend&k=39fd3df3c7e9ba2bd6dabddf23c7a352&wa=2&l=nl",
+      "fr": "https:\/\/app.meteo.be\/services\/appv4\/?s=getWarningLegend&k=39fd3df3c7e9ba2bd6dabddf23c7a352&wa=2&l=fr",
+      "de": "https:\/\/app.meteo.be\/services\/appv4\/?s=getWarningLegend&k=39fd3df3c7e9ba2bd6dabddf23c7a352&wa=2&l=de",
+      "en": "https:\/\/app.meteo.be\/services\/appv4\/?s=getWarningLegend&k=39fd3df3c7e9ba2bd6dabddf23c7a352&wa=2&l=en"
+    },
+    "region": [
+      {
+        "name": {
+          "nl": "Brussel",
+          "fr": "Bruxelles",
+          "en": "Brussels",
+          "de": "Br\u00fcssel"
+        },
+        "district": [
+          {
+            "region": {
+              "code": 6446,
+              "name": {
+                "nl": "Brussel",
+                "fr": "Bruxelles",
+                "en": "Brussels",
+                "de": "Br\u00fcssel"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": {
+          "nl": "Vlaanderen",
+          "fr": "Flandre",
+          "en": "Flanders",
+          "de": "Flandern"
+        },
+        "district": [
+          {
+            "region": {
+              "code": 6404,
+              "name": {
+                "nl": "Kust",
+                "fr": "C\u00f4te",
+                "en": "Coast",
+                "de": "K\u00fcste"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 6407,
+              "name": {
+                "nl": "West-Vlaanderen",
+                "fr": "Flandre-Occidentale",
+                "en": "West Flanders",
+                "de": "Westflandern"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 6431,
+              "name": {
+                "nl": "Oost-Vlaanderen",
+                "fr": "Flandre-Orientale",
+                "en": "East Flanders",
+                "de": "Ostflandern"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 6450,
+              "name": {
+                "nl": "Antwerpen",
+                "fr": "Anvers",
+                "en": "Antwerp",
+                "de": "Antwerpen"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 6479,
+              "name": {
+                "nl": "Limburg",
+                "fr": "Limbourg",
+                "en": "Limburg",
+                "de": "Limburg"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 6446,
+              "name": {
+                "nl": "Vlaams-Brabant",
+                "fr": "Brabant flamand",
+                "en": "Flemish Brabant",
+                "de": "Fl\u00e4misch-Brabant"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": {
+          "nl": "Walloni\u00eb",
+          "fr": "Wallonie",
+          "en": "Wallonia",
+          "de": "Wallonien"
+        },
+        "district": [
+          {
+            "region": {
+              "code": 6478,
+              "name": {
+                "nl": "Luik",
+                "fr": "Li\u00e8ge",
+                "en": "Liege",
+                "de": "L\u00fcttich"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 6432,
+              "name": {
+                "nl": "Henegouwen",
+                "fr": "Hainaut",
+                "en": "Hainaut",
+                "de": "Hennegau"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 6456,
+              "name": {
+                "nl": "Namen",
+                "fr": "Namur",
+                "en": "Namur",
+                "de": "Nam\u00fcr"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 6476,
+              "name": {
+                "nl": "Luxemburg",
+                "fr": "Luxembourg",
+                "en": "Luxembourg",
+                "de": "Luxemburg"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 6446,
+              "name": {
+                "nl": "Waals-Brabant",
+                "fr": "Brabant wallon",
+                "en": "Walloon Brabant",
+                "de": "Wallonisch-Brabant"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T05:00:00+00:00",
+                "toTimestamp": "2025-01-10T12:00:00+00:00"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "icon_country": "NL",
+    "warningType": {
+      "id": "2",
+      "name": {
+        "nl": "Sneeuw en gladheid",
+        "fr": "Neige ou verglas",
+        "en": "Ice or snow",
+        "de": "Gl\u00e4tte"
+      }
+    },
+    "text": {
+      "fr": "Vanochtend op veel plaatsen glad\n\nVanochtend is het op veel plaatsen glad door bevriezing van natte weggedeelten. In het noorden ook door een enkele (winterse) bui met mogelijk wat ijzel. Vanaf ongeveer 10 uur verdwijnt de gladheid.\n\nEr is kans op ongelukken door gladde bruggen, wegen, fietspaden en voetpaden.\n\n \n\n Meer details \nTot ca. 10 uur is het op veel plaatsen glad door bevriezing (verraderlijk) glad. In het noorden komen er ook enkele (winterse) buien voor met een kleine kans op ijzel (regen op een bevroren ondergrond). Na ongeveer 10 uur verdwijnt de gladheid.\nUitgifte: 10\/01\/2025 07:52 uur LT",
+      "nl": "Vanochtend op veel plaatsen glad\n\nVanochtend is het op veel plaatsen glad door bevriezing van natte weggedeelten. In het noorden ook door een enkele (winterse) bui met mogelijk wat ijzel. Vanaf ongeveer 10 uur verdwijnt de gladheid.\n\nEr is kans op ongelukken door gladde bruggen, wegen, fietspaden en voetpaden.\n\n \n\n Meer details \nTot ca. 10 uur is het op veel plaatsen glad door bevriezing (verraderlijk) glad. In het noorden komen er ook enkele (winterse) buien voor met een kleine kans op ijzel (regen op een bevroren ondergrond). Na ongeveer 10 uur verdwijnt de gladheid.\nUitgifte: 10\/01\/2025 07:52 uur LT"
+    },
+    "legendUri": {
+      "nl": "https:\/\/www.knmi.nl\/nederland-nu\/weer\/waarschuwingen",
+      "fr": "https:\/\/www.knmi.nl\/nederland-nu\/weer\/waarschuwingen",
+      "de": "https:\/\/www.knmi.nl\/nederland-nu\/weer\/waarschuwingen",
+      "en": "https:\/\/www.knmi.nl\/nederland-nu\/weer\/waarschuwingen"
+    },
+    "region": [
+      {
+        "name": {
+          "nl": "Nederland",
+          "fr": "Pays-Bas",
+          "en": "Netherlands",
+          "de": "Niederlande"
+        },
+        "district": [
+          {
+            "region": {
+              "code": "200009",
+              "name": {
+                "nl": "Drenthe",
+                "fr": "Drenthe",
+                "en": "Drenthe",
+                "de": "Drenthe"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T19:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200001",
+              "name": {
+                "nl": "Flevoland",
+                "fr": "Flevoland",
+                "en": "Flevoland",
+                "de": "Flevoland"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T19:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200011",
+              "name": {
+                "nl": "Friesland",
+                "fr": "Friesland",
+                "en": "Friesland",
+                "de": "Friesland"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T19:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200005",
+              "name": {
+                "nl": "Gelderland",
+                "fr": "Gelderland",
+                "en": "Gelderland",
+                "de": "Gelderland"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T19:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200010",
+              "name": {
+                "nl": "Groningen",
+                "fr": "Groningen",
+                "en": "Groningen",
+                "de": "Groningen"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T19:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 200014,
+              "name": {
+                "nl": "IJsselmeergebied",
+                "fr": "IJsselmeergebied",
+                "en": "IJsselmeergebied",
+                "de": "IJsselmeergebied"
+              }
+            },
+            "intervals": [
+              {
+                "level": 0,
+                "fromTimestamp": "2024-12-31T00:00:00+01:00",
+                "toTimestamp": "2025-01-03T00:00:00+01:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200007",
+              "name": {
+                "nl": "Limburg",
+                "fr": "Limburg",
+                "en": "Limburg",
+                "de": "Limburg"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T11:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T17:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200004",
+              "name": {
+                "nl": "Noord-Brabant",
+                "fr": "Noord-Brabant",
+                "en": "Noord-Brabant",
+                "de": "Noord-Brabant"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T19:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200000",
+              "name": {
+                "nl": "Noord-Holland",
+                "fr": "Noord-Holland",
+                "en": "Noord-Holland",
+                "de": "Noord-Holland"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T22:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200008",
+              "name": {
+                "nl": "Overijssel",
+                "fr": "Overijssel",
+                "en": "Overijssel",
+                "de": "Overijssel"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T19:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200002",
+              "name": {
+                "nl": "Utrecht",
+                "fr": "Utrecht",
+                "en": "Utrecht",
+                "de": "Utrecht"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T19:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 200012,
+              "name": {
+                "nl": "Waddeneilanden",
+                "fr": "Waddeneilanden",
+                "en": "Waddeneilanden",
+                "de": "Waddeneilanden"
+              }
+            },
+            "intervals": [
+              {
+                "level": 0,
+                "fromTimestamp": "2024-12-31T00:00:00+01:00",
+                "toTimestamp": "2025-01-03T00:00:00+01:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": 200013,
+              "name": {
+                "nl": "Waddenzee",
+                "fr": "Waddenzee",
+                "en": "Waddenzee",
+                "de": "Waddenzee"
+              }
+            },
+            "intervals": [
+              {
+                "level": 0,
+                "fromTimestamp": "2024-12-31T00:00:00+01:00",
+                "toTimestamp": "2025-01-03T00:00:00+01:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200006",
+              "name": {
+                "nl": "Zeeland",
+                "fr": "Zeeland",
+                "en": "Zeeland",
+                "de": "Zeeland"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T22:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "200003",
+              "name": {
+                "nl": "Zuid-Holland",
+                "fr": "Zuid-Holland",
+                "en": "Zuid-Holland",
+                "de": "Zuid-Holland"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T06:00:00+00:00",
+                "toTimestamp": "2025-01-10T10:00:00+00:00"
+              },
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-10T22:00:00+00:00",
+                "toTimestamp": "2025-01-11T10:00:00+00:00"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "icon_country": "LU",
+    "warningType": {
+      "id": "15",
+      "name": {
+        "nl": "Overstroming",
+        "fr": "Crue",
+        "en": "Flood",
+        "de": "Hochwasser"
+      }
+    },
+    "text": {
+      "fr": "vendredi 00:00 \u00e0\u00a0vendredi 17:59, pour le nord du pays: Crue mineure pouvant entra\u00eener des inondations et dommages locaux. Vigilance particuli\u00e8re dans le cas d\u2019activit\u00e9s saisonni\u00e8res et\/ou expos\u00e9es. Plus d'informations sur www.inondations.lu. (* \u00e9mis par l'Administration de la Gestion de l'Eau) vendredi 00:00 \u00e0\u00a0samedi 19:59, pour le sud du pays: Crue mineure pouvant entra\u00eener des inondations et dommages locaux. Vigilance particuli\u00e8re dans le cas d\u2019activit\u00e9s saisonni\u00e8res et\/ou expos\u00e9es. Plus d'informations sur www.inondations.lu. (* \u00e9mis par l'Administration de la Gestion de l'Eau) samedi 20:00 \u00e0\u00a0dimanche 06:59, pour le sud du pays: Situation m\u00e9t\u00e9orologique indiquant un risque \u00e9ventuel de crue. Soyez vigilant. Plus d'informations sur www.inondations.lu. (* \u00e9mis par l'Administration de la Gestion de l'Eau) (MeteoLux - www.meteolux.lu)",
+      "nl": "",
+      "de": "Freitag 00:00 bis\u00a0Freitag 17:59, f\u00fcr den Norden des Landes: Geringes Hochwasser, welches lokal zu \u00dcberschwemmungen und Sch\u00e4den f\u00fchren kann. Bei Aktivit\u00e4ten in betroffenen Gebieten ist Vorsicht geboten. Mehr Informationen auf www.inondations.lu.  (* ausgegeben vom Wasserwirtschaftsamt) Freitag 00:00 bis\u00a0Samstag 19:59, f\u00fcr den S\u00fcden des Landes: Geringes Hochwasser, welches lokal zu \u00dcberschwemmungen und Sch\u00e4den f\u00fchren kann. Bei Aktivit\u00e4ten in betroffenen Gebieten ist Vorsicht geboten. Mehr Informationen auf www.inondations.lu.  (* ausgegeben vom Wasserwirtschaftsamt) Samstag 20:00 bis\u00a0Sonntag 06:59, f\u00fcr den S\u00fcden des Landes: Die meteorologische Situation deutet auf eine m\u00f6gliche \u00dcberschwemmungsgefahr hin. Bleiben Sie wachsam. Mehr Informationen auf www.inondations.lu. (* ausgegeben vom Wasserwirtschaftsamt) (MeteoLux - www.meteolux.lu)"
+    },
+    "legendUri": {
+      "nl": "https:\/\/app.meteo.be\/services\/appv4\/?s=getWarningLegend&k=39fd3df3c7e9ba2bd6dabddf23c7a352&wa=15&l=nl",
+      "fr": "https:\/\/app.meteo.be\/services\/appv4\/?s=getWarningLegend&k=39fd3df3c7e9ba2bd6dabddf23c7a352&wa=15&l=fr",
+      "de": "https:\/\/app.meteo.be\/services\/appv4\/?s=getWarningLegend&k=39fd3df3c7e9ba2bd6dabddf23c7a352&wa=15&l=de",
+      "en": "https:\/\/app.meteo.be\/services\/appv4\/?s=getWarningLegend&k=39fd3df3c7e9ba2bd6dabddf23c7a352&wa=15&l=en"
+    },
+    "region": [
+      {
+        "name": {
+          "nl": "Groothertogdom Luxemburg",
+          "fr": "Grand-Duch\u00e9 de Luxembourg",
+          "en": "Grand Duchy of Luxembourg",
+          "de": "Gro\u00dfherzogtum Luxemburg"
+        },
+        "district": [
+          {
+            "region": {
+              "code": "6590",
+              "name": {
+                "nl": "Luxemburg Zuid",
+                "fr": "Luxembourg Sud",
+                "en": "Luxembourg South",
+                "de": "Luxemburg S\u00fcd"
+              }
+            },
+            "intervals": [
+              {
+                "level": "1",
+                "fromTimestamp": "2025-01-11T19:00:00+00:00",
+                "toTimestamp": "2025-01-12T06:00:00+00:00"
+              },
+              {
+                "level": "2",
+                "fromTimestamp": "2025-01-09T23:00:00+00:00",
+                "toTimestamp": "2025-01-11T19:00:00+00:00"
+              }
+            ]
+          },
+          {
+            "region": {
+              "code": "6585",
+              "name": {
+                "nl": "Luxemburg Noord",
+                "fr": "Luxembourg Nord",
+                "en": "Luxembourg North",
+                "de": "Luxemburg Nord"
+              }
+            },
+            "intervals": [
+              {
+                "level": "2",
+                "fromTimestamp": "2025-01-09T23:00:00+00:00",
+                "toTimestamp": "2025-01-10T17:00:00+00:00"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
