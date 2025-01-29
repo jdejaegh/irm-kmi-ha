@@ -11,8 +11,8 @@ _LOGGER = logging.getLogger(__name__)
 class PollenParser:
     """
     Extract pollen level from an SVG provided by the IRM KMI API.
-    To get the data, match pollen names and pollen levels that are vertically aligned.  Then, map the value to the
-    corresponding color on the scale.
+    To get the data, match pollen names and pollen levels that are vertically aligned or the dot on the color scale.
+    Then, map the value to the corresponding color on the scale.
     """
 
     def __init__(
@@ -70,9 +70,40 @@ class PollenParser:
         pollen_levels = {e.attrib.get('x', None): POLLEN_LEVEL_TO_COLOR[self._get_elem_text(e)]
                          for e in elements if 'tspan' in e.tag and self._get_elem_text(e) in POLLEN_LEVEL_TO_COLOR}
 
+        level_dots = {e.attrib.get('cx', None) for e in elements if 'circle' in e.tag}
+        print(level_dots)
+
+        # For each pollen name found, check the text just below.
+        # As of January 2025, the text is always 'active' and the dot shows the real level
+        # If text says 'active', check the dot; else trust the text
         for position, pollen in pollens.items():
+            # Determine pollen level based on text
             if position is not None and position in pollen_levels:
                 pollen_data[pollen] = pollen_levels[position]
+                print(f"{pollen} is {pollen_data[pollen]} according to text")
+
+            # If text is 'active' or if there is no text, check the dot as a fallback
+            if pollen_data[pollen] not in {'none', 'active'}:
+                _LOGGER.debug(f"{pollen} trusting text")
+            else:
+                for dot in level_dots:
+                    try:
+                        relative_x_position = float(position) - float(dot)
+                    except TypeError:
+                        pass
+                    else:
+                        if 24 <= relative_x_position <= 34:
+                            pollen_data[pollen] = 'green'
+                        elif 13 <= relative_x_position <= 23:
+                            pollen_data[pollen] = 'yellow'
+                        elif -5 <= relative_x_position <= 5:
+                            pollen_data[pollen] = 'orange'
+                        elif -23 <= relative_x_position <= -13:
+                            pollen_data[pollen] = 'red'
+                        elif -34 <= relative_x_position <= -24:
+                            pollen_data[pollen] = 'purple'
+
+                _LOGGER.debug(f"{pollen} is {pollen_data[pollen]} according to dot")
 
         _LOGGER.debug(f"Pollen data: {pollen_data}")
         return pollen_data

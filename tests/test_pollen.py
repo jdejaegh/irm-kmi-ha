@@ -22,6 +22,12 @@ def test_svg_two_pollen_parsing():
     assert data == {'birch': 'none', 'oak': 'none', 'hazel': 'none', 'mugwort': 'active', 'alder': 'none',
                     'grasses': 'red', 'ash': 'none'}
 
+def test_svg_two_pollen_parsing_2025_update():
+    with open("tests/fixtures/pollens-2025.svg", "r") as file:
+        svg_data = file.read()
+    data = PollenParser(svg_data).get_pollen_data()
+    assert data == {'birch': 'none', 'oak': 'none', 'hazel': 'active', 'mugwort': 'none', 'alder': 'green',
+                    'grasses': 'none', 'ash': 'none'}
 
 def test_pollen_options():
     assert set(PollenParser.get_option_values()) == {'green', 'yellow', 'orange', 'red', 'purple', 'active', 'none'}
