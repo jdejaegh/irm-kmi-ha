@@ -12,5 +12,5 @@
     "svgwrite==1.4.3",
     "aiofile==3.9.0"
   ],
-  "version": "0.2.26"
+  "version": "0.2.27"
 }
