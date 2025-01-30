@@ -138,7 +138,6 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             location=localisation
         )
         rain_graph = await self.create_rain_graph(radar_animation, animation_data, country, images_from_api)
-        print(rain_graph)
         radar_animation['svg_animated'] = rain_graph.get_svg_string()
         radar_animation['svg_still'] = rain_graph.get_svg_string(still_image=True)
         return radar_animation
