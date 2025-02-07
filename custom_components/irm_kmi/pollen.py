@@ -71,7 +71,6 @@ class PollenParser:
                          for e in elements if 'tspan' in e.tag and self._get_elem_text(e) in POLLEN_LEVEL_TO_COLOR}
 
         level_dots = {e.attrib.get('cx', None) for e in elements if 'circle' in e.tag}
-        print(level_dots)
 
         # For each pollen name found, check the text just below.
         # As of January 2025, the text is always 'active' and the dot shows the real level
@@ -80,7 +79,7 @@ class PollenParser:
             # Determine pollen level based on text
             if position is not None and position in pollen_levels:
                 pollen_data[pollen] = pollen_levels[position]
-                print(f"{pollen} is {pollen_data[pollen]} according to text")
+                _LOGGER.debug(f"{pollen} is {pollen_data[pollen]} according to text")
 
             # If text is 'active' or if there is no text, check the dot as a fallback
             if pollen_data[pollen] not in {'none', 'active'}:
