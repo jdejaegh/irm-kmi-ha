@@ -1,9 +1,8 @@
 """DataUpdateCoordinator for the IRM KMI integration."""
-import asyncio
 import logging
 from datetime import datetime, timedelta
 from statistics import mean
-from typing import Any, List, Tuple, Coroutine
+from typing import List
 import urllib.parse
 
 import async_timeout
@@ -68,7 +67,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         This is the place to pre-process the data to lookup tables
         so entities can quickly look up their data.
         """
-        _LOGGER.info("Updating weather data")
+        self._api_client.expire_cache()
         if (zone := self.hass.states.get(self._zone)) is None:
             raise UpdateFailed(f"Zone '{self._zone}' not found")
         try:
@@ -118,8 +117,6 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
     async def _async_animation_data(self, api_data: dict) -> RainGraph | None:
         """From the API data passed in, call the API to get all the images and create the radar animation data object.
         Frames from the API are merged with the background map and the location marker to create each frame."""
-        _LOGGER.debug("_async_animation_data")
-
         animation_data = api_data.get('animation', {}).get('sequence')
         localisation_layer_url = api_data.get('animation', {}).get('localisationLayer')
         country = api_data.get('country', '')
@@ -140,9 +137,6 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             location=localisation
         )
         rain_graph: RainGraph = await self.create_rain_graph(radar_animation, animation_data, country, images_from_api)
-        # radar_animation['svg_animated'] = rain_graph.get_svg_string()
-        # radar_animation['svg_still'] = rain_graph.get_svg_string(still_image=True)
-        _LOGGER.debug(f"Return rain_graph from coordinator {rain_graph.get_hint()}")
         return rain_graph
 
     @staticmethod
