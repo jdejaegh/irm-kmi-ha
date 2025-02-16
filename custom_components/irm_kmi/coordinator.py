@@ -3,7 +3,8 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 from statistics import mean
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Coroutine
+import urllib.parse
 
 import async_timeout
 from homeassistant.components.weather import Forecast
@@ -24,9 +25,10 @@ from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
 from .const import MAP_WARNING_ID_TO_SLUG as SLUG_MAP
 from .const import (OPTION_STYLE_SATELLITE, OUT_OF_BENELUX, STYLE_TO_PARAM_MAP,
                     WEEKDAYS)
-from .data import (AnimationFrameData, CurrentWeatherData, IrmKmiForecast,
-                   IrmKmiRadarForecast, ProcessedCoordinatorData,
-                   RadarAnimationData, WarningData)
+from .data import (CurrentWeatherData, IrmKmiForecast,
+                   ProcessedCoordinatorData,
+                   WarningData)
+from .radar_data import IrmKmiRadarForecast, AnimationFrameData, RadarAnimationData
 from .pollen import PollenParser
 from .rain_graph import RainGraph
 from .utils import (disable_from_config, get_config_value, next_weekday,
@@ -66,6 +68,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         This is the place to pre-process the data to lookup tables
         so entities can quickly look up their data.
         """
+        _LOGGER.info("Updating weather data")
         if (zone := self.hass.states.get(self._zone)) is None:
             raise UpdateFailed(f"Zone '{self._zone}' not found")
         try:
@@ -112,24 +115,23 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         """Refresh data and log errors."""
         await self._async_refresh(log_failures=True, raise_on_entry_error=True)
 
-    async def _async_animation_data(self, api_data: dict) -> RadarAnimationData:
+    async def _async_animation_data(self, api_data: dict) -> RainGraph | None:
         """From the API data passed in, call the API to get all the images and create the radar animation data object.
         Frames from the API are merged with the background map and the location marker to create each frame."""
+        _LOGGER.debug("_async_animation_data")
+
         animation_data = api_data.get('animation', {}).get('sequence')
         localisation_layer_url = api_data.get('animation', {}).get('localisationLayer')
         country = api_data.get('country', '')
 
         if animation_data is None or localisation_layer_url is None or not isinstance(animation_data, list):
-            return RadarAnimationData()
+            return None
 
-        try:
-            images_from_api = await self.download_images_from_api(animation_data, country, localisation_layer_url)
-        except IrmKmiApiError as err:
-            _LOGGER.warning(f"Could not get images for weather radar: {err}.  Keep the existing radar data.")
-            return self.data.get('animation', RadarAnimationData()) if self.data is not None else RadarAnimationData()
-
-        localisation = images_from_api[0]
-        images_from_api = images_from_api[1:]
+        localisation = self.merge_url_and_params(localisation_layer_url,
+                                                 {'th': 'd' if country == 'NL' or not self._dark_mode else 'n'})
+        images_from_api = [self.merge_url_and_params(frame.get('uri'), {'rs': STYLE_TO_PARAM_MAP[self._style]})
+            for frame in animation_data if frame is not None and frame.get('uri') is not None
+        ]
 
         lang = preferred_language(self.hass, self.config_entry)
         radar_animation = RadarAnimationData(
@@ -137,10 +139,20 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             unit=api_data.get('animation', {}).get('unit', {}).get(lang),
             location=localisation
         )
-        rain_graph = await self.create_rain_graph(radar_animation, animation_data, country, images_from_api)
-        radar_animation['svg_animated'] = rain_graph.get_svg_string()
-        radar_animation['svg_still'] = rain_graph.get_svg_string(still_image=True)
-        return radar_animation
+        rain_graph: RainGraph = await self.create_rain_graph(radar_animation, animation_data, country, images_from_api)
+        # radar_animation['svg_animated'] = rain_graph.get_svg_string()
+        # radar_animation['svg_still'] = rain_graph.get_svg_string(still_image=True)
+        _LOGGER.debug(f"Return rain_graph from coordinator {rain_graph.get_hint()}")
+        return rain_graph
+
+    @staticmethod
+    def merge_url_and_params(url, params):
+        parsed_url = urllib.parse.urlparse(url)
+        query_params = urllib.parse.parse_qs(parsed_url.query)
+        query_params.update(params)
+        new_query = urllib.parse.urlencode(query_params, doseq=True)
+        new_url = parsed_url._replace(query=new_query)
+        return str(urllib.parse.urlunparse(new_url))
 
     async def _async_pollen_data(self, api_data: dict) -> dict:
         """Get SVG pollen info from the API, return the pollen data dict"""
@@ -179,25 +191,6 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             country=api_data.get('country')
         )
 
-    async def download_images_from_api(self,
-                                       animation_data: list,
-                                       country: str,
-                                       localisation_layer_url: str) -> tuple[Any]:
-        """Download a batch of images to create the radar frames."""
-        coroutines = list()
-        coroutines.append(
-            self._api_client.get_image(localisation_layer_url,
-                                       params={'th': 'd' if country == 'NL' or not self._dark_mode else 'n'}))
-
-        for frame in animation_data:
-            if frame.get('uri', None) is not None:
-                coroutines.append(
-                    self._api_client.get_image(frame.get('uri'), params={'rs': STYLE_TO_PARAM_MAP[self._style]}))
-        async with async_timeout.timeout(60):
-            images_from_api = await asyncio.gather(*coroutines)
-
-        _LOGGER.debug(f"Just downloaded {len(images_from_api)} images")
-        return images_from_api
 
     @staticmethod
     async def current_weather_from_data(api_data: dict) -> CurrentWeatherData:
@@ -457,7 +450,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                                 radar_animation: RadarAnimationData,
                                 api_animation_data: List[dict],
                                 country: str,
-                                images_from_api: Tuple[bytes],
+                                images_from_api: list[str],
                                 ) -> RainGraph:
         """Create a RainGraph object that is ready to output animated and still SVG images"""
         sequence: List[AnimationFrameData] = list()
@@ -494,7 +487,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
             bg_size = (640, 490)
 
         return await RainGraph(radar_animation, image_path, bg_size, tz=tz, config_dir=self.hass.config.config_dir,
-                               dark_mode=self._dark_mode).build()
+                               dark_mode=self._dark_mode, api_client=self._api_client).build()
 
     def warnings_from_data(self, warning_data: list | None) -> List[WarningData]:
         """Create a list of warning data instances based on the api data"""

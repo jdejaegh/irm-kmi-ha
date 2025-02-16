@@ -1,8 +1,7 @@
 import base64
 from datetime import datetime, timedelta
 
-from custom_components.irm_kmi.data import (AnimationFrameData,
-                                            RadarAnimationData)
+from custom_components.irm_kmi.radar_data import AnimationFrameData, RadarAnimationData
 from custom_components.irm_kmi.rain_graph import RainGraph
 
 
@@ -249,7 +248,7 @@ def test_draw_cloud_layer():
     assert str_svg.count('width="640"') == 11  # Is also the width of the SVG itself
 
 
-def test_draw_location_layer():
+async def test_draw_location_layer():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
@@ -257,7 +256,7 @@ def test_draw_location_layer():
         background_size=(640, 490),
     )
 
-    rain_graph.draw_location()
+    await rain_graph.draw_location()
 
     str_svg = rain_graph.get_dwg().tostring()
 
