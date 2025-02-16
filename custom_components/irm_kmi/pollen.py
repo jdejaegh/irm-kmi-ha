@@ -3,7 +3,7 @@ import logging
 import xml.etree.ElementTree as ET
 from typing import List
 
-from custom_components.irm_kmi.const import POLLEN_LEVEL_TO_COLOR, POLLEN_NAMES
+from .const import POLLEN_LEVEL_TO_COLOR, POLLEN_NAMES
 
 _LOGGER = logging.getLogger(__name__)
 

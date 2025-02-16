@@ -3,3 +3,4 @@ pytest_homeassistant_custom_component==0.13.214
 pytest
 freezegun
 isort
+bumpver

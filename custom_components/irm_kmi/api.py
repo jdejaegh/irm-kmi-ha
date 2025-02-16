@@ -10,6 +10,7 @@ from datetime import datetime
 import aiohttp
 import async_timeout
 from aiohttp import ClientResponse
+from .const import USER_AGENT
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -70,9 +71,9 @@ class IrmKmiApiClient:
     ) -> any:
         """Get information from the API."""
         if headers is None:
-            headers = {'User-Agent': 'github.com/jdejaegh/irm-kmi-ha'}
+            headers = {'User-Agent': USER_AGENT}
         else:
-            headers['User-Agent'] = 'github.com/jdejaegh/irm-kmi-ha'
+            headers['User-Agent'] = USER_AGENT
 
         try:
             async with async_timeout.timeout(60):
