@@ -1,6 +1,6 @@
-aiohttp==3.11.11
+aiohttp==3.11.12
 async-timeout==4.0.3
-homeassistant==2025.1.4
+homeassistant==2025.2.4
 voluptuous==0.15.2
 svgwrite==1.4.3
 aiofile==3.9.0
