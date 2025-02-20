@@ -160,4 +160,4 @@ IRM_KMI_NAME: Final = {
 
 WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
-USER_AGENT: Final = 'github.com/jdejaegh/irm-kmi-ha 0.2.28'
+USER_AGENT: Final = 'github.com/jdejaegh/irm-kmi-ha 0.2.29'
