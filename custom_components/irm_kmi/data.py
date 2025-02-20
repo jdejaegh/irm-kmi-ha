@@ -4,6 +4,8 @@ from typing import List, TypedDict
 
 from homeassistant.components.weather import Forecast
 
+from .rain_graph import RainGraph
+
 
 class IrmKmiForecast(Forecast):
     """Forecast class with additional attributes for IRM KMI"""
@@ -12,13 +14,6 @@ class IrmKmiForecast(Forecast):
     text: str | None
     sunrise: str | None
     sunset: str | None
-
-
-class IrmKmiRadarForecast(Forecast):
-    """Forecast class to handle rain forecast from the IRM KMI rain radar"""
-    rain_forecast_max: float
-    rain_forecast_min: float
-    might_rain: bool
 
 
 class CurrentWeatherData(TypedDict, total=False):
@@ -30,27 +25,6 @@ class CurrentWeatherData(TypedDict, total=False):
     wind_bearing: float | str | None
     uv_index: float | None
     pressure: float | None
-
-
-class AnimationFrameData(TypedDict, total=False):
-    """Holds one single frame of the radar camera, along with the timestamp of the frame"""
-    time: datetime | None
-    image: bytes | None
-    value: float | None
-    position: float | None
-    position_higher: float | None
-    position_lower: float | None
-
-
-class RadarAnimationData(TypedDict, total=False):
-    """Holds frames and additional data for the animation to be rendered"""
-    sequence: List[AnimationFrameData] | None
-    most_recent_image_idx: int | None
-    hint: str | None
-    unit: str | None
-    location: bytes | None
-    svg_still: bytes | None
-    svg_animated: bytes | None
 
 
 class WarningData(TypedDict, total=False):
@@ -70,7 +44,7 @@ class ProcessedCoordinatorData(TypedDict, total=False):
     hourly_forecast: List[Forecast] | None
     daily_forecast: List[IrmKmiForecast] | None
     radar_forecast: List[Forecast] | None
-    animation: RadarAnimationData
+    animation: RainGraph | None
     warnings: List[WarningData]
     pollen: dict
     country: str

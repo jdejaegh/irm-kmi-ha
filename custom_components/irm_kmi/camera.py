@@ -46,19 +46,14 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
         """Return the interval between frames of the mjpeg stream."""
         return 1
 
-    def camera_image(self,
-                     width: int | None = None,
-                     height: int | None = None) -> bytes | None:
-        """Return still image to be used as thumbnail."""
-        return self.coordinator.data.get('animation', {}).get('svg_still')
-
     async def async_camera_image(
             self,
             width: int | None = None,
             height: int | None = None
     ) -> bytes | None:
         """Return still image to be used as thumbnail."""
-        return self.camera_image()
+        if self.coordinator.data.get('animation', None) is not None:
+            return await self.coordinator.data.get('animation').get_still()
 
     async def handle_async_still_stream(self, request: web.Request, interval: float) -> web.StreamResponse:
         """Generate an HTTP MJPEG stream from camera images."""
@@ -73,8 +68,8 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
         """Returns the animated svg for camera display"""
         # If this is not done this way, the live view can only be opened once
         self._image_index = not self._image_index
-        if self._image_index:
-            return self.coordinator.data.get('animation', {}).get('svg_animated')
+        if self._image_index and self.coordinator.data.get('animation', None) is not None:
+            return await self.coordinator.data.get('animation').get_animated()
         else:
             return None
 
@@ -86,5 +81,7 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
     @property
     def extra_state_attributes(self) -> dict:
         """Return the camera state attributes."""
-        attrs = {"hint": self.coordinator.data.get('animation', {}).get('hint')}
+        rain_graph = self.coordinator.data.get('animation', None)
+        hint = rain_graph.get_hint() if rain_graph is not None else None
+        attrs = {"hint": hint}
         return attrs

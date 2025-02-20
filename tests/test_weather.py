@@ -10,8 +10,8 @@ from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import IrmKmiCoordinator, IrmKmiWeather
-from custom_components.irm_kmi.data import (IrmKmiRadarForecast,
-                                            ProcessedCoordinatorData)
+from custom_components.irm_kmi.data import (ProcessedCoordinatorData)
+from custom_components.irm_kmi.radar_data import IrmKmiRadarForecast
 from tests.conftest import get_api_data
 
 

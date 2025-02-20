@@ -11,10 +11,10 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
 from custom_components.irm_kmi.data import (CurrentWeatherData, IrmKmiForecast,
-                                            IrmKmiRadarForecast,
-                                            ProcessedCoordinatorData,
-                                            RadarAnimationData)
+                                            ProcessedCoordinatorData)
+from custom_components.irm_kmi.radar_data import IrmKmiRadarForecast, RadarAnimationData
 from custom_components.irm_kmi.pollen import PollenParser
+from custom_components.irm_kmi.rain_graph import RainGraph
 from tests.conftest import get_api_data
 
 
@@ -230,7 +230,7 @@ async def test_refresh_succeed_even_when_pollen_and_radar_fail(
         0,
         {"latitude": 50.738681639, "longitude": 4.054077148},
     )
-
+    hass.config.config_dir = "."
     mock_config_entry.add_to_hass(hass)
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
@@ -239,7 +239,7 @@ async def test_refresh_succeed_even_when_pollen_and_radar_fail(
 
     assert result.get('current_weather').get('condition') == ATTR_CONDITION_CLOUDY
 
-    assert result.get('animation') == dict()
+    assert result.get('animation').get_hint() == "No rain forecasted shortly"
 
     assert result.get('pollen') == PollenParser.get_unavailable_data()
 
@@ -247,7 +247,7 @@ async def test_refresh_succeed_even_when_pollen_and_radar_fail(
         current_weather=CurrentWeatherData(),
         daily_forecast=[],
         hourly_forecast=[],
-        animation=RadarAnimationData(hint="This will remain unchanged"),
+        animation=None,
         warnings=[],
         pollen={'foo': 'bar'}
     )
@@ -256,7 +256,7 @@ async def test_refresh_succeed_even_when_pollen_and_radar_fail(
 
     assert result.get('current_weather').get('condition') == ATTR_CONDITION_CLOUDY
 
-    assert result.get('animation').get('hint') == "This will remain unchanged"
+    assert result.get('animation').get_hint() == "No rain forecasted shortly"
 
     assert result.get('pollen') == {'foo': 'bar'}
 

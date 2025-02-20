@@ -1,20 +1,21 @@
 """Create graphs for rain short term forecast."""
-
+import asyncio
 import base64
 import copy
 import datetime
 import logging
 import os
-from typing import List, Self
+from typing import List, Self, Any, Coroutine
 
+import async_timeout
 from aiofile import async_open
 from homeassistant.util import dt
 from svgwrite import Drawing
 from svgwrite.animate import Animate
 from svgwrite.utils import font_mimetype
 
-from custom_components.irm_kmi.data import (AnimationFrameData,
-                                            RadarAnimationData)
+from .api import IrmKmiApiClient
+from .radar_data import AnimationFrameData, RadarAnimationData
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class RainGraph:
                  top_text_y_pos: float = 20,
                  bottom_text_space: float = 50,
                  bottom_text_y_pos: float = 218,
+                 api_client: IrmKmiApiClient | None = None
                  ):
 
         self._animation_data: RadarAnimationData = animation_data
@@ -49,6 +51,7 @@ class RainGraph:
         self._top_text_y_pos: float = top_text_y_pos + background_size[1]
         self._bottom_text_space: float = bottom_text_space
         self._bottom_text_y_pos: float = bottom_text_y_pos + background_size[1]
+        self._api_client = api_client
 
         self._frame_count: int = len(self._animation_data['sequence'])
         self._graph_width: float = self._svg_width - 2 * self._inset
@@ -64,9 +67,9 @@ class RainGraph:
             raise ValueError("bottom_text_y_pos must be below the graph")
 
         self._dwg: Drawing = Drawing(size=(self._svg_width, self._svg_height), profile='full')
-        self._dwg_save: Drawing = Drawing()
-        self._dwg_animated: Drawing = Drawing()
-        self._dwg_still: Drawing = Drawing()
+        self._dwg_save: Drawing | None = None
+        self._dwg_animated: Drawing | None = None
+        self._dwg_still: Drawing | None = None
 
     async def build(self) -> Self:
         """Build the rain graph by calling all the method in the right order.  Returns self when done"""
@@ -78,20 +81,71 @@ class RainGraph:
         await self.insert_background()
         self._dwg_save = copy.deepcopy(self._dwg)
 
-        self.draw_current_fame_line()
-        self.draw_description_text()
-        self.insert_cloud_layer()
-        self.draw_location()
-        self._dwg_animated = self._dwg
-
-        self._dwg = self._dwg_save
-        idx = self._animation_data['most_recent_image_idx']
-        self.draw_current_fame_line(idx)
-        self.draw_description_text(idx)
-        self.insert_cloud_layer(idx)
-        self.draw_location()
-        self._dwg_still = self._dwg
         return self
+
+    async def get_animated(self) -> bytes:
+        """Get the animated SVG. If called for the first time since refresh, downloads the images to build the file."""
+
+        _LOGGER.info(f"Get animated with _dwg_animated {self._dwg_animated}")
+        if self._dwg_animated is None:
+            clouds = self.download_clouds()
+            self._dwg = copy.deepcopy(self._dwg_save)
+            self.draw_current_fame_line()
+            self.draw_description_text()
+            await clouds
+            self.insert_cloud_layer()
+            await self.draw_location()
+            self._dwg_animated = self._dwg
+        return self.get_svg_string(still_image=False)
+
+    async def get_still(self) -> bytes:
+        """Get the animated SVG. If called for the first time since refresh, downloads the images to build the file."""
+        _LOGGER.info(f"Get still with _dwg_still {self._dwg_still}")
+
+        if self._dwg_still is None:
+            idx = self._animation_data['most_recent_image_idx']
+            cloud = self.download_clouds(idx)
+            self._dwg = copy.deepcopy(self._dwg_save)
+            self.draw_current_fame_line(idx)
+            self.draw_description_text(idx)
+            await cloud
+            self.insert_cloud_layer(idx)
+            await self.draw_location()
+            self._dwg_still = self._dwg
+        return self.get_svg_string(still_image=True)
+
+    async def download_clouds(self, idx = None):
+        imgs = [e['image'] for e in self._animation_data['sequence']]
+
+        if idx is not None and type(imgs[idx]) is str:
+            _LOGGER.info("Download single cloud image")
+            result = await self.download_images_from_api([imgs[idx]])
+            self._animation_data['sequence'][idx]['image'] = result[0]
+
+        else:
+            _LOGGER.info("Download many cloud images")
+
+            result = await self.download_images_from_api([img for img in imgs if type(img) is str])
+
+            for i in range(len(self._animation_data['sequence'])):
+                if type(self._animation_data['sequence'][i]['image']) is str:
+                    self._animation_data['sequence'][i]['image'] = result[0]
+                    result = result[1:]
+
+    async def download_images_from_api(self, urls: list[str]) -> list[Any]:
+        """Download a batch of images to create the radar frames."""
+        coroutines = list()
+
+        for url in urls:
+            coroutines.append(self._api_client.get_image(url))
+        async with async_timeout.timeout(60):
+            images_from_api = await asyncio.gather(*coroutines)
+
+        _LOGGER.info(f"Just downloaded {len(images_from_api)} images")
+        return images_from_api
+
+    def get_hint(self) -> str:
+        return self._animation_data.get('hint', None)
 
     async def draw_svg_frame(self):
         """Create the global area to draw the other items"""
@@ -342,8 +396,14 @@ class RainGraph:
                 repeatCount="indefinite"
             ))
 
-    def draw_location(self):
+    async def draw_location(self):
         img = self._animation_data['location']
+
+        _LOGGER.info(f"Draw location layer with img of type {type(img)}")
+        if type(img) is str:
+            result = await self.download_images_from_api([img])
+            img = result[0]
+            self._animation_data['location'] = img
         png_data = base64.b64encode(img).decode('utf-8')
         image = self._dwg.image("data:image/png;base64," + png_data, insert=(0, 0), size=self._background_size)
         self._dwg.add(image)
