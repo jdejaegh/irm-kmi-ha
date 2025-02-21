@@ -11,7 +11,8 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt
 
 from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
-from custom_components.irm_kmi.const import POLLEN_NAMES, POLLEN_TO_ICON_MAP
+from custom_components.irm_kmi.const import POLLEN_NAMES, POLLEN_TO_ICON_MAP, CURRENT_WEATHER_SENSOR_UNITS, \
+    CURRENT_WEATHER_SENSOR_CLASS, CURRENT_WEATHER_SENSORS
 from custom_components.irm_kmi.data import IrmKmiForecast
 from custom_components.irm_kmi.pollen import PollenParser
 
@@ -22,6 +23,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     """Set up the sensor platform"""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([IrmKmiPollen(coordinator, entry, pollen.lower()) for pollen in POLLEN_NAMES])
+    async_add_entities([IrmKmiCurrentWeather(coordinator, entry, name) for name in CURRENT_WEATHER_SENSORS])
     async_add_entities([IrmKmiNextWarning(coordinator, entry),])
 
     if coordinator.data.get('country') != 'NL':
@@ -135,3 +137,36 @@ class IrmKmiNextSunMove(CoordinatorEntity, SensorEntity):
         if len(upcoming) > 0:
             return upcoming[0]
         return None
+
+
+class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
+    """Representation of a current weather sensor"""
+
+    _attr_has_entity_name = True
+    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+
+    def __init__(self,
+                 coordinator: IrmKmiCoordinator,
+                 entry: ConfigEntry,
+                 sensor_name: str) -> None:
+        super().__init__(coordinator)
+        SensorEntity.__init__(self)
+        self._attr_unique_id = f"{entry.entry_id}-current-{sensor_name}"
+        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_next_{sensor_name}")
+        self._attr_device_info = coordinator.shared_device_info
+        # TODO
+        #  self._attr_translation_key = f"next_{move}"
+        self._sensor_name: str = sensor_name
+
+    @property
+    def native_value(self) -> float | None:
+        """Return the current value of the sensor"""
+        return self.coordinator.data.get('current_weather', {}).get(self._sensor_name, None)
+
+    @property
+    def native_unit_of_measurement(self) -> str | None:
+        return CURRENT_WEATHER_SENSOR_UNITS[self._sensor_name]
+
+    @property
+    def device_class(self) -> SensorDeviceClass | None:
+        return CURRENT_WEATHER_SENSOR_CLASS[self._sensor_name]
