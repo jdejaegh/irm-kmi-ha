@@ -182,6 +182,27 @@
           "purple": "Violet",
           "none": "Aucun"
         }
+      },
+      "current_temperature": {
+        "name": "Température"
+      },
+      "current_wind_speed": {
+        "name": "Vitesse du vent"
+      },
+      "current_wind_gust_speed": {
+        "name": "Vitesse des rafales de vent"
+      },
+      "current_wind_bearing": {
+        "name": "Direction du vent"
+      },
+      "current_uv_index": {
+        "name": "Index UV"
+      },
+      "current_pressure": {
+        "name": "Pression atmosphérique"
+      },
+      "current_rainfall": {
+        "name": "Precipitation"
       }
     }
   },

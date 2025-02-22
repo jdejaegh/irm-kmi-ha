@@ -1474,7 +1474,7 @@
             {
                 "time": "2024-01-12T10:10:00+01:00",
                 "uri": "https:\/\/app.meteo.be\/services\/appv4\/?s=getIncaImage&i=202401120920&f=2&k=2160a92594985471351907ee5cc75d1f&d=202401120900",
-                "value": 0,
+                "value": 0.42,
                 "position": 0,
                 "positionLower": 0,
                 "positionHigher": 0

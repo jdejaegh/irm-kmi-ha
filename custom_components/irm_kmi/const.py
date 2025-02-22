@@ -1,6 +1,7 @@
 """Constants for the IRM KMI integration."""
 from typing import Final
 
+from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
                                               ATTR_CONDITION_CLOUDY,
                                               ATTR_CONDITION_FOG,
@@ -11,7 +12,7 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
                                               ATTR_CONDITION_SNOWY,
                                               ATTR_CONDITION_SNOWY_RAINY,
                                               ATTR_CONDITION_SUNNY)
-from homeassistant.const import Platform
+from homeassistant.const import Platform, UnitOfPressure, UnitOfSpeed, UnitOfTemperature, DEGREE
 
 DOMAIN: Final = 'irm_kmi'
 PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA, Platform.BINARY_SENSOR, Platform.SENSOR]
@@ -161,3 +162,28 @@ IRM_KMI_NAME: Final = {
 WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 USER_AGENT: Final = 'github.com/jdejaegh/irm-kmi-ha 0.2.29'
+
+CURRENT_WEATHER_SENSORS: Final = {'temperature', 'wind_speed', 'wind_gust_speed', 'wind_bearing', 'uv_index',
+                                  'pressure'}
+
+CURRENT_WEATHER_SENSOR_UNITS: Final = {'temperature': UnitOfTemperature.CELSIUS,
+                                       'wind_speed': UnitOfSpeed.KILOMETERS_PER_HOUR,
+                                       'wind_gust_speed': UnitOfSpeed.KILOMETERS_PER_HOUR,
+                                       'wind_bearing': DEGREE,
+                                       'uv_index': None,
+                                       'pressure': UnitOfPressure.HPA}
+
+CURRENT_WEATHER_SENSOR_CLASS: Final = {'temperature': SensorDeviceClass.TEMPERATURE,
+                                       'wind_speed': SensorDeviceClass.WIND_SPEED,
+                                       'wind_gust_speed': SensorDeviceClass.WIND_SPEED,
+                                       'wind_bearing': None,
+                                       'uv_index': None,
+                                       'pressure': SensorDeviceClass.ATMOSPHERIC_PRESSURE}
+
+# Leave None when we want the default icon to be shown
+CURRENT_WEATHER_SENSOR_ICON: Final = {'temperature': None,
+                                       'wind_speed': None,
+                                       'wind_gust_speed': None,
+                                       'wind_bearing': 'mdi:compass',
+                                       'uv_index': 'mdi:sun-wireless',
+                                       'pressure': None}

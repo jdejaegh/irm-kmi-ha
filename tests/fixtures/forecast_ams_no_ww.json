@@ -1642,7 +1642,7 @@
       {
         "time": "2024-06-09T13:40:00+00:00",
         "uri": "https:\/\/cdn.knmi.nl\/knmi\/map\/page\/weer\/actueel-weer\/neerslagradar\/weerapp\/RAD_NL25_PCP_CM_202406091340_640.png",
-        "value": 0,
+        "value": 0.1341,
         "position": 0,
         "positionLower": 0,
         "positionHigher": 0

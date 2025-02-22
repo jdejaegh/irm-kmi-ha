@@ -327,6 +327,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         if data is None:
             return None
         sequence = data.get("sequence", [])
+        unit = data.get("unit", {}).get("en", None)
         ratios = [f['value'] / f['position'] for f in sequence if f['position'] > 0]
 
         if len(ratios) > 0:
@@ -342,7 +343,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                     native_precipitation=f.get('value'),
                     rain_forecast_max=round(f.get('positionHigher') * ratio, 2),
                     rain_forecast_min=round(f.get('positionLower') * ratio, 2),
-                    might_rain=f.get('positionHigher') > 0
+                    might_rain=f.get('positionHigher') > 0,
+                    unit=unit
                 )
             )
         return forecast

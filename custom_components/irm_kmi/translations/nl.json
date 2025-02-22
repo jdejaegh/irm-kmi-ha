@@ -182,6 +182,27 @@
           "purple": "Paars",
           "none": "Geen"
         }
+      },
+      "current_temperature": {
+        "name": "Temperatuur"
+      },
+      "current_wind_speed": {
+        "name": "Windsnelheid"
+      },
+      "current_wind_gust_speed": {
+        "name": "Snelheid windvlaag"
+      },
+      "current_wind_bearing": {
+        "name": "Windrichting"
+      },
+      "current_uv_index": {
+        "name": "UV-index"
+      },
+      "current_pressure": {
+        "name": "Luchtdruk"
+      },
+      "current_rainfall": {
+        "name": "Neerslag"
       }
     }
   },
