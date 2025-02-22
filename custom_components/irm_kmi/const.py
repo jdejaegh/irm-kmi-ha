@@ -180,4 +180,10 @@ CURRENT_WEATHER_SENSOR_CLASS: Final = {'temperature': SensorDeviceClass.TEMPERAT
                                        'uv_index': None,
                                        'pressure': SensorDeviceClass.ATMOSPHERIC_PRESSURE}
 
-# TODO add sensor icon map for nice display
+# Leave None when we want the default icon to be shown
+CURRENT_WEATHER_SENSOR_ICON: Final = {'temperature': None,
+                                       'wind_speed': None,
+                                       'wind_gust_speed': None,
+                                       'wind_bearing': 'mdi:compass',
+                                       'uv_index': None,
+                                       'pressure': None}

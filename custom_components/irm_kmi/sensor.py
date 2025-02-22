@@ -12,7 +12,7 @@ from homeassistant.util import dt
 
 from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
 from custom_components.irm_kmi.const import POLLEN_NAMES, POLLEN_TO_ICON_MAP, CURRENT_WEATHER_SENSOR_UNITS, \
-    CURRENT_WEATHER_SENSOR_CLASS, CURRENT_WEATHER_SENSORS
+    CURRENT_WEATHER_SENSOR_CLASS, CURRENT_WEATHER_SENSORS, CURRENT_WEATHER_SENSOR_ICON
 from custom_components.irm_kmi.data import IrmKmiForecast
 from custom_components.irm_kmi.pollen import PollenParser
 
@@ -154,8 +154,7 @@ class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}-current-{sensor_name}"
         self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_next_{sensor_name}")
         self._attr_device_info = coordinator.shared_device_info
-        # TODO
-        #  self._attr_translation_key = f"next_{move}"
+        self._attr_translation_key = f"current_{sensor_name}"
         self._sensor_name: str = sensor_name
 
     @property
@@ -170,3 +169,7 @@ class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
     @property
     def device_class(self) -> SensorDeviceClass | None:
         return CURRENT_WEATHER_SENSOR_CLASS[self._sensor_name]
+
+    @property
+    def icon(self) -> str | None:
+        return CURRENT_WEATHER_SENSOR_ICON[self._sensor_name]
