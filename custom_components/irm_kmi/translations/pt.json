@@ -200,6 +200,9 @@
       },
       "current_pressure": {
         "name": "Pressão atmosférica"
+      },
+      "current_rainfall": {
+        "name": "Precipitação"
       }
     }
   },

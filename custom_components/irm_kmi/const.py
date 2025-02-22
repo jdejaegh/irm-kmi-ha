@@ -185,5 +185,5 @@ CURRENT_WEATHER_SENSOR_ICON: Final = {'temperature': None,
                                        'wind_speed': None,
                                        'wind_gust_speed': None,
                                        'wind_bearing': 'mdi:compass',
-                                       'uv_index': None,
+                                       'uv_index': 'mdi:sun-wireless',
                                        'pressure': None}

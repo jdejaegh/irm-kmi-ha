@@ -200,6 +200,9 @@
       },
       "current_pressure": {
         "name": "Luchtdruk"
+      },
+      "current_rainfall": {
+        "name": "Neerslag"
       }
     }
   },

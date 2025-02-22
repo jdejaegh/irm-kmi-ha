@@ -6,7 +6,7 @@
 		"municipality_code": "0995",
 		"temp": 11,
 		"windSpeedKm": 40,
-		"timestamp": "2023-12-28T14:20:00+00:00",
+		"timestamp": "2023-12-28T14:30:00+00:00",
 		"windDirection": 45,
 		"municipality": "Lelystad",
 		"windDirectionText": {
@@ -1337,7 +1337,7 @@
 			{
 				"time": "2023-12-28T14:25:00+00:00",
 				"uri": "https:\/\/cdn.knmi.nl\/knmi\/map\/page\/weer\/actueel-weer\/neerslagradar\/weerapp\/RAD_NL25_PCP_CM_202312281425_640.png",
-				"value": 0,
+				"value": 0.15,
 				"position": 0,
 				"positionLower": 0,
 				"positionHigher": 0

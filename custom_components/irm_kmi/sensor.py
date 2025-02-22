@@ -15,6 +15,7 @@ from custom_components.irm_kmi.const import POLLEN_NAMES, POLLEN_TO_ICON_MAP, CU
     CURRENT_WEATHER_SENSOR_CLASS, CURRENT_WEATHER_SENSORS, CURRENT_WEATHER_SENSOR_ICON
 from custom_components.irm_kmi.data import IrmKmiForecast
 from custom_components.irm_kmi.pollen import PollenParser
+from custom_components.irm_kmi.radar_data import IrmKmiRadarForecast
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([IrmKmiPollen(coordinator, entry, pollen.lower()) for pollen in POLLEN_NAMES])
     async_add_entities([IrmKmiCurrentWeather(coordinator, entry, name) for name in CURRENT_WEATHER_SENSORS])
-    async_add_entities([IrmKmiNextWarning(coordinator, entry),])
+    async_add_entities([IrmKmiNextWarning(coordinator, entry),
+                        IrmKmiCurrentRainfall(coordinator, entry)])
 
     if coordinator.data.get('country') != 'NL':
         async_add_entities([IrmKmiNextSunMove(coordinator, entry, move) for move in ['sunset', 'sunrise']])
@@ -152,7 +154,7 @@ class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-current-{sensor_name}"
-        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_next_{sensor_name}")
+        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_current_{sensor_name}")
         self._attr_device_info = coordinator.shared_device_info
         self._attr_translation_key = f"current_{sensor_name}"
         self._sensor_name: str = sensor_name
@@ -173,3 +175,55 @@ class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
     @property
     def icon(self) -> str | None:
         return CURRENT_WEATHER_SENSOR_ICON[self._sensor_name]
+
+
+class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
+    """Representation of a current rainfall sensor"""
+
+    _attr_has_entity_name = True
+    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+
+    def __init__(self,
+                 coordinator: IrmKmiCoordinator,
+                 entry: ConfigEntry) -> None:
+        super().__init__(coordinator)
+        SensorEntity.__init__(self)
+        self._attr_unique_id = f"{entry.entry_id}-current-rainfall"
+        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_current_rainfall")
+        self._attr_device_info = coordinator.shared_device_info
+        self._attr_translation_key = "current_rainfall"
+        self._attr_icon = 'mdi:weather-pouring'
+
+    def _current_forecast(self) -> IrmKmiRadarForecast | None:
+        now = dt.now()
+        forecasts = self.coordinator.data.get('radar_forecast', None)
+
+        if forecasts is None:
+            return None
+
+        prev = forecasts[0]
+        for f in forecasts:
+            if datetime.fromisoformat(f.get('datetime')) > now:
+                return prev
+            prev = f
+
+        return forecasts[-1]
+
+    @property
+    def native_value(self) -> float | None:
+        """Return the current value of the sensor"""
+        current = self._current_forecast()
+
+        if current is None:
+            return None
+
+        return current.get('native_precipitation', None)
+
+    @property
+    def native_unit_of_measurement(self) -> str | None:
+        current = self._current_forecast()
+
+        if current is None:
+            return None
+
+        return current.get('unit', None)

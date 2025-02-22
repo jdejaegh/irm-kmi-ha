@@ -11,6 +11,7 @@ class IrmKmiRadarForecast(Forecast):
     rain_forecast_max: float
     rain_forecast_min: float
     might_rain: bool
+    unit: str | None
 
 
 class AnimationFrameData(TypedDict, total=False):

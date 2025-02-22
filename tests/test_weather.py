@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock
 
 from freezegun import freeze_time
 from homeassistant.components.weather import Forecast
-from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -30,7 +29,7 @@ async def test_weather_nl(
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     await coordinator.async_refresh()
-
+    print(coordinator.data)
     weather = IrmKmiWeather(coordinator, mock_config_entry)
     result = await weather.async_forecast_daily()
 
@@ -118,27 +117,27 @@ async def test_radar_forecast_service(
 
     expected = [
         IrmKmiRadarForecast(datetime="2023-12-26T17:00:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:10:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:20:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:30:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:40:00+01:00", native_precipitation=0.1, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:50:00+01:00", native_precipitation=0.01, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:00:00+01:00", native_precipitation=0.12, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:10:00+01:00", native_precipitation=1.2, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:20:00+01:00", native_precipitation=2, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:30:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:40:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0)
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min')
     ]
 
     assert result_service == expected[5:]

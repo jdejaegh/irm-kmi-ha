@@ -1,4 +1,3 @@
-import zoneinfo
 from datetime import datetime, timedelta
 
 from freezegun import freeze_time
@@ -12,9 +11,8 @@ from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
 from custom_components.irm_kmi.data import (CurrentWeatherData, IrmKmiForecast,
                                             ProcessedCoordinatorData)
-from custom_components.irm_kmi.radar_data import IrmKmiRadarForecast, RadarAnimationData
 from custom_components.irm_kmi.pollen import PollenParser
-from custom_components.irm_kmi.rain_graph import RainGraph
+from custom_components.irm_kmi.radar_data import IrmKmiRadarForecast
 from tests.conftest import get_api_data
 
 
@@ -267,27 +265,27 @@ def test_radar_forecast() -> None:
 
     expected = [
         IrmKmiRadarForecast(datetime="2023-12-26T17:00:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:10:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:20:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:30:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:40:00+01:00", native_precipitation=0.1, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:50:00+01:00", native_precipitation=0.01, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:00:00+01:00", native_precipitation=0.12, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:10:00+01:00", native_precipitation=1.2, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:20:00+01:00", native_precipitation=2, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:30:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0),
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T18:40:00+01:00", native_precipitation=0, might_rain=False,
-                            rain_forecast_max=0, rain_forecast_min=0)
+                            rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min')
     ]
 
     assert expected == result
@@ -302,7 +300,8 @@ def test_radar_forecast_rain_interval() -> None:
         native_precipitation=0.89,
         might_rain=True,
         rain_forecast_max=1.12,
-        rain_forecast_min=0.50
+        rain_forecast_min=0.50,
+        unit='mm/10min'
     )
 
     _13 = IrmKmiRadarForecast(
@@ -310,7 +309,8 @@ def test_radar_forecast_rain_interval() -> None:
         native_precipitation=0.83,
         might_rain=True,
         rain_forecast_max=1.09,
-        rain_forecast_min=0.64
+        rain_forecast_min=0.64,
+        unit='mm/10min'
     )
 
     assert result[12] == _12
