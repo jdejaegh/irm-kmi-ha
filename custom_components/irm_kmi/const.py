@@ -161,7 +161,7 @@ IRM_KMI_NAME: Final = {
 
 WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
-USER_AGENT: Final = 'github.com/jdejaegh/irm-kmi-ha 0.2.29'
+USER_AGENT: Final = 'github.com/jdejaegh/irm-kmi-ha 0.2.30'
 
 CURRENT_WEATHER_SENSORS: Final = {'temperature', 'wind_speed', 'wind_gust_speed', 'wind_bearing', 'uv_index',
                                   'pressure'}
