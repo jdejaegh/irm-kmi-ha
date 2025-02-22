@@ -182,6 +182,24 @@
           "purple": "Roxo",
           "none": "Nenhum"
         }
+      },
+      "current_temperature": {
+        "name": "Temperatura"
+      },
+      "current_wind_speed": {
+        "name": "Velocidade do vento"
+      },
+      "current_wind_gust_speed": {
+        "name": "Velocidade da rajada de vento"
+      },
+      "current_wind_bearing": {
+        "name": "Direção do vento"
+      },
+      "current_uv_index": {
+        "name": "Índice UV"
+      },
+      "current_pressure": {
+        "name": "Pressão atmosférica"
       }
     }
   },
