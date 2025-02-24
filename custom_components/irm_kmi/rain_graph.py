@@ -12,10 +12,12 @@ from aiofile import async_open
 from homeassistant.util import dt
 from svgwrite import Drawing
 from svgwrite.animate import Animate
+from svgwrite.container import FONT_TEMPLATE
 from svgwrite.utils import font_mimetype
 
 from .api import IrmKmiApiClient
 from .radar_data import AnimationFrameData, RadarAnimationData
+from .roboto import roboto_b64
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -149,15 +151,11 @@ class RainGraph:
 
     async def draw_svg_frame(self):
         """Create the global area to draw the other items"""
-        font_file = os.path.join(self._config_dir, 'custom_components/irm_kmi/resources/roboto_medium.ttf')
-        _LOGGER.debug(f"Opening font file at {font_file}")
+        mimetype = "application/x-font-ttf"
 
-        async with async_open(font_file, 'rb') as font:
-            data = await font.read()
+        content = FONT_TEMPLATE.format(name="Roboto Medium", data=f"data:{mimetype};charset=utf-8;base64,{roboto_b64}")
+        self._dwg.embed_stylesheet(content)
 
-        # Need to use the private class method as the public one does not offer an async call
-        # As this is run in the main loop, we cannot afford a blocking open() call
-        self._dwg._embed_font_data("Roboto Medium", data, font_mimetype(font_file))
         self._dwg.embed_stylesheet("""
             .roboto {
                 font-family: "Roboto Medium";
