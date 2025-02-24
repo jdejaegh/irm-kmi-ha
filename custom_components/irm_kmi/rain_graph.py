@@ -4,20 +4,17 @@ import base64
 import copy
 import datetime
 import logging
-import os
-from typing import List, Self, Any, Coroutine
+from typing import List, Self, Any
 
 import async_timeout
-from aiofile import async_open
 from homeassistant.util import dt
 from svgwrite import Drawing
 from svgwrite.animate import Animate
 from svgwrite.container import FONT_TEMPLATE
-from svgwrite.utils import font_mimetype
 
 from .api import IrmKmiApiClient
 from .radar_data import AnimationFrameData, RadarAnimationData
-from .roboto import roboto_b64
+from custom_components.irm_kmi.resources import roboto, be_black, be_satellite, be_white, nl
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -153,7 +150,8 @@ class RainGraph:
         """Create the global area to draw the other items"""
         mimetype = "application/x-font-ttf"
 
-        content = FONT_TEMPLATE.format(name="Roboto Medium", data=f"data:{mimetype};charset=utf-8;base64,{roboto_b64}")
+        content = FONT_TEMPLATE.format(name="Roboto Medium",
+                                       data=f"data:{mimetype};charset=utf-8;base64,{roboto.roboto_b64}")
         self._dwg.embed_stylesheet(content)
 
         self._dwg.embed_stylesheet("""
@@ -362,9 +360,7 @@ class RainGraph:
         return self._dwg_still.tostring().encode() if still_image else self._dwg_animated.tostring().encode()
 
     async def insert_background(self):
-        bg_image_path = os.path.join(self._config_dir, self._background_image_path)
-        async with async_open(bg_image_path, 'rb') as f:
-            png_data = base64.b64encode(await f.read()).decode('utf-8')
+        png_data = self.get_background_png_b64()
         image = self._dwg.image("data:image/png;base64," + png_data, insert=(0, 0), size=self._background_size)
         self._dwg.add(image)
 
@@ -408,3 +404,14 @@ class RainGraph:
 
     def get_dwg(self):
         return copy.deepcopy(self._dwg)
+
+    def get_background_png_b64(self):
+        _LOGGER.debug(f"Get b64 for {self._background_image_path}")
+        if self._background_image_path.endswith('be_black.png'):
+            return be_black.be_black_b64
+        elif self._background_image_path.endswith('be_white.png'):
+            return be_white.be_white_b64
+        elif self._background_image_path.endswith('be_satellite.png'):
+            return be_satellite.be_satelitte_b64
+        elif self._background_image_path.endswith('nl.png'):
+            return nl.nl_b64
