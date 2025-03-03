@@ -170,7 +170,8 @@ CURRENT_WEATHER_SENSOR_UNITS: Final = {'temperature': UnitOfTemperature.CELSIUS,
                                        'wind_speed': UnitOfSpeed.KILOMETERS_PER_HOUR,
                                        'wind_gust_speed': UnitOfSpeed.KILOMETERS_PER_HOUR,
                                        'wind_bearing': DEGREE,
-                                       'uv_index': None,
+                                       # Need to put '', else the history shows a bar graph instead of a chart
+                                       'uv_index': '',
                                        'pressure': UnitOfPressure.HPA}
 
 CURRENT_WEATHER_SENSOR_CLASS: Final = {'temperature': SensorDeviceClass.TEMPERATURE,
