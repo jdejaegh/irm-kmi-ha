@@ -9,8 +9,7 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/jdejaegh/irm-kmi-ha/issues",
   "requirements": [
-    "svgwrite==1.4.3",
-    "aiofile==3.9.0"
+    "svgwrite==1.4.3"
   ],
   "version": "0.2.32"
 }
