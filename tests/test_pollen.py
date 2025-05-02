@@ -1,11 +1,12 @@
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.common import MockConfigEntry, load_fixture
 
 from custom_components.irm_kmi import IrmKmiCoordinator
-from custom_components.irm_kmi.pollen import PollenParser
-from tests.conftest import get_api_data
+from custom_components.irm_kmi.irm_kmi_api.api import IrmKmiApiError
+from custom_components.irm_kmi.irm_kmi_api.pollen import PollenParser
+from tests.conftest import get_api_with_data
 
 
 def test_svg_pollen_parsing():
@@ -38,15 +39,13 @@ def test_pollen_default_values():
                                                'alder': 'none', 'grasses': 'none', 'ash': 'none'}
 
 
-async def test_pollen_data_from_api(
-        hass: HomeAssistant,
-        mock_svg_pollen: AsyncMock,
-        mock_config_entry: MockConfigEntry
-) -> None:
-    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
-    api_data = get_api_data("be_forecast_warning.json")
+async def test_pollen_data_from_api() -> None:
+    api = get_api_with_data("be_forecast_warning.json")
 
-    result = await coordinator._async_pollen_data(api_data)
+    # Mock get_svg function
+    api.get_svg = AsyncMock(return_value=load_fixture("pollen.svg"))
+
+    result = await api.get_pollen()
     expected = {'mugwort': 'none', 'birch': 'none', 'alder': 'none', 'ash': 'none', 'oak': 'none',
                 'grasses': 'purple', 'hazel': 'none'}
     assert result == expected
@@ -55,11 +54,15 @@ async def test_pollen_data_from_api(
 async def test_pollen_error_leads_to_unavailable_on_first_call(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry,
-        mock_exception_irm_kmi_api_svg_pollen: AsyncMock
 ) -> None:
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
-    api_data = get_api_data("be_forecast_warning.json")
+    api = get_api_with_data("be_forecast_warning.json")
 
-    result = await coordinator._async_pollen_data(api_data)
+    api.get_svg = AsyncMock()
+    api.get_svg.side_effect = IrmKmiApiError
+
+    coordinator._api = api
+
+    result = await coordinator.process_api_data()
     expected = PollenParser.get_unavailable_data()
-    assert result == expected
+    assert result['pollen'] == expected

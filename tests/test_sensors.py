@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest.mock import AsyncMock
 
 from freezegun import freeze_time
 from homeassistant.core import HomeAssistant
@@ -8,7 +9,7 @@ from custom_components.irm_kmi import IrmKmiCoordinator
 from custom_components.irm_kmi.binary_sensor import IrmKmiWarning
 from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
 from custom_components.irm_kmi.sensor import IrmKmiNextSunMove, IrmKmiNextWarning
-from tests.conftest import get_api_data
+from tests.conftest import get_api_data, get_api_with_data
 
 
 @freeze_time(datetime.fromisoformat('2024-01-12T07:55:00+01:00'))
@@ -16,10 +17,10 @@ async def test_warning_data(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
-    api_data = get_api_data("be_forecast_warning.json")
+    api = get_api_with_data("be_forecast_warning.json")
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
-    result = coordinator.warnings_from_data(api_data.get('for', {}).get('warning'))
+    result = api.get_warnings('en')
 
     coordinator.data = {'warnings': result}
     warning = IrmKmiWarning(coordinator, mock_config_entry)
@@ -39,15 +40,18 @@ async def test_warning_data_unknown_lang(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
-    # When language is unknown, default to english setting
-    hass.config.language = "foo"
 
-    api_data = get_api_data("be_forecast_warning.json")
+    api = get_api_with_data("be_forecast_warning.json")
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
-    result = coordinator.warnings_from_data(api_data.get('for', {}).get('warning'))
+    api.get_pollen = AsyncMock()
+    api.get_animation_data = AsyncMock()
+    coordinator._api = api
 
-    coordinator.data = {'warnings': result}
+
+    result = await coordinator.process_api_data()
+
+    coordinator.data = {'warnings': result['warnings']}
     warning = IrmKmiWarning(coordinator, mock_config_entry)
     warning.hass = hass
 
@@ -65,15 +69,19 @@ async def test_next_warning_when_data_available(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
-    api_data = get_api_data("be_forecast_warning.json")
+    api = get_api_with_data("be_forecast_warning.json")
     await hass.config_entries.async_add(mock_config_entry)
     hass.config_entries.async_update_entry(mock_config_entry, data=mock_config_entry.data | {CONF_LANGUAGE_OVERRIDE: 'de'})
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
-    result = coordinator.warnings_from_data(api_data.get('for', {}).get('warning'))
+    api.get_pollen = AsyncMock()
+    api.get_animation_data = AsyncMock()
+    coordinator._api = api
 
-    coordinator.data = {'warnings': result}
+    result = await coordinator.process_api_data()
+
+    coordinator.data = {'warnings': result['warnings']}
     warning = IrmKmiNextWarning(coordinator, mock_config_entry)
     warning.hass = hass
 
@@ -93,12 +101,16 @@ async def test_next_warning_none_when_only_active_warnings(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
-    api_data = get_api_data("be_forecast_warning.json")
+    api = get_api_with_data("be_forecast_warning.json")
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
-    result = coordinator.warnings_from_data(api_data.get('for', {}).get('warning'))
+    api.get_pollen = AsyncMock()
+    api.get_animation_data = AsyncMock()
+    coordinator._api = api
 
-    coordinator.data = {'warnings': result}
+    result = await coordinator.process_api_data()
+
+    coordinator.data = {'warnings': result['warnings']}
     warning = IrmKmiNextWarning(coordinator, mock_config_entry)
     warning.hass = hass
 
@@ -154,13 +166,16 @@ async def test_next_sunrise_sunset(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
-    api_data = get_api_data("forecast.json")
+    api = get_api_with_data("forecast.json")
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+    api.get_pollen = AsyncMock()
+    api.get_animation_data = AsyncMock()
+    coordinator._api = api
 
-    result = await coordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily'))
+    result = await coordinator.process_api_data()
 
-    coordinator.data = {'daily_forecast': result}
+    coordinator.data = {'daily_forecast': result['daily_forecast']}
 
     sunset = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunset')
     sunrise = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunrise')
@@ -180,13 +195,16 @@ async def test_next_sunrise_sunset_bis(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
-    api_data = get_api_data("forecast.json")
+    api = get_api_with_data("forecast.json")
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+    api.get_pollen = AsyncMock()
+    api.get_animation_data = AsyncMock()
+    coordinator._api = api
 
-    result = await coordinator.daily_list_to_forecast(api_data.get('for', {}).get('daily'))
+    result = await coordinator.process_api_data()
 
-    coordinator.data = {'daily_forecast': result}
+    coordinator.data = {'daily_forecast': result['daily_forecast']}
 
     sunset = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunset')
     sunrise = IrmKmiNextSunMove(coordinator, mock_config_entry, 'sunrise')

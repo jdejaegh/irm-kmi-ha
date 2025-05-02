@@ -9,12 +9,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.irm_kmi import async_migrate_entry
+from custom_components.irm_kmi import async_migrate_entry, OPTION_STYLE_STD
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
     CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
-    OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_SATELLITE,
-    OPTION_STYLE_STD)
+    OPTION_DEPRECATED_FORECAST_NOT_USED)
+from custom_components.irm_kmi.irm_kmi_api.const import OPTION_STYLE_SATELLITE
 
 
 async def test_full_user_flow(

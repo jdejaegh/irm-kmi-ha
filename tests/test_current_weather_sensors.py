@@ -1,5 +1,6 @@
 import inspect
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 import pytest
 from freezegun import freeze_time
@@ -9,9 +10,10 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.irm_kmi import IrmKmiCoordinator
 from custom_components.irm_kmi.const import CURRENT_WEATHER_SENSORS, CURRENT_WEATHER_SENSOR_UNITS, \
     CURRENT_WEATHER_SENSOR_CLASS
-from custom_components.irm_kmi.data import CurrentWeatherData, ProcessedCoordinatorData
+from custom_components.irm_kmi.irm_kmi_api.data import CurrentWeatherData
+from custom_components.irm_kmi.data import ProcessedCoordinatorData
 from custom_components.irm_kmi.sensor import IrmKmiCurrentWeather, IrmKmiCurrentRainfall
-from tests.conftest import get_api_data
+from tests.conftest import get_api_data, get_api_with_data
 
 
 def test_sensors_in_current_weather_data():
@@ -110,14 +112,16 @@ async def test_current_weather_sensors(
 
     api_data = get_api_data(filename)
     time = api_data.get('obs').get('timestamp')
+    api = get_api_with_data(filename)
+    tz = ZoneInfo("Europe/Brussels")
 
     @freeze_time(datetime.fromisoformat(time) + timedelta(seconds=45, minutes=1))
     async def run(mock_config_entry_, sensor_, expected_):
         coordinator = IrmKmiCoordinator(hass, mock_config_entry_)
         coordinator.data = ProcessedCoordinatorData(
-            current_weather=await IrmKmiCoordinator.current_weather_from_data(api_data),
-            hourly_forecast=await IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
-            radar_forecast=IrmKmiCoordinator.radar_list_to_forecast(api_data.get('animation', {})),
+            current_weather=await api.get_current_weather(tz),
+            hourly_forecast=await api.get_hourly_forecast(tz),
+            radar_forecast=api.get_radar_forecast(),
             country=api_data.get('country')
         )
 
@@ -145,13 +149,14 @@ async def test_current_rainfall_unit(
 ) -> None:
     hass.config.time_zone = 'Europe/Brussels'
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
-    api_data = get_api_data(filename)
+    api = get_api_with_data(filename)
+    tz = ZoneInfo("Europe/Brussels")
 
     coordinator.data = ProcessedCoordinatorData(
-        current_weather=await IrmKmiCoordinator.current_weather_from_data(api_data),
-        hourly_forecast=await IrmKmiCoordinator.hourly_list_to_forecast(api_data.get('for', {}).get('hourly')),
-        radar_forecast=IrmKmiCoordinator.radar_list_to_forecast(api_data.get('animation', {})),
-        country=api_data.get('country')
+        current_weather=await api.get_current_weather(tz),
+        hourly_forecast=await api.get_hourly_forecast(tz),
+        radar_forecast=api.get_radar_forecast(),
+        country=api.get_country()
     )
 
     s = IrmKmiCurrentRainfall(coordinator, mock_config_entry)

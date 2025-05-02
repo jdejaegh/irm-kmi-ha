@@ -15,13 +15,14 @@ from homeassistant.helpers.selector import (EntitySelector,
                                             SelectSelectorConfig,
                                             SelectSelectorMode)
 
-from .api import IrmKmiApiClient
+from . import OPTION_STYLE_STD
 from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE,
                     CONF_LANGUAGE_OVERRIDE_OPTIONS, CONF_STYLE,
                     CONF_STYLE_OPTIONS, CONF_USE_DEPRECATED_FORECAST,
                     CONF_USE_DEPRECATED_FORECAST_OPTIONS, CONFIG_FLOW_VERSION,
                     DOMAIN, OPTION_DEPRECATED_FORECAST_NOT_USED,
-                    OPTION_STYLE_STD, OUT_OF_BENELUX)
+                    OUT_OF_BENELUX, USER_AGENT)
+from .irm_kmi_api.api import IrmKmiApiClient
 from .utils import get_config_value
 
 _LOGGER = logging.getLogger(__name__)
@@ -50,9 +51,11 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
             if not errors:
                 api_data = {}
                 try:
-                    async with async_timeout.timeout(60):
+                    async with (async_timeout.timeout(60)):
                         api_data = await IrmKmiApiClient(
-                            session=async_get_clientsession(self.hass)).get_forecasts_coord(
+                            session=async_get_clientsession(self.hass),
+                            user_agent=USER_AGENT
+                        ).get_forecasts_coord(
                             {'lat': zone.attributes[ATTR_LATITUDE],
                              'long': zone.attributes[ATTR_LONGITUDE]}
                         )

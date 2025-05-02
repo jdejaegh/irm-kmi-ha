@@ -13,8 +13,8 @@ from svgwrite.animate import Animate
 from svgwrite.container import FONT_TEMPLATE
 
 from .api import IrmKmiApiClient
-from .radar_data import AnimationFrameData, RadarAnimationData
-from custom_components.irm_kmi.resources import roboto, be_black, be_satellite, be_white, nl
+from .data import AnimationFrameData, RadarAnimationData
+from .resources import be_black, be_satellite, be_white, nl, roboto
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class RainGraph:
                  animation_data: RadarAnimationData,
                  background_image_path: str,
                  background_size: (int, int),
-                 config_dir: str = '.',
+                 config_dir: str = '.',  # TODO remove ununsed
                  dark_mode: bool = False,
                  tz: datetime.tzinfo = dt.get_default_time_zone(),
                  svg_width: float = 640,
@@ -40,7 +40,6 @@ class RainGraph:
         self._animation_data: RadarAnimationData = animation_data
         self._background_image_path: str = background_image_path
         self._background_size: (int, int) = background_size
-        self._config_dir: str = config_dir
         self._dark_mode: bool = dark_mode
         self._tz = tz
         self._svg_width: float = svg_width

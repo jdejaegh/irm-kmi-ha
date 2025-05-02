@@ -14,6 +14,9 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
                                               ATTR_CONDITION_SUNNY)
 from homeassistant.const import Platform, UnitOfPressure, UnitOfSpeed, UnitOfTemperature, DEGREE
 
+from custom_components.irm_kmi.irm_kmi_api.const import OPTION_STYLE_CONTRAST, OPTION_STYLE_YELLOW_RED, \
+    OPTION_STYLE_SATELLITE, OPTION_STYLE_STD
+
 DOMAIN: Final = 'irm_kmi'
 PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA, Platform.BINARY_SENSOR, Platform.SENSOR]
 CONFIG_FLOW_VERSION = 5
@@ -24,10 +27,6 @@ OUT_OF_BENELUX: Final = ["außerhalb der Benelux (Brussels)",
                          "Buiten de Benelux (Brussel)"]
 LANGS: Final = ['en', 'fr', 'nl', 'de']
 
-OPTION_STYLE_STD: Final = 'standard_style'
-OPTION_STYLE_CONTRAST: Final = 'contrast_style'
-OPTION_STYLE_YELLOW_RED: Final = 'yellow_red_style'
-OPTION_STYLE_SATELLITE: Final = 'satellite_style'
 CONF_STYLE: Final = "style"
 
 CONF_STYLE_OPTIONS: Final = [
@@ -38,13 +37,6 @@ CONF_STYLE_OPTIONS: Final = [
 ]
 
 CONF_DARK_MODE: Final = "dark_mode"
-
-STYLE_TO_PARAM_MAP: Final = {
-    OPTION_STYLE_STD: 1,
-    OPTION_STYLE_CONTRAST: 2,
-    OPTION_STYLE_YELLOW_RED: 3,
-    OPTION_STYLE_SATELLITE: 4
-}
 
 CONF_USE_DEPRECATED_FORECAST: Final = 'use_deprecated_forecast_attribute'
 OPTION_DEPRECATED_FORECAST_NOT_USED: Final = 'do_not_use_deprecated_forecast'
@@ -130,23 +122,6 @@ IRM_KMI_TO_HA_CONDITION_MAP: Final = {
     (27, 'n'): ATTR_CONDITION_FOG
 }
 
-MAP_WARNING_ID_TO_SLUG: Final = {
-    0: 'wind',
-    1: 'rain',
-    2: 'ice_or_snow',
-    3: 'thunder',
-    7: 'fog',
-    9: 'cold',
-    12: 'thunder_wind_rain',
-    13: 'thunderstorm_strong_gusts',
-    14: 'thunderstorm_large_rainfall',
-    15: 'storm_surge',
-    17: 'coldspell'}
-
-POLLEN_NAMES: Final = {'Alder', 'Ash', 'Birch', 'Grasses', 'Hazel', 'Mugwort', 'Oak'}
-POLLEN_LEVEL_TO_COLOR = {'null': 'green', 'low': 'yellow', 'moderate': 'orange', 'high': 'red', 'very high': 'purple',
-                         'active': 'active'}
-
 POLLEN_TO_ICON_MAP: Final = {
     'alder': 'mdi:tree', 'ash': 'mdi:tree', 'birch': 'mdi:tree', 'grasses': 'mdi:grass', 'hazel': 'mdi:tree',
     'mugwort': 'mdi:sprout', 'oak': 'mdi:tree'
@@ -158,8 +133,6 @@ IRM_KMI_NAME: Final = {
     'de': 'Königliche Meteorologische Institut von Belgien',
     'en': 'Royal Meteorological Institute of Belgium'
 }
-
-WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 USER_AGENT: Final = 'github.com/jdejaegh/irm-kmi-ha 0.2.32'
 
