@@ -9,7 +9,7 @@ from custom_components.irm_kmi import IrmKmiCoordinator
 from custom_components.irm_kmi.binary_sensor import IrmKmiWarning
 from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
 from custom_components.irm_kmi.sensor import IrmKmiNextSunMove, IrmKmiNextWarning
-from tests.conftest import get_api_data, get_api_with_data
+from tests.conftest import get_api_with_data
 
 
 @freeze_time(datetime.fromisoformat('2024-01-12T07:55:00+01:00'))

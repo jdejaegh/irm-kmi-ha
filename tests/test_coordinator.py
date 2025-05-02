@@ -8,9 +8,7 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLOUDY,
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
 from custom_components.irm_kmi.coordinator import IrmKmiCoordinator
-from custom_components.irm_kmi.irm_kmi_api.api import IrmKmiApiClientHa
 from custom_components.irm_kmi.irm_kmi_api.data import (CurrentWeatherData, IrmKmiForecast, IrmKmiRadarForecast)
 from custom_components.irm_kmi.data import ProcessedCoordinatorData
 from custom_components.irm_kmi.irm_kmi_api.pollen import PollenParser
@@ -87,7 +85,6 @@ async def test_current_weather_nl() -> None:
 
 @freeze_time(datetime.fromisoformat('2023-12-26T18:30:00+01:00'))
 async def test_daily_forecast(
-        hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("forecast.json")
@@ -201,7 +198,6 @@ async def test_hourly_forecast_midnight_bug() -> None:
 
 @freeze_time(datetime.fromisoformat('2024-05-31T00:10:00+02:00'))
 async def test_daily_forecast_midnight_bug(
-        hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("midnight-bug-31-05-2024T00-13.json")
@@ -315,7 +311,6 @@ def test_radar_forecast_rain_interval() -> None:
 
 @freeze_time("2024-06-09T13:40:00+00:00")
 async def test_datetime_daily_forecast_nl(
-        hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("forecast_ams_no_ww.json")
@@ -354,7 +349,6 @@ async def test_current_condition_forecast_nl() -> None:
 
 @freeze_time("2024-06-09T13:40:00+00:00")
 async def test_sunrise_sunset_nl(
-        hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("forecast_ams_no_ww.json")
@@ -374,7 +368,6 @@ async def test_sunrise_sunset_nl(
 
 @freeze_time("2023-12-26T18:30:00+01:00")
 async def test_sunrise_sunset_be(
-        hass: HomeAssistant,
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("forecast.json")
