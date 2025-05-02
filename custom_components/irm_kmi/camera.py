@@ -54,6 +54,7 @@ class IrmKmiRadar(CoordinatorEntity, Camera):
         """Return still image to be used as thumbnail."""
         if self.coordinator.data.get('animation', None) is not None:
             return await self.coordinator.data.get('animation').get_still()
+        return None
 
     async def handle_async_still_stream(self, request: web.Request, interval: float) -> web.StreamResponse:
         """Generate an HTTP MJPEG stream from camera images."""

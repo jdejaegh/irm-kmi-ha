@@ -413,3 +413,4 @@ class RainGraph:
             return be_satellite.be_satelitte_b64
         elif self._background_image_path.endswith('nl.png'):
             return nl.nl_b64
+        return None
