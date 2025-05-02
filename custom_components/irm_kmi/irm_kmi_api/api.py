@@ -14,12 +14,12 @@ from zoneinfo import ZoneInfo
 import aiohttp
 import async_timeout
 
-from custom_components.irm_kmi.irm_kmi_api.const import WEEKDAYS, STYLE_TO_PARAM_MAP, OPTION_STYLE_SATELLITE, \
+from .const import WEEKDAYS, STYLE_TO_PARAM_MAP, OPTION_STYLE_SATELLITE, \
     MAP_WARNING_ID_TO_SLUG as SLUG_MAP
-from custom_components.irm_kmi.irm_kmi_api.data import CurrentWeatherData, IrmKmiForecast, Forecast, \
+from .data import CurrentWeatherData, IrmKmiForecast, Forecast, \
     IrmKmiRadarForecast, RadarAnimationData, AnimationFrameData, WarningData
-from custom_components.irm_kmi.irm_kmi_api.pollen import PollenParser
-from custom_components.irm_kmi.utils import next_weekday
+from .pollen import PollenParser
+from .utils import next_weekday
 
 _LOGGER = logging.getLogger(__name__)
 

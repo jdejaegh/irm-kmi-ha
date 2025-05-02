@@ -1,5 +1,4 @@
 import logging
-from datetime import timedelta
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
@@ -41,8 +40,3 @@ def preferred_language(hass: HomeAssistant, config_entry: ConfigEntry) -> str:
     return get_config_value(config_entry, CONF_LANGUAGE_OVERRIDE)
 
 
-def next_weekday(current, weekday):
-    days_ahead = weekday - current.weekday()
-    if days_ahead < 0:
-        days_ahead += 7
-    return current + timedelta(days_ahead)
