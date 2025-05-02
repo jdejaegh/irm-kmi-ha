@@ -24,7 +24,6 @@ class RainGraph:
                  animation_data: RadarAnimationData,
                  background_image_path: str,
                  background_size: (int, int),
-                 config_dir: str = '.',  # TODO remove ununsed
                  dark_mode: bool = False,
                  tz: datetime.tzinfo = dt.get_default_time_zone(),
                  svg_width: float = 640,
