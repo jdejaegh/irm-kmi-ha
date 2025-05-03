@@ -7,12 +7,12 @@ import logging
 from typing import List, Self, Any
 
 import async_timeout
-from homeassistant.util import dt
 from svgwrite import Drawing
 from svgwrite.animate import Animate
 from svgwrite.container import FONT_TEMPLATE
 
 from .api import IrmKmiApiClient
+from .const import OPTION_STYLE_SATELLITE
 from .data import AnimationFrameData, RadarAnimationData
 from .resources import be_black, be_satellite, be_white, nl, roboto
 
@@ -22,10 +22,10 @@ _LOGGER = logging.getLogger(__name__)
 class RainGraph:
     def __init__(self,
                  animation_data: RadarAnimationData,
-                 background_image_path: str,
-                 background_size: (int, int),
+                 country: str,
+                 style: str,
                  dark_mode: bool = False,
-                 tz: datetime.tzinfo = dt.get_default_time_zone(),
+                 tz: datetime.tzinfo = None,
                  svg_width: float = 640,
                  inset: float = 20,
                  graph_height: float = 150,
@@ -37,20 +37,26 @@ class RainGraph:
                  ):
 
         self._animation_data: RadarAnimationData = animation_data
-        self._background_image_path: str = background_image_path
-        self._background_size: (int, int) = background_size
+        self._country: str = country
+
+        if self._country == 'NL':
+            self._background_size: (int, int) = (640, 600)
+        else:
+            self._background_size: (int, int) = (640, 490)
+
+        self._style = style
         self._dark_mode: bool = dark_mode
         self._tz = tz
         self._svg_width: float = svg_width
         self._inset: float = inset
         self._graph_height: float = graph_height
-        self._top_text_space: float = top_text_space + background_size[1]
-        self._top_text_y_pos: float = top_text_y_pos + background_size[1]
+        self._top_text_space: float = top_text_space + self._background_size[1]
+        self._top_text_y_pos: float = top_text_y_pos + self._background_size[1]
         self._bottom_text_space: float = bottom_text_space
-        self._bottom_text_y_pos: float = bottom_text_y_pos + background_size[1]
+        self._bottom_text_y_pos: float = bottom_text_y_pos + self._background_size[1]
         self._api_client = api_client
 
-        self._frame_count: int = len(self._animation_data['sequence'])
+        self._frame_count: int = max(len(self._animation_data['sequence']), 1)
         self._graph_width: float = self._svg_width - 2 * self._inset
         self._graph_bottom: float = self._top_text_space + self._graph_height
         self._svg_height: float = self._graph_height + self._top_text_space + self._bottom_text_space
@@ -404,13 +410,13 @@ class RainGraph:
         return copy.deepcopy(self._dwg)
 
     def get_background_png_b64(self):
-        _LOGGER.debug(f"Get b64 for {self._background_image_path}")
-        if self._background_image_path.endswith('be_black.png'):
-            return be_black.be_black_b64
-        elif self._background_image_path.endswith('be_white.png'):
-            return be_white.be_white_b64
-        elif self._background_image_path.endswith('be_satellite.png'):
-            return be_satellite.be_satelitte_b64
-        elif self._background_image_path.endswith('nl.png'):
+        _LOGGER.debug(f"Get b64 for {self._country} {self._style} {'dark' if self._dark_mode else 'light'} mode")
+        if self._country == 'NL':
             return nl.nl_b64
-        return None
+        elif self._style == OPTION_STYLE_SATELLITE:
+            return be_satellite.be_satelitte_b64
+        elif self._dark_mode:
+            return be_black.be_black_b64
+        else:
+            return be_white.be_white_b64
+

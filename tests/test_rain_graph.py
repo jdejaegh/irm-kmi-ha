@@ -1,5 +1,6 @@
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime as dt, timedelta
+import datetime
 
 from custom_components.irm_kmi.irm_kmi_api.data import AnimationFrameData, RadarAnimationData
 from custom_components.irm_kmi.irm_kmi_api.rain_graph import RainGraph
@@ -13,7 +14,7 @@ def get_radar_animation_data() -> RadarAnimationData:
 
     sequence = [
         AnimationFrameData(
-            time=datetime.fromisoformat("2023-12-26T18:30:00+00:00") + timedelta(minutes=10 * i),
+            time=dt.fromisoformat("2023-12-26T18:30:00+00:00") + timedelta(minutes=10 * i),
             image=image_data,
             value=2,
             position=.5,
@@ -36,8 +37,8 @@ async def test_svg_frame_setup():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD'
     )
 
     await rain_graph.draw_svg_frame()
@@ -56,8 +57,8 @@ def test_svg_hint():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD'
     )
 
     rain_graph.write_hint()
@@ -71,8 +72,9 @@ def test_svg_time_bars():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD',
+        tz=datetime.UTC
     )
 
     rain_graph.draw_hour_bars()
@@ -90,8 +92,9 @@ def test_draw_chances_path():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD',
+        tz=datetime.UTC
     )
 
     rain_graph.draw_chances_path()
@@ -108,8 +111,8 @@ def test_draw_data_line():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD'
     )
 
     rain_graph.draw_data_line()
@@ -126,8 +129,8 @@ async def test_insert_background():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD'
     )
 
     await rain_graph.insert_background()
@@ -149,8 +152,8 @@ def test_draw_current_frame_line_moving():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD'
     )
 
     rain_graph.draw_current_fame_line()
@@ -177,8 +180,8 @@ def test_draw_current_frame_line_index():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD'
     )
 
     rain_graph.draw_current_fame_line(0)
@@ -205,8 +208,9 @@ def test_draw_description_text():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD',
+        tz=datetime.UTC
     )
 
     rain_graph.draw_description_text()
@@ -232,8 +236,8 @@ def test_draw_cloud_layer():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD'
     )
 
     rain_graph.insert_cloud_layer()
@@ -252,8 +256,8 @@ async def test_draw_location_layer():
     data = get_radar_animation_data()
     rain_graph = RainGraph(
         animation_data=data,
-        background_image_path="custom_components/irm_kmi/irm_kmi_api/resources/be_white.png",
-        background_size=(640, 490),
+        country='BE',
+        style='STD'
     )
 
     await rain_graph.draw_location()

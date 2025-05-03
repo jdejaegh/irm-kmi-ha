@@ -112,10 +112,14 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
                 if self.data is not None else PollenParser.get_unavailable_data()
 
         try:
-            radar_animation, image_path, bg_size = self._api.get_animation_data(tz, lang, self._style,
-                                                                                      self._dark_mode)
-            animation = await RainGraph(radar_animation, image_path, bg_size, tz=tz, dark_mode=self._dark_mode,
-                                        api_client=self._api).build()
+            radar_animation = self._api.get_animation_data(tz, lang, self._style, self._dark_mode)
+            animation = await RainGraph(radar_animation,
+                                        country=self._api.get_country(),
+                                        style=self._style,
+                                        tz=tz,
+                                        dark_mode=self._dark_mode,
+                                        api_client=self._api
+                                        ).build()
         except ValueError:
             animation = None
 

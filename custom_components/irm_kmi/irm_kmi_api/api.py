@@ -417,8 +417,7 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
             )
         return forecast
 
-    def get_animation_data(self, tz: ZoneInfo, lang: str, style: str, dark_mode: bool) -> (RadarAnimationData,
-                                                                                                 str, Tuple[int, int]):
+    def get_animation_data(self, tz: ZoneInfo, lang: str, style: str, dark_mode: bool) -> RadarAnimationData:
         """From the API data passed in, call the API to get all the images and create the radar animation data object.
         Frames from the API are merged with the background map and the location marker to create each frame."""
         animation_data = self._api_data.get('animation', {}).get('sequence')
@@ -443,11 +442,9 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
         r = self._get_rain_graph_data(
             radar_animation,
             animation_data,
-            country,
             images_from_api,
-            tz,
-            style,
-            dark_mode)
+            tz
+        )
 
         return r
 
@@ -520,12 +517,9 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
     @staticmethod
     def _get_rain_graph_data(radar_animation: RadarAnimationData,
                              api_animation_data: List[dict],
-                             country: str | None,
                              images_from_api: list[str],
                              tz: ZoneInfo,
-                             style: str,
-                             dark_mode: bool
-                             ) -> (RadarAnimationData, str, Tuple[int, int]):
+                             ) -> RadarAnimationData:
         """Create a RainGraph object that is ready to output animated and still SVG images"""
         sequence: List[AnimationFrameData] = list()
 
@@ -549,14 +543,4 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
         radar_animation['sequence'] = sequence
         radar_animation['most_recent_image_idx'] = most_recent_frame
 
-        satellite_mode = style == OPTION_STYLE_SATELLITE
-
-        if country == 'NL':
-            image_path = "custom_components/irm_kmi/resources/nl.png"
-            bg_size = (640, 600)
-        else:
-            image_path = (f"custom_components/irm_kmi/resources/be_"
-                          f"{'satellite' if satellite_mode else 'black' if dark_mode else 'white'}.png")
-            bg_size = (640, 490)
-
-        return radar_animation, image_path, bg_size
+        return radar_animation

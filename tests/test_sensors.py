@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 from freezegun import freeze_time
 from homeassistant.core import HomeAssistant
@@ -10,6 +10,7 @@ from custom_components.irm_kmi.binary_sensor import IrmKmiWarning
 from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
 from custom_components.irm_kmi.sensor import IrmKmiNextSunMove, IrmKmiNextWarning
 from tests.conftest import get_api_with_data
+from tests.test_rain_graph import get_radar_animation_data
 
 
 @freeze_time(datetime.fromisoformat('2024-01-12T07:55:00+01:00'))
@@ -45,7 +46,7 @@ async def test_warning_data_unknown_lang(
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
     api.get_pollen = AsyncMock()
-    api.get_animation_data = AsyncMock()
+    api.get_animation_data = MagicMock(return_value=get_radar_animation_data())
     coordinator._api = api
 
 
@@ -76,7 +77,7 @@ async def test_next_warning_when_data_available(
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
     api.get_pollen = AsyncMock()
-    api.get_animation_data = AsyncMock()
+    api.get_animation_data = MagicMock(return_value=get_radar_animation_data())
     coordinator._api = api
 
     result = await coordinator.process_api_data()
@@ -105,7 +106,7 @@ async def test_next_warning_none_when_only_active_warnings(
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
     api.get_pollen = AsyncMock()
-    api.get_animation_data = AsyncMock()
+    api.get_animation_data = MagicMock(return_value=get_radar_animation_data())
     coordinator._api = api
 
     result = await coordinator.process_api_data()
@@ -170,7 +171,7 @@ async def test_next_sunrise_sunset(
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     api.get_pollen = AsyncMock()
-    api.get_animation_data = AsyncMock()
+    api.get_animation_data = MagicMock(return_value=get_radar_animation_data())
     coordinator._api = api
 
     result = await coordinator.process_api_data()
@@ -199,7 +200,7 @@ async def test_next_sunrise_sunset_bis(
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
     api.get_pollen = AsyncMock()
-    api.get_animation_data = AsyncMock()
+    api.get_animation_data = MagicMock(return_value=get_radar_animation_data())
     coordinator._api = api
 
     result = await coordinator.process_api_data()
