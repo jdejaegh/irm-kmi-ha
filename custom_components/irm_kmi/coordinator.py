@@ -57,6 +57,9 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         This is the place to pre-process the data to lookup tables
         so entities can quickly look up their data.
         """
+        # When integration is set up, set the logging level of the irm_kmi_api package to the same level to help debugging
+        logging.getLogger('irm_kmi_api').setLevel(_LOGGER.getEffectiveLevel())
+
         self._api.expire_cache()
         if (zone := self.hass.states.get(self._zone)) is None:
             raise UpdateFailed(f"Zone '{self._zone}' not found")
