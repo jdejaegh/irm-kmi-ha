@@ -1,10 +1,12 @@
+import json
 import logging
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers import issue_registry
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.common import (MockConfigEntry,
+                                                          load_fixture)
 
 from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
 from custom_components.irm_kmi.const import (REPAIR_OPT_DELETE,
@@ -28,6 +30,11 @@ async def get_repair_flow(
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     await hass.async_block_till_done()
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+
+    fixture: str = "forecast_out_of_benelux.json"
+    forecast = json.loads(load_fixture(fixture))
+    coordinator._api.get_forecasts_coord = AsyncMock(return_value=forecast)
+
     await coordinator._async_update_data()
     ir = issue_registry.async_get(hass)
     issue = ir.async_get_issue(DOMAIN, "zone_moved")
@@ -38,7 +45,6 @@ async def get_repair_flow(
 
 async def test_repair_triggers_when_out_of_benelux(
         hass: HomeAssistant,
-        mock_irm_kmi_api_coordinator_out_benelux: MagicMock,
         mock_config_entry: MockConfigEntry
 ) -> None:
     hass.states.async_set(
@@ -50,6 +56,8 @@ async def test_repair_triggers_when_out_of_benelux(
     mock_config_entry.add_to_hass(hass)
 
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+    coordinator._api.get_forecasts_coord = AsyncMock(return_value=json.loads(load_fixture("forecast_out_of_benelux.json")))
+
     await coordinator._async_update_data()
 
     ir = issue_registry.async_get(hass)
@@ -65,7 +73,6 @@ async def test_repair_triggers_when_out_of_benelux(
 
 async def test_repair_flow(
         hass: HomeAssistant,
-        mock_irm_kmi_api_coordinator_out_benelux: MagicMock,
         mock_irm_kmi_api_repair_in_benelux: MagicMock,
         mock_config_entry: MockConfigEntry
 ) -> None:
@@ -87,7 +94,6 @@ async def test_repair_flow(
 
 async def test_repair_flow_invalid_choice(
         hass: HomeAssistant,
-        mock_irm_kmi_api_coordinator_out_benelux: MagicMock,
         mock_irm_kmi_api_repair_in_benelux: MagicMock,
         mock_config_entry: MockConfigEntry
 ) -> None:
@@ -106,7 +112,6 @@ async def test_repair_flow_invalid_choice(
 
 async def test_repair_flow_api_error(
         hass: HomeAssistant,
-        mock_irm_kmi_api_coordinator_out_benelux: MagicMock,
         mock_get_forecast_api_error_repair: MagicMock,
         mock_config_entry: MockConfigEntry
 ) -> None:
@@ -125,7 +130,6 @@ async def test_repair_flow_api_error(
 
 async def test_repair_flow_out_of_benelux(
         hass: HomeAssistant,
-        mock_irm_kmi_api_coordinator_out_benelux: MagicMock,
         mock_irm_kmi_api_repair_out_of_benelux: MagicMock,
         mock_config_entry: MockConfigEntry
 ) -> None:
@@ -144,7 +148,6 @@ async def test_repair_flow_out_of_benelux(
 
 async def test_repair_flow_delete_entry(
         hass: HomeAssistant,
-        mock_irm_kmi_api_coordinator_out_benelux: MagicMock,
         mock_config_entry: MockConfigEntry
 ) -> None:
     repair_flow = await get_repair_flow(hass, mock_config_entry)

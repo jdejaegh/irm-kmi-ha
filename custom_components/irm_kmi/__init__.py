@@ -6,11 +6,11 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
+from irm_kmi_api.const import OPTION_STYLE_STD
 
 from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
                     CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
-                    OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD,
-                    PLATFORMS)
+                    OPTION_DEPRECATED_FORECAST_NOT_USED, PLATFORMS)
 from .coordinator import IrmKmiCoordinator
 from .weather import IrmKmiWeather
 
@@ -22,6 +22,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = coordinator = IrmKmiCoordinator(hass, entry)
 
+    # When integration is set up, set the logging level of the irm_kmi_api package to the same level to help debugging
+    logging.getLogger('irm_kmi_api').setLevel(_LOGGER.getEffectiveLevel())
     try:
         # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
         await coordinator.async_config_entry_first_refresh()

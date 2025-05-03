@@ -8,13 +8,12 @@ from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
+from irm_kmi_api.api import IrmKmiApiClient
 
-from custom_components.irm_kmi import async_reload_entry
-from custom_components.irm_kmi.api import IrmKmiApiClient
-from custom_components.irm_kmi.const import (OUT_OF_BENELUX, REPAIR_OPT_DELETE,
-                                             REPAIR_OPT_MOVE, REPAIR_OPTIONS,
-                                             REPAIR_SOLUTION)
-from custom_components.irm_kmi.utils import modify_from_config
+from . import async_reload_entry
+from .const import (OUT_OF_BENELUX, REPAIR_OPT_DELETE, REPAIR_OPT_MOVE,
+                    REPAIR_OPTIONS, REPAIR_SOLUTION, USER_AGENT)
+from .utils import modify_from_config
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,7 +49,9 @@ class OutOfBeneluxRepairFlow(RepairsFlow):
                     try:
                         async with async_timeout.timeout(10):
                             api_data = await IrmKmiApiClient(
-                                session=async_get_clientsession(self.hass)).get_forecasts_coord(
+                                session=async_get_clientsession(self.hass),
+                                user_agent=USER_AGENT
+                            ).get_forecasts_coord(
                                 {'lat': zone.attributes[ATTR_LATITUDE],
                                  'long': zone.attributes[ATTR_LONGITUDE]}
                             )
@@ -84,8 +85,8 @@ class OutOfBeneluxRepairFlow(RepairsFlow):
 
 
 async def async_create_fix_flow(
-        hass: HomeAssistant,
-        issue_id: str,
+        _hass: HomeAssistant,
+        _issue_id: str,
         data: dict[str, str | int | float | None] | None,
 ) -> OutOfBeneluxRepairFlow:
     """Create flow."""

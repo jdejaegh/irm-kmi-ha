@@ -8,18 +8,17 @@ from homeassistant.const import CONF_ZONE
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.irm_kmi import async_migrate_entry
+from custom_components.irm_kmi import OPTION_STYLE_STD, async_migrate_entry
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
     CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
-    OPTION_DEPRECATED_FORECAST_NOT_USED, OPTION_STYLE_STD)
+    OPTION_DEPRECATED_FORECAST_NOT_USED)
 
 
 async def test_load_unload_config_entry(
         hass: HomeAssistant,
         mock_config_entry: MockConfigEntry,
         mock_irm_kmi_api: AsyncMock,
-        mock_coordinator: AsyncMock
 ) -> None:
     """Test the IRM KMI configuration entry loading/unloading."""
     hass.states.async_set(
@@ -57,7 +56,7 @@ async def test_config_entry_not_ready(
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     await hass.async_block_till_done()
 
-    assert mock_exception_irm_kmi_api.get_forecasts_coord.call_count == 1
+    assert mock_exception_irm_kmi_api.refresh_forecasts_coord.call_count == 1
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
 
 

@@ -9,13 +9,14 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt
+from irm_kmi_api.const import POLLEN_NAMES
+from irm_kmi_api.data import IrmKmiForecast, IrmKmiRadarForecast
+from irm_kmi_api.pollen import PollenParser
 
-from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
-from custom_components.irm_kmi.const import POLLEN_NAMES, POLLEN_TO_ICON_MAP, CURRENT_WEATHER_SENSOR_UNITS, \
-    CURRENT_WEATHER_SENSOR_CLASS, CURRENT_WEATHER_SENSORS, CURRENT_WEATHER_SENSOR_ICON
-from custom_components.irm_kmi.data import IrmKmiForecast
-from custom_components.irm_kmi.pollen import PollenParser
-from custom_components.irm_kmi.radar_data import IrmKmiRadarForecast
+from . import DOMAIN, IrmKmiCoordinator
+from .const import (CURRENT_WEATHER_SENSOR_CLASS, CURRENT_WEATHER_SENSOR_ICON,
+                    CURRENT_WEATHER_SENSOR_UNITS, CURRENT_WEATHER_SENSORS,
+                    POLLEN_TO_ICON_MAP)
 
 _LOGGER = logging.getLogger(__name__)
 
