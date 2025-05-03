@@ -9,17 +9,19 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import issue_registry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.update_coordinator import TimestampDataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import (
+    TimestampDataUpdateCoordinator, UpdateFailed)
 from homeassistant.util import dt
 from homeassistant.util.dt import utcnow
+from irm_kmi_api.api import IrmKmiApiClientHa, IrmKmiApiError
+from irm_kmi_api.pollen import PollenParser
+from irm_kmi_api.rain_graph import RainGraph
 
-from .const import OUT_OF_BENELUX, CONF_DARK_MODE, CONF_STYLE, DOMAIN, IRM_KMI_NAME, USER_AGENT, \
-    IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
+from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN, IRM_KMI_NAME
+from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
+from .const import OUT_OF_BENELUX, USER_AGENT
 from .data import ProcessedCoordinatorData
-from .irm_kmi_api.api import IrmKmiApiClientHa, IrmKmiApiError
-from .irm_kmi_api.pollen import PollenParser
-from .irm_kmi_api.rain_graph import RainGraph
-from .utils import (disable_from_config, get_config_value, preferred_language)
+from .utils import disable_from_config, get_config_value, preferred_language
 
 _LOGGER = logging.getLogger(__name__)
 

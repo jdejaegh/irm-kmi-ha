@@ -167,6 +167,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
         return [f for f in self.coordinator.data.get('radar_forecast')
                 if include_past_forecasts or datetime.fromisoformat(f.get('datetime')) >= now]
 
+    # TODO remove on next breaking changes
     @property
     def extra_state_attributes(self) -> dict:
         """Here to keep the DEPRECATED forecast attribute.

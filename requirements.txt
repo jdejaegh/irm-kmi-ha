@@ -2,4 +2,4 @@ aiohttp==3.11.13
 async-timeout==4.0.3
 homeassistant==2025.3.1
 voluptuous==0.15.2
-svgwrite==1.4.3
+irm-kmi-api>=0.1.2,<1.0.0

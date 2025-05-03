@@ -14,6 +14,7 @@ from homeassistant.helpers.selector import (EntitySelector,
                                             SelectSelector,
                                             SelectSelectorConfig,
                                             SelectSelectorMode)
+from irm_kmi_api.api import IrmKmiApiClient
 
 from . import OPTION_STYLE_STD
 from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE,
@@ -22,7 +23,6 @@ from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE,
                     CONF_USE_DEPRECATED_FORECAST_OPTIONS, CONFIG_FLOW_VERSION,
                     DOMAIN, OPTION_DEPRECATED_FORECAST_NOT_USED,
                     OUT_OF_BENELUX, USER_AGENT)
-from .irm_kmi_api.api import IrmKmiApiClient
 from .utils import get_config_value
 
 _LOGGER = logging.getLogger(__name__)

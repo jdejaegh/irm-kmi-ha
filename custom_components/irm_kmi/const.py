@@ -12,10 +12,10 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
                                               ATTR_CONDITION_SNOWY,
                                               ATTR_CONDITION_SNOWY_RAINY,
                                               ATTR_CONDITION_SUNNY)
-from homeassistant.const import Platform, UnitOfPressure, UnitOfSpeed, UnitOfTemperature, DEGREE
-
-from .irm_kmi_api.const import OPTION_STYLE_CONTRAST, OPTION_STYLE_YELLOW_RED, \
-    OPTION_STYLE_SATELLITE, OPTION_STYLE_STD
+from homeassistant.const import (DEGREE, Platform, UnitOfPressure, UnitOfSpeed,
+                                 UnitOfTemperature)
+from irm_kmi_api.const import (OPTION_STYLE_CONTRAST, OPTION_STYLE_SATELLITE,
+                               OPTION_STYLE_STD, OPTION_STYLE_YELLOW_RED)
 
 DOMAIN: Final = 'irm_kmi'
 PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA, Platform.BINARY_SENSOR, Platform.SENSOR]

@@ -5,11 +5,12 @@ from typing import List
 from freezegun import freeze_time
 from homeassistant.components.weather import Forecast
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry, load_fixture
+from irm_kmi_api.data import IrmKmiRadarForecast
+from pytest_homeassistant_custom_component.common import (MockConfigEntry,
+                                                          load_fixture)
 
 from custom_components.irm_kmi import IrmKmiCoordinator, IrmKmiWeather
 from custom_components.irm_kmi.data import ProcessedCoordinatorData
-from custom_components.irm_kmi.irm_kmi_api.data import IrmKmiRadarForecast
 from tests.conftest import get_api_with_data
 
 

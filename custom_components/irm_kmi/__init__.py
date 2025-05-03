@@ -6,12 +6,12 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
+from irm_kmi_api.const import OPTION_STYLE_STD
 
 from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
                     CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
                     OPTION_DEPRECATED_FORECAST_NOT_USED, PLATFORMS)
 from .coordinator import IrmKmiCoordinator
-from .irm_kmi_api.const import OPTION_STYLE_STD
 from .weather import IrmKmiWeather
 
 _LOGGER = logging.getLogger(__name__)

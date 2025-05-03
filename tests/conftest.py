@@ -2,19 +2,24 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta
 from typing import Generator
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from homeassistant.const import CONF_ZONE
-from pytest_homeassistant_custom_component.common import MockConfigEntry, load_fixture
+from irm_kmi_api.api import (IrmKmiApiClientHa, IrmKmiApiError,
+                             IrmKmiApiParametersError)
+from irm_kmi_api.data import AnimationFrameData, RadarAnimationData
+from pytest_homeassistant_custom_component.common import (MockConfigEntry,
+                                                          load_fixture)
 
 from custom_components.irm_kmi import OPTION_STYLE_STD
-from custom_components.irm_kmi.const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
-                                             CONF_USE_DEPRECATED_FORECAST, DOMAIN, OPTION_DEPRECATED_FORECAST_NOT_USED,
-                                             OPTION_DEPRECATED_FORECAST_TWICE_DAILY, IRM_KMI_TO_HA_CONDITION_MAP)
-from custom_components.irm_kmi.data import ProcessedCoordinatorData
-from custom_components.irm_kmi.irm_kmi_api.api import IrmKmiApiError, IrmKmiApiParametersError, IrmKmiApiClientHa
+from custom_components.irm_kmi.const import (
+    CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
+    CONF_USE_DEPRECATED_FORECAST, DOMAIN, IRM_KMI_TO_HA_CONDITION_MAP,
+    OPTION_DEPRECATED_FORECAST_NOT_USED,
+    OPTION_DEPRECATED_FORECAST_TWICE_DAILY)
 
 
 def get_api_data(fixture: str) -> dict:
@@ -155,3 +160,28 @@ def mock_exception_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None
         irm_kmi.refresh_forecasts_coord.side_effect = IrmKmiApiParametersError
         yield irm_kmi
 
+def get_radar_animation_data() -> RadarAnimationData:
+    with open("tests/fixtures/clouds_be.png", "rb") as file:
+        image_data = file.read()
+    with open("tests/fixtures/loc_layer_be_n.png", "rb") as file:
+        location = file.read()
+
+    sequence = [
+        AnimationFrameData(
+            time=datetime.fromisoformat("2023-12-26T18:30:00+00:00") + timedelta(minutes=10 * i),
+            image=image_data,
+            value=2,
+            position=.5,
+            position_lower=.4,
+            position_higher=.6
+        )
+        for i in range(10)
+    ]
+
+    return RadarAnimationData(
+        sequence=sequence,
+        most_recent_image_idx=2,
+        hint="Testing SVG camera",
+        unit="mm/10min",
+        location=location
+    )

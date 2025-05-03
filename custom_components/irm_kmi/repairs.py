@@ -8,12 +8,11 @@ from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
+from irm_kmi_api.api import IrmKmiApiClient
 
 from . import async_reload_entry
-from .const import (OUT_OF_BENELUX, REPAIR_OPT_DELETE,
-                    REPAIR_OPT_MOVE, REPAIR_OPTIONS,
-                    REPAIR_SOLUTION, USER_AGENT)
-from .irm_kmi_api.api import IrmKmiApiClient
+from .const import (OUT_OF_BENELUX, REPAIR_OPT_DELETE, REPAIR_OPT_MOVE,
+                    REPAIR_OPTIONS, REPAIR_SOLUTION, USER_AGENT)
 from .utils import modify_from_config
 
 _LOGGER = logging.getLogger(__name__)

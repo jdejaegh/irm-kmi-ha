@@ -8,7 +8,7 @@ from homeassistant.const import CONF_ZONE
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.irm_kmi import async_migrate_entry, OPTION_STYLE_STD
+from custom_components.irm_kmi import OPTION_STYLE_STD, async_migrate_entry
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
     CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,

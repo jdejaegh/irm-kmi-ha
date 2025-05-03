@@ -1,11 +1,12 @@
 import json
 import logging
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers import issue_registry
-from pytest_homeassistant_custom_component.common import MockConfigEntry, load_fixture
+from pytest_homeassistant_custom_component.common import (MockConfigEntry,
+                                                          load_fixture)
 
 from custom_components.irm_kmi import DOMAIN, IrmKmiCoordinator
 from custom_components.irm_kmi.const import (REPAIR_OPT_DELETE,
