@@ -153,11 +153,11 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
     def get_country(self) -> str | None:
         return self._api_data.get('country', None)
 
-    async def get_current_weather(self, tz: ZoneInfo) -> CurrentWeatherData:
+    def get_current_weather(self, tz: ZoneInfo) -> CurrentWeatherData:
         """Parse the API data to build a CurrentWeatherData."""
 
-        now_hourly = await self._get_now_hourly(tz)
-        uv_index = await self._get_uv_index()
+        now_hourly = self._get_now_hourly(tz)
+        uv_index = self._get_uv_index()
 
         try:
             pressure = float(now_hourly.get('pressure', None)) if now_hourly is not None else None
@@ -221,7 +221,7 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
 
         return current_weather
 
-    async def _get_uv_index(self) -> float | None:
+    def _get_uv_index(self) -> float | None:
         uv_index = None
         module_data = self._api_data.get('module', None)
         if not (module_data is None or not isinstance(module_data, list)):
@@ -230,7 +230,7 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
                     uv_index = module.get('data', {}).get('levelValue')
         return uv_index
 
-    async def _get_now_hourly(self, tz: ZoneInfo) -> dict | None:
+    def _get_now_hourly(self, tz: ZoneInfo) -> dict | None:
         now_hourly = None
         hourly_forecast_data = self._api_data.get('for', {}).get('hourly')
         now = datetime.now(tz)
@@ -244,7 +244,7 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
                     break
         return now_hourly
 
-    async def get_daily_forecast(self, tz: ZoneInfo, lang: str) -> List[IrmKmiForecast] | None:
+    def get_daily_forecast(self, tz: ZoneInfo, lang: str) -> List[IrmKmiForecast] | None:
         """Parse data from the API to create a list of daily forecasts"""
         data = self._api_data.get('for', {}).get('daily')
         if data is None or not isinstance(data, list) or len(data) == 0:
@@ -336,12 +336,12 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
 
         return forecasts
 
-    async def get_hourly_forecast(self, tz: ZoneInfo) -> List[Forecast] | None:
+    def get_hourly_forecast(self, tz: ZoneInfo) -> List[Forecast] :
         """Parse data from the API to create a list of hourly forecasts"""
         data = self._api_data.get('for', {}).get('hourly')
 
         if data is None or not isinstance(data, list) or len(data) == 0:
-            return None
+            return []
 
         forecasts = list()
         day = datetime.now(tz).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -417,7 +417,7 @@ class IrmKmiApiClientHa(IrmKmiApiClient):
             )
         return forecast
 
-    async def get_animation_data(self, tz: ZoneInfo, lang: str, style: str, dark_mode: bool) -> (RadarAnimationData,
+    def get_animation_data(self, tz: ZoneInfo, lang: str, style: str, dark_mode: bool) -> (RadarAnimationData,
                                                                                                  str, Tuple[int, int]):
         """From the API data passed in, call the API to get all the images and create the radar animation data object.
         Frames from the API are merged with the background map and the location marker to create each frame."""

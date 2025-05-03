@@ -49,7 +49,7 @@ async def test_warning_data(
 async def test_current_weather_be() -> None:
     api = get_api_with_data("forecast.json")
     tz = ZoneInfo("Europe/Brussels")
-    result = await api.get_current_weather(tz)
+    result = api.get_current_weather(tz)
 
     expected = CurrentWeatherData(
         condition=ATTR_CONDITION_CLOUDY,
@@ -68,7 +68,7 @@ async def test_current_weather_be() -> None:
 async def test_current_weather_nl() -> None:
     api = get_api_with_data("forecast_nl.json")
     tz = ZoneInfo("Europe/Brussels")
-    result = await api.get_current_weather(tz)
+    result = api.get_current_weather(tz)
 
     expected = CurrentWeatherData(
         condition=ATTR_CONDITION_CLOUDY,
@@ -84,13 +84,13 @@ async def test_current_weather_nl() -> None:
 
 
 @freeze_time(datetime.fromisoformat('2023-12-26T18:30:00+01:00'))
-async def test_daily_forecast(
+def test_daily_forecast(
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("forecast.json")
     tz = ZoneInfo("Europe/Brussels")
 
-    result = await api.get_daily_forecast(tz, 'fr')
+    result = api.get_daily_forecast(tz, 'fr')
 
     assert isinstance(result, list)
     assert len(result) == 8
@@ -116,10 +116,10 @@ async def test_daily_forecast(
 
 
 @freeze_time(datetime.fromisoformat('2023-12-26T18:30:00+01:00'))
-async def test_hourly_forecast() -> None:
+def test_hourly_forecast() -> None:
     api = get_api_with_data("forecast.json")
     tz = ZoneInfo("Europe/Brussels")
-    result = await api.get_hourly_forecast(tz)
+    result = api.get_hourly_forecast(tz)
 
     assert isinstance(result, list)
     assert len(result) == 49
@@ -142,11 +142,11 @@ async def test_hourly_forecast() -> None:
 
 
 @freeze_time(datetime.fromisoformat('2024-05-31T01:50:00+02:00'))
-async def test_hourly_forecast_bis() -> None:
+def test_hourly_forecast_bis() -> None:
     api = get_api_with_data("no-midnight-bug-31-05-2024T01-55.json")
     tz = ZoneInfo("Europe/Brussels")
 
-    result = await api.get_hourly_forecast(tz)
+    result = api.get_hourly_forecast(tz)
 
     assert isinstance(result, list)
 
@@ -160,12 +160,12 @@ async def test_hourly_forecast_bis() -> None:
 
 
 @freeze_time(datetime.fromisoformat('2024-05-31T00:10:00+02:00'))
-async def test_hourly_forecast_midnight_bug() -> None:
+def test_hourly_forecast_midnight_bug() -> None:
     # Related to https://github.com/jdejaegh/irm-kmi-ha/issues/38
     api = get_api_with_data("midnight-bug-31-05-2024T00-13.json")
     tz = ZoneInfo("Europe/Brussels")
 
-    result = await api.get_hourly_forecast(tz)
+    result = api.get_hourly_forecast(tz)
 
     assert isinstance(result, list)
 
@@ -197,13 +197,13 @@ async def test_hourly_forecast_midnight_bug() -> None:
 
 
 @freeze_time(datetime.fromisoformat('2024-05-31T00:10:00+02:00'))
-async def test_daily_forecast_midnight_bug(
+def test_daily_forecast_midnight_bug(
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("midnight-bug-31-05-2024T00-13.json")
     tz = ZoneInfo("Europe/Brussels")
 
-    result = await api.get_daily_forecast(tz, 'en')
+    result = api.get_daily_forecast(tz, 'en')
 
     assert result[0]['datetime'] == '2024-05-31'
     assert not result[0]['is_daytime']
@@ -310,13 +310,13 @@ def test_radar_forecast_rain_interval() -> None:
 
 
 @freeze_time("2024-06-09T13:40:00+00:00")
-async def test_datetime_daily_forecast_nl(
+def test_datetime_daily_forecast_nl(
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("forecast_ams_no_ww.json")
     tz = ZoneInfo("Europe/Brussels")
 
-    result = await api.get_daily_forecast(tz, 'en')
+    result = api.get_daily_forecast(tz, 'en')
 
     assert result[0]['datetime'] == '2024-06-09'
     assert result[0]['is_daytime']
@@ -333,7 +333,7 @@ async def test_current_condition_forecast_nl() -> None:
     api = get_api_with_data("forecast_ams_no_ww.json")
     tz = ZoneInfo("Europe/Brussels")
 
-    result = await api.get_current_weather(tz)
+    result = api.get_current_weather(tz)
 
     expected = CurrentWeatherData(
         condition=ATTR_CONDITION_PARTLYCLOUDY,
@@ -348,13 +348,13 @@ async def test_current_condition_forecast_nl() -> None:
 
 
 @freeze_time("2024-06-09T13:40:00+00:00")
-async def test_sunrise_sunset_nl(
+def test_sunrise_sunset_nl(
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("forecast_ams_no_ww.json")
     tz = ZoneInfo("Europe/Brussels")
 
-    result = await api.get_daily_forecast(tz, 'en')
+    result = api.get_daily_forecast(tz, 'en')
 
     assert result[0]['sunrise'] == '2024-06-09T05:19:28+02:00'
     assert result[0]['sunset'] == '2024-06-09T22:01:09+02:00'
@@ -367,13 +367,13 @@ async def test_sunrise_sunset_nl(
 
 
 @freeze_time("2023-12-26T18:30:00+01:00")
-async def test_sunrise_sunset_be(
+def test_sunrise_sunset_be(
         mock_config_entry: MockConfigEntry
 ) -> None:
     api = get_api_with_data("forecast.json")
     tz = ZoneInfo("Europe/Brussels")
 
-    result = await api.get_daily_forecast(tz, 'en')
+    result = api.get_daily_forecast(tz, 'en')
 
     assert result[1]['sunrise'] == '2023-12-27T08:44:00+01:00'
     assert result[1]['sunset'] == '2023-12-27T16:43:00+01:00'
