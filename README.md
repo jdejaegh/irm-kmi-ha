@@ -32,15 +32,11 @@ This integration provides the following things:
 - A weather entity with current weather conditions
 - Weather forecasts (hourly, daily and twice-daily) [using the service `weather.get_forecasts`](https://www.home-assistant.io/integrations/weather/#service-weatherget_forecasts)
 - Short-term rain forecasts using the radar data using the [custom service `ìrm_kmi.get_forecasts_radar`](#custom-service-irm_kmiget_forecasts_radar)
-- A camera entity for rain radar and short-term rain previsions
+- A camera entity for rain radar and short-term rain previsions (with different styles)
 - A binary sensor for weather warnings
 - A sensor with the timestamp for the start of the next warning
 - Sensors for active pollens
 
-The following options are available:
-
-- Styles for the radar
-- Support for the old `forecast` attribute for components relying on this
 
 ## Screenshots
 
