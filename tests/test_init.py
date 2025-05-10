@@ -98,7 +98,6 @@ async def test_config_entry_migration(
         CONF_ZONE: "zone.castle",
         CONF_STYLE: OPTION_STYLE_STD,
         CONF_DARK_MODE: True,
-        CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
         CONF_LANGUAGE_OVERRIDE: 'none'
     }
 

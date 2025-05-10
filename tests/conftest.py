@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timedelta
 from typing import Generator
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from homeassistant.const import CONF_ZONE
@@ -18,8 +18,7 @@ from custom_components.irm_kmi import OPTION_STYLE_STD
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
     CONF_USE_DEPRECATED_FORECAST, DOMAIN, IRM_KMI_TO_HA_CONDITION_MAP,
-    OPTION_DEPRECATED_FORECAST_NOT_USED,
-    OPTION_DEPRECATED_FORECAST_TWICE_DAILY)
+    OPTION_DEPRECATED_FORECAST_NOT_USED)
 
 
 def get_api_data(fixture: str) -> dict:
@@ -47,21 +46,6 @@ def mock_config_entry() -> MockConfigEntry:
               CONF_STYLE: OPTION_STYLE_STD,
               CONF_DARK_MODE: True,
               CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
-              CONF_LANGUAGE_OVERRIDE: 'none'},
-        unique_id="zone.home",
-    )
-
-
-@pytest.fixture
-def mock_config_entry_with_deprecated() -> MockConfigEntry:
-    """Return the default mocked config entry."""
-    return MockConfigEntry(
-        title="Home",
-        domain=DOMAIN,
-        data={CONF_ZONE: "zone.home",
-              CONF_STYLE: OPTION_STYLE_STD,
-              CONF_DARK_MODE: True,
-              CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_TWICE_DAILY,
               CONF_LANGUAGE_OVERRIDE: 'none'},
         unique_id="zone.home",
     )

@@ -19,9 +19,7 @@ from irm_kmi_api.api import IrmKmiApiClient
 from . import OPTION_STYLE_STD
 from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE,
                     CONF_LANGUAGE_OVERRIDE_OPTIONS, CONF_STYLE,
-                    CONF_STYLE_OPTIONS, CONF_USE_DEPRECATED_FORECAST,
-                    CONF_USE_DEPRECATED_FORECAST_OPTIONS, CONFIG_FLOW_VERSION,
-                    DOMAIN, OPTION_DEPRECATED_FORECAST_NOT_USED,
+                    CONF_STYLE_OPTIONS, CONFIG_FLOW_VERSION, DOMAIN,
                     OUT_OF_BENELUX, USER_AGENT)
 from .utils import get_config_value
 
@@ -75,7 +73,6 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
                         data={CONF_ZONE: user_input[CONF_ZONE],
                               CONF_STYLE: user_input[CONF_STYLE],
                               CONF_DARK_MODE: user_input[CONF_DARK_MODE],
-                              CONF_USE_DEPRECATED_FORECAST: user_input[CONF_USE_DEPRECATED_FORECAST],
                               CONF_LANGUAGE_OVERRIDE: user_input[CONF_LANGUAGE_OVERRIDE]},
                     )
 
@@ -93,11 +90,6 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
                                                         translation_key=CONF_STYLE)),
 
                 vol.Optional(CONF_DARK_MODE, default=False): bool,
-
-                vol.Optional(CONF_USE_DEPRECATED_FORECAST, default=OPTION_DEPRECATED_FORECAST_NOT_USED):
-                    SelectSelector(SelectSelectorConfig(options=CONF_USE_DEPRECATED_FORECAST_OPTIONS,
-                                                        mode=SelectSelectorMode.DROPDOWN,
-                                                        translation_key=CONF_USE_DEPRECATED_FORECAST)),
 
                 vol.Optional(CONF_LANGUAGE_OVERRIDE, default='none'):
                     SelectSelector(SelectSelectorConfig(options=CONF_LANGUAGE_OVERRIDE_OPTIONS,
@@ -128,12 +120,6 @@ class IrmKmiOptionFlow(OptionsFlow):
                                                             translation_key=CONF_STYLE)),
 
                     vol.Optional(CONF_DARK_MODE, default=get_config_value(self.current_config_entry, CONF_DARK_MODE)): bool,
-
-                    vol.Optional(CONF_USE_DEPRECATED_FORECAST,
-                                 default=get_config_value(self.current_config_entry, CONF_USE_DEPRECATED_FORECAST)):
-                        SelectSelector(SelectSelectorConfig(options=CONF_USE_DEPRECATED_FORECAST_OPTIONS,
-                                                            mode=SelectSelectorMode.DROPDOWN,
-                                                            translation_key=CONF_USE_DEPRECATED_FORECAST)),
 
                     vol.Optional(CONF_LANGUAGE_OVERRIDE,
                                  default=get_config_value(self.current_config_entry, CONF_LANGUAGE_OVERRIDE)):

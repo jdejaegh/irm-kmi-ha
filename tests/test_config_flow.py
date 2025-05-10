@@ -41,7 +41,6 @@ async def test_full_user_flow(
     assert result2.get("data") == {CONF_ZONE: ENTITY_ID_HOME,
                                    CONF_STYLE: OPTION_STYLE_STD,
                                    CONF_DARK_MODE: False,
-                                   CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
                                    CONF_LANGUAGE_OVERRIDE: 'none'}
 
 
@@ -122,7 +121,6 @@ async def test_option_flow(
         user_input={
             CONF_STYLE: OPTION_STYLE_SATELLITE,
             CONF_DARK_MODE: True,
-            CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED
         }
     )
 
@@ -130,7 +128,6 @@ async def test_option_flow(
     assert result["data"] == {
         CONF_STYLE: OPTION_STYLE_SATELLITE,
         CONF_DARK_MODE: True,
-        CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
         CONF_LANGUAGE_OVERRIDE: 'none'
     }
 

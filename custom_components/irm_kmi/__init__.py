@@ -9,8 +9,8 @@ from homeassistant.exceptions import ConfigEntryError
 from irm_kmi_api.const import OPTION_STYLE_STD
 
 from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
-                    CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
-                    OPTION_DEPRECATED_FORECAST_NOT_USED, PLATFORMS)
+                    CONFIG_FLOW_VERSION, DOMAIN, PLATFORMS, CONF_USE_DEPRECATED_FORECAST,
+                    OPTION_DEPRECATED_FORECAST_NOT_USED)
 from .coordinator import IrmKmiCoordinator
 from .weather import IrmKmiWeather
 
@@ -75,6 +75,10 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
 
     if config_entry.version == 4:
         new[CONF_LANGUAGE_OVERRIDE] = 'none' if new[CONF_LANGUAGE_OVERRIDE] is None else new[CONF_LANGUAGE_OVERRIDE]
+        hass.config_entries.async_update_entry(config_entry, data=new, version=5)
+
+    if config_entry.version == 5:
+        del new[CONF_USE_DEPRECATED_FORECAST]
         hass.config_entries.async_update_entry(config_entry, data=new, version=5)
 
     _LOGGER.debug(f"Migration to version {config_entry.version} successful")

@@ -38,18 +38,9 @@ CONF_STYLE_OPTIONS: Final = [
 
 CONF_DARK_MODE: Final = "dark_mode"
 
+# TODO delete those two constants when integrating with Home Assistant Core
 CONF_USE_DEPRECATED_FORECAST: Final = 'use_deprecated_forecast_attribute'
 OPTION_DEPRECATED_FORECAST_NOT_USED: Final = 'do_not_use_deprecated_forecast'
-OPTION_DEPRECATED_FORECAST_DAILY: Final = 'daily_in_deprecated_forecast'
-OPTION_DEPRECATED_FORECAST_TWICE_DAILY: Final = 'twice_daily_in_deprecated_forecast'
-OPTION_DEPRECATED_FORECAST_HOURLY: Final = 'hourly_in_deprecated_forecast'
-
-CONF_USE_DEPRECATED_FORECAST_OPTIONS: Final = [
-    OPTION_DEPRECATED_FORECAST_NOT_USED,
-    OPTION_DEPRECATED_FORECAST_DAILY,
-    OPTION_DEPRECATED_FORECAST_TWICE_DAILY,
-    OPTION_DEPRECATED_FORECAST_HOURLY
-]
 
 CONF_LANGUAGE_OVERRIDE: Final = 'language_override'
 
