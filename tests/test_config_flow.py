@@ -12,8 +12,12 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import async_migrate_entry
 from custom_components.irm_kmi.const import (
-    CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
-    CONFIG_FLOW_VERSION, DOMAIN)
+    CONF_DARK_MODE,
+    CONF_LANGUAGE_OVERRIDE,
+    CONF_STYLE,
+    CONFIG_FLOW_VERSION,
+    DOMAIN,
+)
 
 
 async def test_full_user_flow(

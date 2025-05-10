@@ -1,7 +1,7 @@
 from typing import List, TypedDict
 
 from homeassistant.components.weather import Forecast
-from irm_kmi_api import CurrentWeatherData, ExtendedForecast, WarningData, RainGraph
+from irm_kmi_api import CurrentWeatherData, ExtendedForecast, RainGraph, WarningData
 
 
 class ProcessedCoordinatorData(TypedDict, total=False):

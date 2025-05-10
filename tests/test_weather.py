@@ -1,16 +1,15 @@
 import json
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 from freezegun import freeze_time
 from homeassistant.components.weather import Forecast
 from homeassistant.core import HomeAssistant
 from irm_kmi_api.data import RadarForecast
-from pytest_homeassistant_custom_component.common import (MockConfigEntry,
-                                                          load_fixture)
+from pytest_homeassistant_custom_component.common import MockConfigEntry, load_fixture
 
-from custom_components.irm_kmi.weather import IrmKmiCoordinator, IrmKmiWeather
 from custom_components.irm_kmi.data import ProcessedCoordinatorData
+from custom_components.irm_kmi.weather import IrmKmiCoordinator, IrmKmiWeather
 from tests.conftest import get_api_with_data
 
 

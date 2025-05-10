@@ -8,9 +8,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
 from irm_kmi_api import RadarStyle
 
-from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
-                    CONFIG_FLOW_VERSION, DOMAIN, PLATFORMS, CONF_USE_DEPRECATED_FORECAST,
-                    OPTION_DEPRECATED_FORECAST_NOT_USED)
+from .const import (
+    CONF_DARK_MODE,
+    CONF_LANGUAGE_OVERRIDE,
+    CONF_STYLE,
+    CONF_USE_DEPRECATED_FORECAST,
+    CONFIG_FLOW_VERSION,
+    DOMAIN,
+    OPTION_DEPRECATED_FORECAST_NOT_USED,
+    PLATFORMS,
+)
 from .coordinator import IrmKmiCoordinator
 
 _LOGGER = logging.getLogger(__name__)

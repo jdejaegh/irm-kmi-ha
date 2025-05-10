@@ -9,17 +9,25 @@ from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE, CONF_ZONE
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.selector import (EntitySelector,
-                                            EntitySelectorConfig,
-                                            SelectSelector,
-                                            SelectSelectorConfig,
-                                            SelectSelectorMode)
+from homeassistant.helpers.selector import (
+    EntitySelector,
+    EntitySelectorConfig,
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
+)
 from irm_kmi_api import IrmKmiApiClient, RadarStyle
 
-from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE,
-                    CONF_LANGUAGE_OVERRIDE_OPTIONS, CONF_STYLE,
-                    CONFIG_FLOW_VERSION, DOMAIN,
-                    OUT_OF_BENELUX, USER_AGENT)
+from .const import (
+    CONF_DARK_MODE,
+    CONF_LANGUAGE_OVERRIDE,
+    CONF_LANGUAGE_OVERRIDE_OPTIONS,
+    CONF_STYLE,
+    CONFIG_FLOW_VERSION,
+    DOMAIN,
+    OUT_OF_BENELUX,
+    USER_AGENT,
+)
 from .utils import get_config_value
 
 _LOGGER = logging.getLogger(__name__)

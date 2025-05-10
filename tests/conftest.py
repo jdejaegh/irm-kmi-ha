@@ -8,14 +8,24 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from homeassistant.const import CONF_ZONE
-from irm_kmi_api import IrmKmiApiClientHa, IrmKmiApiError, AnimationFrameData, RadarAnimationData, RadarStyle
-from pytest_homeassistant_custom_component.common import (MockConfigEntry,
-                                                          load_fixture)
+from irm_kmi_api import (
+    AnimationFrameData,
+    IrmKmiApiClientHa,
+    IrmKmiApiError,
+    RadarAnimationData,
+    RadarStyle,
+)
+from pytest_homeassistant_custom_component.common import MockConfigEntry, load_fixture
 
 from custom_components.irm_kmi.const import (
-    CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
-    CONF_USE_DEPRECATED_FORECAST, DOMAIN, IRM_KMI_TO_HA_CONDITION_MAP,
-    OPTION_DEPRECATED_FORECAST_NOT_USED)
+    CONF_DARK_MODE,
+    CONF_LANGUAGE_OVERRIDE,
+    CONF_STYLE,
+    CONF_USE_DEPRECATED_FORECAST,
+    DOMAIN,
+    IRM_KMI_TO_HA_CONDITION_MAP,
+    OPTION_DEPRECATED_FORECAST_NOT_USED,
+)
 
 
 def get_api_data(fixture: str) -> dict:

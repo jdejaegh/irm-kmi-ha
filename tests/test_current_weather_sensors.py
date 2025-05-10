@@ -7,9 +7,11 @@ from irm_kmi_api.data import CurrentWeatherData
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import IrmKmiCoordinator
-from custom_components.irm_kmi.const import (CURRENT_WEATHER_SENSOR_CLASS,
-                                             CURRENT_WEATHER_SENSOR_UNITS,
-                                             CURRENT_WEATHER_SENSORS)
+from custom_components.irm_kmi.const import (
+    CURRENT_WEATHER_SENSOR_CLASS,
+    CURRENT_WEATHER_SENSOR_UNITS,
+    CURRENT_WEATHER_SENSORS,
+)
 from custom_components.irm_kmi.data import ProcessedCoordinatorData
 from custom_components.irm_kmi.sensor import IrmKmiCurrentRainfall
 from tests.conftest import get_api_with_data

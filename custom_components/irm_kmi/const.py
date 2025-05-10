@@ -2,18 +2,25 @@
 from typing import Final
 
 from homeassistant.components.sensor import SensorDeviceClass
-from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
-                                              ATTR_CONDITION_CLOUDY,
-                                              ATTR_CONDITION_FOG,
-                                              ATTR_CONDITION_LIGHTNING_RAINY,
-                                              ATTR_CONDITION_PARTLYCLOUDY,
-                                              ATTR_CONDITION_POURING,
-                                              ATTR_CONDITION_RAINY,
-                                              ATTR_CONDITION_SNOWY,
-                                              ATTR_CONDITION_SNOWY_RAINY,
-                                              ATTR_CONDITION_SUNNY)
-from homeassistant.const import (DEGREE, Platform, UnitOfPressure, UnitOfSpeed,
-                                 UnitOfTemperature)
+from homeassistant.components.weather import (
+      ATTR_CONDITION_CLEAR_NIGHT,
+      ATTR_CONDITION_CLOUDY,
+      ATTR_CONDITION_FOG,
+      ATTR_CONDITION_LIGHTNING_RAINY,
+      ATTR_CONDITION_PARTLYCLOUDY,
+      ATTR_CONDITION_POURING,
+      ATTR_CONDITION_RAINY,
+      ATTR_CONDITION_SNOWY,
+      ATTR_CONDITION_SNOWY_RAINY,
+      ATTR_CONDITION_SUNNY,
+)
+from homeassistant.const import (
+      DEGREE,
+      Platform,
+      UnitOfPressure,
+      UnitOfSpeed,
+      UnitOfTemperature,
+)
 from irm_kmi_api import PollenName
 
 DOMAIN: Final = 'irm_kmi'

@@ -8,8 +8,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.irm_kmi import IrmKmiCoordinator
 from custom_components.irm_kmi.binary_sensor import IrmKmiWarning
 from custom_components.irm_kmi.const import CONF_LANGUAGE_OVERRIDE
-from custom_components.irm_kmi.sensor import (IrmKmiNextSunMove,
-                                              IrmKmiNextWarning)
+from custom_components.irm_kmi.sensor import IrmKmiNextSunMove, IrmKmiNextWarning
 from tests.conftest import get_api_with_data, get_radar_animation_data
 
 

@@ -1,14 +1,21 @@
 """Support for IRM KMI weather."""
 import logging
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 import voluptuous as vol
-from homeassistant.components.weather import (Forecast, WeatherEntity,
-                                              WeatherEntityFeature)
+from homeassistant.components.weather import (
+    Forecast,
+    WeatherEntity,
+    WeatherEntityFeature,
+)
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (UnitOfPrecipitationDepth, UnitOfPressure,
-                                 UnitOfSpeed, UnitOfTemperature)
+from homeassistant.const import (
+    UnitOfPrecipitationDepth,
+    UnitOfPressure,
+    UnitOfSpeed,
+    UnitOfTemperature,
+)
 from homeassistant.core import HomeAssistant, SupportsResponse
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
