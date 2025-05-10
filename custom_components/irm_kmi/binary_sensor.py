@@ -10,7 +10,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt
 
-from . import DOMAIN, IrmKmiCoordinator
+from .const import DOMAIN
+from .coordinator import IrmKmiCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 

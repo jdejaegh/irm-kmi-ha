@@ -6,13 +6,12 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
-from irm_kmi_api.const import OPTION_STYLE_STD
+from irm_kmi_api import RadarStyle
 
 from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
                     CONFIG_FLOW_VERSION, DOMAIN, PLATFORMS, CONF_USE_DEPRECATED_FORECAST,
                     OPTION_DEPRECATED_FORECAST_NOT_USED)
 from .coordinator import IrmKmiCoordinator
-from .weather import IrmKmiWeather
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -62,7 +61,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
 
     new = {**config_entry.data}
     if config_entry.version == 1:
-        new = new | {CONF_STYLE: OPTION_STYLE_STD, CONF_DARK_MODE: True}
+        new = new | {CONF_STYLE: RadarStyle.OPTION_STYLE_STD, CONF_DARK_MODE: True}
         hass.config_entries.async_update_entry(config_entry, data=new, version=2)
 
     if config_entry.version == 2:

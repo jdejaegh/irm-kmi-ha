@@ -1,6 +1,6 @@
+import asyncio
 import logging
 
-import async_timeout
 import voluptuous as vol
 from homeassistant import data_entry_flow
 from homeassistant.components.repairs import RepairsFlow
@@ -8,7 +8,7 @@ from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
-from irm_kmi_api.api import IrmKmiApiClient
+from irm_kmi_api import IrmKmiApiClient
 
 from . import async_reload_entry
 from .const import (OUT_OF_BENELUX, REPAIR_OPT_DELETE, REPAIR_OPT_MOVE,
@@ -47,7 +47,7 @@ class OutOfBeneluxRepairFlow(RepairsFlow):
                 if not errors:
                     api_data = {}
                     try:
-                        async with async_timeout.timeout(10):
+                        async with asyncio.timeout(10):
                             api_data = await IrmKmiApiClient(
                                 session=async_get_clientsession(self.hass),
                                 user_agent=USER_AGENT

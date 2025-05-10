@@ -9,14 +9,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt
-from irm_kmi_api.const import POLLEN_NAMES
-from irm_kmi_api.data import IrmKmiForecast, IrmKmiRadarForecast
-from irm_kmi_api.pollen import PollenParser
+from irm_kmi_api import ExtendedForecast, PollenParser, PollenName, RadarForecast
 
-from . import DOMAIN, IrmKmiCoordinator
+from .coordinator import IrmKmiCoordinator
 from .const import (CURRENT_WEATHER_SENSOR_CLASS, CURRENT_WEATHER_SENSOR_ICON,
                     CURRENT_WEATHER_SENSOR_UNITS, CURRENT_WEATHER_SENSORS,
-                    POLLEN_TO_ICON_MAP)
+                    POLLEN_TO_ICON_MAP, DOMAIN)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     """Set up the sensor platform"""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([IrmKmiPollen(coordinator, entry, pollen.lower()) for pollen in POLLEN_NAMES])
+    async_add_entities([IrmKmiPollen(coordinator, entry, pollen) for pollen in PollenName])
     async_add_entities([IrmKmiCurrentWeather(coordinator, entry, name) for name in CURRENT_WEATHER_SENSORS])
     async_add_entities([IrmKmiNextWarning(coordinator, entry),
                         IrmKmiCurrentRainfall(coordinator, entry)])
@@ -42,22 +40,23 @@ class IrmKmiPollen(CoordinatorEntity, SensorEntity):
     def __init__(self,
                  coordinator: IrmKmiCoordinator,
                  entry: ConfigEntry,
-                 pollen: str
+                 pollen: PollenName
                  ) -> None:
         super().__init__(coordinator)
         SensorEntity.__init__(self)
-        self._attr_unique_id = f"{entry.entry_id}-pollen-{pollen}"
-        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_{pollen}_level")
-        self._attr_options = PollenParser.get_option_values()
+        self._attr_unique_id = f"{entry.entry_id}-pollen-{pollen.value}"
+        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_{pollen.value}_level")
+        self._attr_options = [p.value for p in PollenParser.get_option_values()]
         self._attr_device_info = coordinator.shared_device_info
         self._pollen = pollen
-        self._attr_translation_key = f"pollen_{pollen}"
+        self._attr_translation_key = f"pollen_{pollen.value}"
         self._attr_icon = POLLEN_TO_ICON_MAP[pollen]
 
     @property
     def native_value(self) -> str | None:
         """Return the state of the sensor."""
-        return self.coordinator.data.get('pollen', {}).get(self._pollen, None)
+        r = self.coordinator.data.get('pollen', {}).get(self._pollen, None)
+        return r.value if r is not None else None
 
 
 class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
@@ -132,7 +131,7 @@ class IrmKmiNextSunMove(CoordinatorEntity, SensorEntity):
     def native_value(self) -> datetime | None:
         """Return the timestamp for the next sunrise or sunset"""
         now = dt.now()
-        data: list[IrmKmiForecast] = self.coordinator.data.get('daily_forecast')
+        data: list[ExtendedForecast] = self.coordinator.data.get('daily_forecast')
 
         upcoming = [datetime.fromisoformat(f.get(self._move)) for f in data
                     if f.get(self._move) is not None and datetime.fromisoformat(f.get(self._move)) >= now]
@@ -195,7 +194,7 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
         self._attr_translation_key = "current_rainfall"
         self._attr_icon = 'mdi:weather-pouring'
 
-    def _current_forecast(self) -> IrmKmiRadarForecast | None:
+    def _current_forecast(self) -> RadarForecast | None:
         now = dt.now()
         forecasts = self.coordinator.data.get('radar_forecast', None)
 

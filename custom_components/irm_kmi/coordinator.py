@@ -1,8 +1,8 @@
 """DataUpdateCoordinator for the IRM KMI integration."""
+import asyncio
 import logging
 from datetime import timedelta
 
-import async_timeout
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_LATITUDE, ATTR_LONGITUDE, CONF_ZONE
 from homeassistant.core import HomeAssistant
@@ -13,9 +13,7 @@ from homeassistant.helpers.update_coordinator import (
     TimestampDataUpdateCoordinator, UpdateFailed)
 from homeassistant.util import dt
 from homeassistant.util.dt import utcnow
-from irm_kmi_api.api import IrmKmiApiClientHa, IrmKmiApiError
-from irm_kmi_api.pollen import PollenParser
-from irm_kmi_api.rain_graph import RainGraph
+from irm_kmi_api import IrmKmiApiClientHa, IrmKmiApiError, PollenParser, RainGraph, RadarStyle
 
 from .const import CONF_DARK_MODE, CONF_STYLE, DOMAIN, IRM_KMI_NAME
 from .const import IRM_KMI_TO_HA_CONDITION_MAP as CDT_MAP
@@ -43,7 +41,10 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         self._api = IrmKmiApiClientHa(session=async_get_clientsession(hass), user_agent=USER_AGENT, cdt_map=CDT_MAP)
         self._zone = get_config_value(entry, CONF_ZONE)
         self._dark_mode = get_config_value(entry, CONF_DARK_MODE)
-        self._style = get_config_value(entry, CONF_STYLE)
+        try:
+            self._style = RadarStyle(get_config_value(entry, CONF_STYLE))
+        except ValueError:
+            self._style = RadarStyle.OPTION_STYLE_STD
         self.shared_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, entry.entry_id)},
@@ -66,7 +67,7 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         try:
             # Note: asyncio.TimeoutError and aiohttp.ClientError are already
             # handled by the data update coordinator.
-            async with async_timeout.timeout(60):
+            async with asyncio.timeout(60):
                 await self._api.refresh_forecasts_coord(
                     {'lat': zone.attributes[ATTR_LATITUDE],
                      'long': zone.attributes[ATTR_LONGITUDE]}

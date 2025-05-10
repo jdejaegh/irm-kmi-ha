@@ -14,8 +14,7 @@ from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
                                               ATTR_CONDITION_SUNNY)
 from homeassistant.const import (DEGREE, Platform, UnitOfPressure, UnitOfSpeed,
                                  UnitOfTemperature)
-from irm_kmi_api.const import (OPTION_STYLE_CONTRAST, OPTION_STYLE_SATELLITE,
-                               OPTION_STYLE_STD, OPTION_STYLE_YELLOW_RED)
+from irm_kmi_api import PollenName
 
 DOMAIN: Final = 'irm_kmi'
 PLATFORMS: Final = [Platform.WEATHER, Platform.CAMERA, Platform.BINARY_SENSOR, Platform.SENSOR]
@@ -28,13 +27,6 @@ OUT_OF_BENELUX: Final = ["außerhalb der Benelux (Brussels)",
 LANGS: Final = ['en', 'fr', 'nl', 'de']
 
 CONF_STYLE: Final = "style"
-
-CONF_STYLE_OPTIONS: Final = [
-    OPTION_STYLE_STD,
-    OPTION_STYLE_CONTRAST,
-    OPTION_STYLE_YELLOW_RED,
-    OPTION_STYLE_SATELLITE
-]
 
 CONF_DARK_MODE: Final = "dark_mode"
 
@@ -114,8 +106,13 @@ IRM_KMI_TO_HA_CONDITION_MAP: Final = {
 }
 
 POLLEN_TO_ICON_MAP: Final = {
-    'alder': 'mdi:tree', 'ash': 'mdi:tree', 'birch': 'mdi:tree', 'grasses': 'mdi:grass', 'hazel': 'mdi:tree',
-    'mugwort': 'mdi:sprout', 'oak': 'mdi:tree'
+    PollenName.ALDER: 'mdi:tree',
+    PollenName.ASH: 'mdi:tree',
+    PollenName.BIRCH: 'mdi:tree',
+    PollenName.GRASSES: 'mdi:grass',
+    PollenName.HAZEL: 'mdi:tree',
+    PollenName.MUGWORT: 'mdi:sprout',
+    PollenName.OAK: 'mdi:tree'
 }
 
 IRM_KMI_NAME: Final = {

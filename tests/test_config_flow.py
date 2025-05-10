@@ -7,14 +7,13 @@ from homeassistant.config_entries import SOURCE_USER
 from homeassistant.const import CONF_ZONE
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
-from irm_kmi_api.const import OPTION_STYLE_SATELLITE, OPTION_STYLE_STD
+from irm_kmi_api import RadarStyle
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import async_migrate_entry
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
-    CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
-    OPTION_DEPRECATED_FORECAST_NOT_USED)
+    CONFIG_FLOW_VERSION, DOMAIN)
 
 
 async def test_full_user_flow(
@@ -33,13 +32,13 @@ async def test_full_user_flow(
     result2 = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         user_input={CONF_ZONE: ENTITY_ID_HOME,
-                    CONF_STYLE: OPTION_STYLE_STD,
+                    CONF_STYLE: RadarStyle.OPTION_STYLE_STD.value,
                     CONF_DARK_MODE: False},
     )
     assert result2.get("type") == FlowResultType.CREATE_ENTRY
     assert result2.get("title") == "test home"
     assert result2.get("data") == {CONF_ZONE: ENTITY_ID_HOME,
-                                   CONF_STYLE: OPTION_STYLE_STD,
+                                   CONF_STYLE: RadarStyle.OPTION_STYLE_STD.value,
                                    CONF_DARK_MODE: False,
                                    CONF_LANGUAGE_OVERRIDE: 'none'}
 
@@ -56,7 +55,7 @@ async def test_config_flow_out_benelux_zone(
     result2 = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         user_input={CONF_ZONE: ENTITY_ID_HOME,
-                    CONF_STYLE: OPTION_STYLE_STD,
+                    CONF_STYLE: RadarStyle.OPTION_STYLE_STD.value,
                     CONF_DARK_MODE: False},
     )
 
@@ -77,7 +76,7 @@ async def test_config_flow_with_api_error(
     result2 = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         user_input={CONF_ZONE: ENTITY_ID_HOME,
-                    CONF_STYLE: OPTION_STYLE_STD,
+                    CONF_STYLE: RadarStyle.OPTION_STYLE_STD.value,
                     CONF_DARK_MODE: False},
     )
 
@@ -94,7 +93,7 @@ async def test_config_flow_unknown_zone(hass: HomeAssistant) -> None:
     result2 = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         user_input={CONF_ZONE: "zone.what",
-                    CONF_STYLE: OPTION_STYLE_STD,
+                    CONF_STYLE: RadarStyle.OPTION_STYLE_STD.value,
                     CONF_DARK_MODE: False},
     )
 
@@ -119,14 +118,14 @@ async def test_option_flow(
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
         user_input={
-            CONF_STYLE: OPTION_STYLE_SATELLITE,
+            CONF_STYLE: RadarStyle.OPTION_STYLE_SATELLITE.value,
             CONF_DARK_MODE: True,
         }
     )
 
     assert result["type"] == FlowResultType.CREATE_ENTRY
     assert result["data"] == {
-        CONF_STYLE: OPTION_STYLE_SATELLITE,
+        CONF_STYLE: RadarStyle.OPTION_STYLE_SATELLITE.value,
         CONF_DARK_MODE: True,
         CONF_LANGUAGE_OVERRIDE: 'none'
     }

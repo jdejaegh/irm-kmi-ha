@@ -1,7 +1,7 @@
 """Config flow to set up IRM KMI integration via the UI."""
+import asyncio
 import logging
 
-import async_timeout
 import voluptuous as vol
 from homeassistant.components.zone import DOMAIN as ZONE_DOMAIN
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
@@ -14,12 +14,11 @@ from homeassistant.helpers.selector import (EntitySelector,
                                             SelectSelector,
                                             SelectSelectorConfig,
                                             SelectSelectorMode)
-from irm_kmi_api.api import IrmKmiApiClient
+from irm_kmi_api import IrmKmiApiClient, RadarStyle
 
-from . import OPTION_STYLE_STD
 from .const import (CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE,
                     CONF_LANGUAGE_OVERRIDE_OPTIONS, CONF_STYLE,
-                    CONF_STYLE_OPTIONS, CONFIG_FLOW_VERSION, DOMAIN,
+                    CONFIG_FLOW_VERSION, DOMAIN,
                     OUT_OF_BENELUX, USER_AGENT)
 from .utils import get_config_value
 
@@ -49,7 +48,7 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
             if not errors:
                 api_data = {}
                 try:
-                    async with (async_timeout.timeout(60)):
+                    async with asyncio.timeout(60):
                         api_data = await IrmKmiApiClient(
                             session=async_get_clientsession(self.hass),
                             user_agent=USER_AGENT
@@ -84,8 +83,8 @@ class IrmKmiConfigFlow(ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_ZONE):
                     EntitySelector(EntitySelectorConfig(domain=ZONE_DOMAIN)),
 
-                vol.Optional(CONF_STYLE, default=OPTION_STYLE_STD):
-                    SelectSelector(SelectSelectorConfig(options=CONF_STYLE_OPTIONS,
+                vol.Optional(CONF_STYLE, default=RadarStyle.OPTION_STYLE_STD.value):
+                    SelectSelector(SelectSelectorConfig(options=[o.value for o in RadarStyle],
                                                         mode=SelectSelectorMode.DROPDOWN,
                                                         translation_key=CONF_STYLE)),
 
@@ -115,7 +114,7 @@ class IrmKmiOptionFlow(OptionsFlow):
             data_schema=vol.Schema(
                 {
                     vol.Optional(CONF_STYLE, default=get_config_value(self.current_config_entry, CONF_STYLE)):
-                        SelectSelector(SelectSelectorConfig(options=CONF_STYLE_OPTIONS,
+                        SelectSelector(SelectSelectorConfig(options=[o.value for o in RadarStyle],
                                                             mode=SelectSelectorMode.DROPDOWN,
                                                             translation_key=CONF_STYLE)),
 

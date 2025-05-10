@@ -8,13 +8,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from homeassistant.const import CONF_ZONE
-from irm_kmi_api.api import (IrmKmiApiClientHa, IrmKmiApiError,
-                             IrmKmiApiParametersError)
-from irm_kmi_api.data import AnimationFrameData, RadarAnimationData
+from irm_kmi_api import IrmKmiApiClientHa, IrmKmiApiError, AnimationFrameData, RadarAnimationData, RadarStyle
 from pytest_homeassistant_custom_component.common import (MockConfigEntry,
                                                           load_fixture)
 
-from custom_components.irm_kmi import OPTION_STYLE_STD
 from custom_components.irm_kmi.const import (
     CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
     CONF_USE_DEPRECATED_FORECAST, DOMAIN, IRM_KMI_TO_HA_CONDITION_MAP,
@@ -43,7 +40,7 @@ def mock_config_entry() -> MockConfigEntry:
         title="Home",
         domain=DOMAIN,
         data={CONF_ZONE: "zone.home",
-              CONF_STYLE: OPTION_STYLE_STD,
+              CONF_STYLE: RadarStyle.OPTION_STYLE_STD,
               CONF_DARK_MODE: True,
               CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
               CONF_LANGUAGE_OVERRIDE: 'none'},
@@ -141,7 +138,7 @@ def mock_exception_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None
             "custom_components.irm_kmi.coordinator.IrmKmiApiClientHa", autospec=True
     ) as irm_kmi_api_mock:
         irm_kmi = irm_kmi_api_mock.return_value
-        irm_kmi.refresh_forecasts_coord.side_effect = IrmKmiApiParametersError
+        irm_kmi.refresh_forecasts_coord.side_effect = IrmKmiApiError
         yield irm_kmi
 
 def get_radar_animation_data() -> RadarAnimationData:

@@ -1,15 +1,15 @@
 import json
 from datetime import datetime
-from typing import List
+from typing import List, Dict
 
 from freezegun import freeze_time
 from homeassistant.components.weather import Forecast
 from homeassistant.core import HomeAssistant
-from irm_kmi_api.data import IrmKmiRadarForecast
+from irm_kmi_api.data import RadarForecast
 from pytest_homeassistant_custom_component.common import (MockConfigEntry,
                                                           load_fixture)
 
-from custom_components.irm_kmi import IrmKmiCoordinator, IrmKmiWeather
+from custom_components.irm_kmi.weather import IrmKmiCoordinator, IrmKmiWeather
 from custom_components.irm_kmi.data import ProcessedCoordinatorData
 from tests.conftest import get_api_with_data
 
@@ -77,35 +77,35 @@ async def test_radar_forecast_service(
 
     weather = IrmKmiWeather(coordinator, mock_config_entry)
 
-    result_service: List[Forecast] = weather.get_forecasts_radar_service(False)
+    result_service: Dict[str, List[Forecast]] = weather.get_forecasts_radar_service(False)
 
     l = [
-        IrmKmiRadarForecast(datetime="2023-12-26T17:00:00+01:00", native_precipitation=0, might_rain=False,
+        RadarForecast(datetime="2023-12-26T17:00:00+01:00", native_precipitation=0, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T17:10:00+01:00", native_precipitation=0, might_rain=False,
+        RadarForecast(datetime="2023-12-26T17:10:00+01:00", native_precipitation=0, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T17:20:00+01:00", native_precipitation=0, might_rain=False,
+        RadarForecast(datetime="2023-12-26T17:20:00+01:00", native_precipitation=0, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T17:30:00+01:00", native_precipitation=0, might_rain=False,
+        RadarForecast(datetime="2023-12-26T17:30:00+01:00", native_precipitation=0, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T17:40:00+01:00", native_precipitation=0.1, might_rain=False,
+        RadarForecast(datetime="2023-12-26T17:40:00+01:00", native_precipitation=0.1, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T17:50:00+01:00", native_precipitation=0.01, might_rain=False,
+        RadarForecast(datetime="2023-12-26T17:50:00+01:00", native_precipitation=0.01, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T18:00:00+01:00", native_precipitation=0.12, might_rain=False,
+        RadarForecast(datetime="2023-12-26T18:00:00+01:00", native_precipitation=0.12, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T18:10:00+01:00", native_precipitation=1.2, might_rain=False,
+        RadarForecast(datetime="2023-12-26T18:10:00+01:00", native_precipitation=1.2, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T18:20:00+01:00", native_precipitation=2, might_rain=False,
+        RadarForecast(datetime="2023-12-26T18:20:00+01:00", native_precipitation=2, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T18:30:00+01:00", native_precipitation=0, might_rain=False,
+        RadarForecast(datetime="2023-12-26T18:30:00+01:00", native_precipitation=0, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
-        IrmKmiRadarForecast(datetime="2023-12-26T18:40:00+01:00", native_precipitation=0, might_rain=False,
+        RadarForecast(datetime="2023-12-26T18:40:00+01:00", native_precipitation=0, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min')
     ]
 
     assert result_service == {'forecast': l[5:]}
 
-    result_service: List[Forecast] = weather.get_forecasts_radar_service(True)
+    result_service: Dict[str, List[Forecast]] = weather.get_forecasts_radar_service(True)
 
     assert result_service == {'forecast': l}
