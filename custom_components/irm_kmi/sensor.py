@@ -75,7 +75,7 @@ class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}-next-warning"
         self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_next_warning")
         self._attr_device_info = coordinator.shared_device_info
-        self._attr_translation_key = f"next_warning"
+        self._attr_translation_key = "next_warning"
 
     @property
     def native_value(self) -> datetime | None:
