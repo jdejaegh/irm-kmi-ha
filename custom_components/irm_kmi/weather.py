@@ -1,7 +1,7 @@
 """Support for IRM KMI weather."""
 import logging
 from datetime import datetime
-from typing import List
+from typing import List, Dict
 
 import voluptuous as vol
 from homeassistant.components.weather import (Forecast, WeatherEntity,
@@ -152,20 +152,18 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
 
         return [f for f in data if f.get('is_daytime')]
 
-    def get_forecasts_radar_service(self, include_past_forecasts: bool = False) -> List[Forecast] | None:
+    def get_forecasts_radar_service(self, include_past_forecasts: bool = False) -> Dict[str, List[Forecast]]:
         """
         Forecast service based on data from the radar.  Only contains datetime and precipitation amount.
         The result always include the current 10 minutes interval, even if include_past_forecast is false.
         :param include_past_forecasts: whether to include data points that are in the past
-        :return: ordered list of forecasts
+        :return: ordered list of forecasts, under the 'forecast' key as other HA services
         """
         now = dt.now()
         now = now.replace(minute=(now.minute // 10) * 10, second=0, microsecond=0)
 
-        # TODO adapt the return value to match the weather.get_forecasts in next breaking change release
-        #  return { 'forecast': [...] }
-        return [f for f in self.coordinator.data.get('radar_forecast')
-                if include_past_forecasts or datetime.fromisoformat(f.get('datetime')) >= now]
+        return {'forecast': [f for f in self.coordinator.data.get('radar_forecast')
+                if include_past_forecasts or datetime.fromisoformat(f.get('datetime')) >= now]}
 
     # TODO remove on next breaking changes
     @property

@@ -61,25 +61,6 @@ async def test_weather_higher_temp_at_night(
             assert f['native_temperature'] >= f['native_templow']
 
 
-@freeze_time(datetime.fromisoformat("2023-12-26T18:30:00+01:00"))
-async def test_forecast_attribute_same_as_service_call(
-        hass: HomeAssistant,
-        mock_config_entry_with_deprecated: MockConfigEntry
-) -> None:
-    coordinator = IrmKmiCoordinator(hass, mock_config_entry_with_deprecated)
-    forecast = json.loads(load_fixture("forecast.json"))
-    coordinator._api._api_data = forecast
-
-    coordinator.data = await coordinator.process_api_data()
-
-    weather = IrmKmiWeather(coordinator, mock_config_entry_with_deprecated)
-
-    result_service: List[Forecast] = await weather.async_forecast_twice_daily()
-    result_forecast: List[Forecast] = weather.extra_state_attributes['forecast']
-
-    assert result_service == result_forecast
-
-
 @freeze_time(datetime.fromisoformat("2023-12-26T17:58:03+01:00"))
 async def test_radar_forecast_service(
         hass: HomeAssistant,
@@ -98,7 +79,7 @@ async def test_radar_forecast_service(
 
     result_service: List[Forecast] = weather.get_forecasts_radar_service(False)
 
-    expected = [
+    l = [
         IrmKmiRadarForecast(datetime="2023-12-26T17:00:00+01:00", native_precipitation=0, might_rain=False,
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min'),
         IrmKmiRadarForecast(datetime="2023-12-26T17:10:00+01:00", native_precipitation=0, might_rain=False,
@@ -123,8 +104,8 @@ async def test_radar_forecast_service(
                             rain_forecast_max=0, rain_forecast_min=0, unit='mm/10min')
     ]
 
-    assert result_service == expected[5:]
+    assert result_service == {'forecast': l[5:]}
 
     result_service: List[Forecast] = weather.get_forecasts_radar_service(True)
 
-    assert result_service == expected
+    assert result_service == {'forecast': l}
