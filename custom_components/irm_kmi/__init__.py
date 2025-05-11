@@ -85,7 +85,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
 
     if config_entry.version == 5:
         del new[CONF_USE_DEPRECATED_FORECAST]
-        hass.config_entries.async_update_entry(config_entry, data=new, version=5)
+        hass.config_entries.async_update_entry(config_entry, data=new, version=6)
 
     _LOGGER.debug(f"Migration to version {config_entry.version} successful")
 
