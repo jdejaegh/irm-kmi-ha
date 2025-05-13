@@ -128,3 +128,38 @@ async def test_radar_forecast_service(
     result_service: List[Forecast] = weather.get_forecasts_radar_service(True)
 
     assert result_service == expected
+
+def is_serializable(x):
+    try:
+        json.dumps(x)
+        return True
+    except (TypeError, OverflowError):
+        return False
+
+def all_serializable(elements: list[Forecast]):
+    for element in elements:
+        for v in element.values():
+            assert is_serializable(v)
+
+async def test_forecast_types_are_serializable(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry
+) -> None:
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+    forecast = json.loads(load_fixture("forecast.json"))
+    coordinator._api._api_data = forecast
+
+    coordinator.data = await coordinator.process_api_data()
+    weather = IrmKmiWeather(coordinator, mock_config_entry)
+
+    result = await weather.async_forecast_daily()
+    all_serializable(result)
+
+    result = await weather.async_forecast_twice_daily()
+    all_serializable(result)
+
+    result = await weather.async_forecast_hourly()
+    all_serializable(result)
+
+    result = weather.get_forecasts_radar_service(True)
+    all_serializable(result)
