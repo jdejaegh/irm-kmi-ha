@@ -128,9 +128,18 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
         except ValueError:
             animation = None
 
+
+        # Make 'condition_evol' in a str instead of enum variant
+        daily_forecast = [
+            {**d, "condition_evol": d["condition_evol"].value}
+            if "condition_evol" in d and hasattr(d["condition_evol"], "value")
+            else d
+            for d in self._api.get_daily_forecast(tz, lang)
+        ]
+
         return ProcessedCoordinatorData(
             current_weather=self._api.get_current_weather(tz),
-            daily_forecast=self._api.get_daily_forecast(tz, lang),
+            daily_forecast=daily_forecast,
             hourly_forecast=self._api.get_hourly_forecast(tz),
             radar_forecast=self._api.get_radar_forecast(),
             animation=animation,
