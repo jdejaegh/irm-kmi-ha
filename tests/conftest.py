@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timedelta
 from typing import Generator
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from homeassistant.const import CONF_ZONE
@@ -119,6 +119,7 @@ def mock_irm_kmi_api(request: pytest.FixtureRequest) -> Generator[None, MagicMoc
     ) as irm_kmi_api_mock:
         irm_kmi = irm_kmi_api_mock.return_value
         irm_kmi.get_forecasts_coord.return_value = forecast
+        irm_kmi.get_radar_forecast.return_value = {}
         yield irm_kmi
 
 
