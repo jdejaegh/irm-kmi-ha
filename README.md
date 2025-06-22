@@ -119,6 +119,7 @@ The following table summarizes the different known warning types.  Other warning
 | thunder                     | 3          | Thunder, Orage, Onweer, Gewitter                                                         |
 | fog                         | 7          | Fog, Brouillard, Mist, Nebel                                                             |
 | cold                        | 9          | Cold, Froid, Koude, Kalt                                                                 |
+| heat                        | 10         | Heat, Chaleur, Hitte, Hitze                                                              |
 | thunder_wind_rain           | 12         | Thunder Wind Rain, Orage, rafales et averses, Onweer Wind Regen, Gewitter Windböen Regen |
 | thunderstorm_strong_gusts   | 13         | Thunderstorm & strong gusts, Orage et rafales, Onweer en wind, Gewitter und Windböen     |
 | thunderstorm_large_rainfall | 14         | Thunderstorm & large rainfall, Orage et averses, Onweer en regen, Gewitter und Regen     |
