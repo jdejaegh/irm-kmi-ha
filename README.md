@@ -5,6 +5,10 @@ The data is collected via their non-public mobile application API.
 
 Although the provider is Belgian, the data is available for Belgium 🇧🇪, Luxembourg 🇱🇺, and The Netherlands 🇳🇱
 
+> [!NOTE]  
+> Starting with Home Assistant 2025.10, this integration is also available directly in Home Assistant Core. 
+> Only some features are available in the Home Assistant Core version, other features will be added over time.
+
 ## Installing via HACS
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jdejaegh&repository=irm-kmi-ha&category=integration)
