@@ -1,7 +1,7 @@
 """Constants for the IRM KMI integration."""
 from typing import Final
 
-from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.components.weather import (ATTR_CONDITION_CLEAR_NIGHT,
                                               ATTR_CONDITION_CLOUDY,
                                               ATTR_CONDITION_FOG,
@@ -134,7 +134,7 @@ IRM_KMI_NAME: Final = {
     'en': 'Royal Meteorological Institute of Belgium'
 }
 
-USER_AGENT: Final = 'github.com/jdejaegh/irm-kmi-ha 0.3.2'
+USER_AGENT: Final = 'github.com/jdejaegh/irm-kmi-ha 0.3.3'
 
 CURRENT_WEATHER_SENSORS: Final = {'temperature', 'wind_speed', 'wind_gust_speed', 'wind_bearing', 'uv_index',
                                   'pressure'}
@@ -147,12 +147,19 @@ CURRENT_WEATHER_SENSOR_UNITS: Final = {'temperature': UnitOfTemperature.CELSIUS,
                                        'uv_index': '',
                                        'pressure': UnitOfPressure.HPA}
 
-CURRENT_WEATHER_SENSOR_CLASS: Final = {'temperature': SensorDeviceClass.TEMPERATURE,
+CURRENT_WEATHER_SENSOR_DEVICE_CLASS: Final = {'temperature': SensorDeviceClass.TEMPERATURE,
                                        'wind_speed': SensorDeviceClass.WIND_SPEED,
                                        'wind_gust_speed': SensorDeviceClass.WIND_SPEED,
                                        'wind_bearing': None,
                                        'uv_index': None,
                                        'pressure': SensorDeviceClass.ATMOSPHERIC_PRESSURE}
+
+CURRENT_WEATHER_SENSOR_STATE_CLASS: Final = {'temperature': SensorStateClass.MEASUREMENT,
+                                       'wind_speed': SensorStateClass.MEASUREMENT,
+                                       'wind_gust_speed': SensorStateClass.MEASUREMENT,
+                                       'wind_bearing': SensorStateClass.MEASUREMENT,
+                                       'uv_index': SensorStateClass.MEASUREMENT,
+                                       'pressure': SensorStateClass.MEASUREMENT}
 
 # Leave None when we want the default icon to be shown
 CURRENT_WEATHER_SENSOR_ICON: Final = {'temperature': None,
