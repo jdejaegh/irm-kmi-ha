@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 from homeassistant.components import sensor
-from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -14,9 +14,9 @@ from irm_kmi_api.data import IrmKmiForecast, IrmKmiRadarForecast
 from irm_kmi_api.pollen import PollenParser
 
 from . import DOMAIN, IrmKmiCoordinator
-from .const import (CURRENT_WEATHER_SENSOR_CLASS, CURRENT_WEATHER_SENSOR_ICON,
-                    CURRENT_WEATHER_SENSOR_UNITS, CURRENT_WEATHER_SENSORS,
-                    POLLEN_TO_ICON_MAP)
+from .const import (CURRENT_WEATHER_SENSOR_DEVICE_CLASS, CURRENT_WEATHER_SENSOR_STATE_CLASS,
+		    CURRENT_WEATHER_SENSOR_ICON, CURRENT_WEATHER_SENSOR_UNITS,
+		    CURRENT_WEATHER_SENSORS, POLLEN_TO_ICON_MAP)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -171,7 +171,11 @@ class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
 
     @property
     def device_class(self) -> SensorDeviceClass | None:
-        return CURRENT_WEATHER_SENSOR_CLASS[self._sensor_name]
+        return CURRENT_WEATHER_SENSOR_DEVICE_CLASS[self._sensor_name]
+
+    @property
+    def state_class(self) -> SensorStateClass | None:
+        return CURRENT_WEATHER_SENSOR_STATE_CLASS[self._sensor_name]
 
     @property
     def icon(self) -> str | None:
@@ -192,6 +196,8 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}-current-rainfall"
         self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_current_rainfall")
         self._attr_device_info = coordinator.shared_device_info
+        self._attr_device_class = SensorDeviceClass.PRECIPITATION_INTENSITY
+        self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_translation_key = "current_rainfall"
         self._attr_icon = 'mdi:weather-pouring'
 
