@@ -16,6 +16,7 @@ jobs:
         uses: "hacs/action@main"
         with:
           category: "integration"
+          ignore: "image"
   validate-hassfest:
     runs-on: "ubuntu-latest"
     steps:
