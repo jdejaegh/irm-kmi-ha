@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 from homeassistant.components import sensor
-from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -47,7 +47,6 @@ class IrmKmiPollen(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-pollen-{pollen}"
-        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_{pollen}_level")
         self._attr_options = PollenParser.get_option_values()
         self._attr_device_info = coordinator.shared_device_info
         self._pollen = pollen
@@ -74,7 +73,6 @@ class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-next-warning"
-        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_next_warning")
         self._attr_device_info = coordinator.shared_device_info
         self._attr_translation_key = f"next_warning"
 
@@ -122,7 +120,6 @@ class IrmKmiNextSunMove(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-next-{move}"
-        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_next_{move}")
         self._attr_device_info = coordinator.shared_device_info
         self._attr_translation_key = f"next_{move}"
         self._move: str = move
@@ -147,6 +144,7 @@ class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
 
     _attr_has_entity_name = True
     _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    _attr_state_class = SensorStateClass.MEASUREMENT  # Enable LTS    
 
     def __init__(self,
                  coordinator: IrmKmiCoordinator,
@@ -155,7 +153,6 @@ class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-current-{sensor_name}"
-        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_current_{sensor_name}")
         self._attr_device_info = coordinator.shared_device_info
         self._attr_translation_key = f"current_{sensor_name}"
         self._sensor_name: str = sensor_name
@@ -183,6 +180,7 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
 
     _attr_has_entity_name = True
     _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    _attr_state_class = SensorStateClass.MEASUREMENT  # Enable LTS
 
     def __init__(self,
                  coordinator: IrmKmiCoordinator,
@@ -190,7 +188,6 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-current-rainfall"
-        self.entity_id = sensor.ENTITY_ID_FORMAT.format(f"{str(entry.title).lower()}_current_rainfall")
         self._attr_device_info = coordinator.shared_device_info
         self._attr_translation_key = "current_rainfall"
         self._attr_icon = 'mdi:weather-pouring'
@@ -218,6 +215,9 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
         if current is None:
             return None
 
+        if current.get('unit', None) == "mm/10min":
+            return current.get('native_precipitation', None) * 6
+
         return current.get('native_precipitation', None)
 
     @property
@@ -227,4 +227,7 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
         if current is None:
             return None
 
+        if current.get('unit', None) == 'mm/10min':
+            return 'mm/h'
+            
         return current.get('unit', None)

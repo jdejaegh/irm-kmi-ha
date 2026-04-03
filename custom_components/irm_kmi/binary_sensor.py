@@ -34,7 +34,6 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
         BinarySensorEntity.__init__(self)
         self._attr_device_class = BinarySensorDeviceClass.SAFETY
         self._attr_unique_id = entry.entry_id
-        self.entity_id = binary_sensor.ENTITY_ID_FORMAT.format(f"weather_warning_{str(entry.title).lower()}")
         self._attr_name = f"Warning {entry.title}"
         self._attr_device_info = coordinator.shared_device_info
 
