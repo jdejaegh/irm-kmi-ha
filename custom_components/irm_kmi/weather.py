@@ -57,6 +57,7 @@ class IrmKmiWeather(CoordinatorEntity, WeatherEntity):
                  ) -> None:
         super().__init__(coordinator)
         WeatherEntity.__init__(self)
+        self._name = entry.title
         self._attr_name = "IRM KMI Weather"
         self._attr_unique_id = entry.entry_id
         self._attr_device_info = coordinator.shared_device_info
