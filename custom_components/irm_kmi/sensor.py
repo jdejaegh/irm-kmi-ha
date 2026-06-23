@@ -197,9 +197,9 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
 
     def _current_forecast(self) -> IrmKmiRadarForecast | None:
         now = dt.now()
-        forecasts = self.coordinator.data.get('radar_forecast', None)
+        forecasts = self.coordinator.data.get('radar_forecast')
 
-        if forecasts is None:
+        if not forecasts:
             return None
 
         prev = forecasts[0]

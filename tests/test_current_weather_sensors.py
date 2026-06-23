@@ -62,3 +62,17 @@ async def test_current_rainfall_unit(
     s = IrmKmiCurrentRainfall(coordinator, mock_config_entry)
 
     assert s.native_unit_of_measurement == expected
+
+
+async def test_current_rainfall_handles_empty_radar_forecast(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry,
+) -> None:
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+    coordinator.data = ProcessedCoordinatorData(radar_forecast=[])
+
+    s = IrmKmiCurrentRainfall(coordinator, mock_config_entry)
+
+    assert s._current_forecast() is None
+    assert s.native_value is None
+    assert s.native_unit_of_measurement is None
