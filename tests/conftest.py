@@ -95,17 +95,21 @@ def mock_get_forecast_out_benelux():
 @pytest.fixture
 def mock_get_forecast_api_error():
     """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it raises an error"""
-    with patch("custom_components.irm_kmi.config_flow.IrmKmiApiClient.get_forecasts_coord",
-               side_effet=IrmKmiApiError):
-        return
+    with patch(
+            "custom_components.irm_kmi.config_flow.IrmKmiApiClient.get_forecasts_coord",
+            side_effect=IrmKmiApiError,
+    ):
+        yield
 
 
 @pytest.fixture
 def mock_get_forecast_api_error_repair():
     """Mock a call to IrmKmiApiClient.get_forecasts_coord() so that it raises an error"""
-    with patch("custom_components.irm_kmi.repairs.IrmKmiApiClient.get_forecasts_coord",
-               side_effet=IrmKmiApiError):
-        return
+    with patch(
+            "custom_components.irm_kmi.repairs.IrmKmiApiClient.get_forecasts_coord",
+            side_effect=IrmKmiApiError,
+    ):
+        yield
 
 
 @pytest.fixture()
