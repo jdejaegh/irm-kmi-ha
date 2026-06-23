@@ -1,7 +1,12 @@
 from datetime import timedelta
+from unittest.mock import AsyncMock
 
+import pytest
 from homeassistant.components.weather import ATTR_CONDITION_CLOUDY
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.util.dt import utcnow
+from irm_kmi_api.api import IrmKmiApiError
 from irm_kmi_api.data import CurrentWeatherData, IrmKmiRadarForecast
 from irm_kmi_api.pollen import PollenParser
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -18,6 +23,26 @@ async def test_jules_forgot_to_revert_update_interval_before_pushing(
     coordinator = IrmKmiCoordinator(hass, mock_config_entry)
 
     assert timedelta(minutes=5) <= coordinator.update_interval
+
+
+async def test_update_raises_when_cached_data_is_too_stale(
+        hass: HomeAssistant,
+        mock_config_entry: MockConfigEntry,
+) -> None:
+    hass.states.async_set(
+        "zone.home",
+        0,
+        {"latitude": 50.738681639, "longitude": 4.054077148},
+    )
+
+    coordinator = IrmKmiCoordinator(hass, mock_config_entry)
+    coordinator.data = ProcessedCoordinatorData()
+    coordinator.last_update_success_time = utcnow() - timedelta(hours=1)
+    coordinator.update_interval = timedelta(minutes=7)
+    coordinator._api.refresh_forecasts_coord = AsyncMock(side_effect=IrmKmiApiError)
+
+    with pytest.raises(UpdateFailed):
+        await coordinator._async_update_data()
 
 
 async def test_refresh_succeed_even_when_pollen_and_radar_fail(
