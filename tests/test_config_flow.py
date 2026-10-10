@@ -7,20 +7,28 @@ from homeassistant.config_entries import SOURCE_USER
 from homeassistant.const import CONF_ZONE
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
-from irm_kmi_api.const import OPTION_STYLE_SATELLITE, OPTION_STYLE_STD
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import async_migrate_entry
 from custom_components.irm_kmi.const import (
-    CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
-    CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
-    OPTION_DEPRECATED_FORECAST_NOT_USED)
+    CONF_DARK_MODE,
+    CONF_LANGUAGE_OVERRIDE,
+    CONF_STYLE,
+    CONF_USE_DEPRECATED_FORECAST,
+    CONFIG_FLOW_VERSION,
+    DOMAIN,
+    OPTION_DEPRECATED_FORECAST_NOT_USED,
+)
+from custom_components.irm_kmi.irm_kmi_api.const import (
+    OPTION_STYLE_SATELLITE,
+    OPTION_STYLE_STD,
+)
 
 
 async def test_full_user_flow(
-        hass: HomeAssistant,
-        mock_setup_entry: MagicMock,
-        mock_get_forecast_in_benelux: MagicMock
+    hass: HomeAssistant,
+    mock_setup_entry: MagicMock,
+    mock_get_forecast_in_benelux: MagicMock,
 ) -> None:
     """Test the full user configuration flow."""
     result = await hass.config_entries.flow.async_init(
@@ -32,23 +40,27 @@ async def test_full_user_flow(
 
     result2 = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        user_input={CONF_ZONE: ENTITY_ID_HOME,
-                    CONF_STYLE: OPTION_STYLE_STD,
-                    CONF_DARK_MODE: False},
+        user_input={
+            CONF_ZONE: ENTITY_ID_HOME,
+            CONF_STYLE: OPTION_STYLE_STD,
+            CONF_DARK_MODE: False,
+        },
     )
     assert result2.get("type") == FlowResultType.CREATE_ENTRY
     assert result2.get("title") == "test home"
-    assert result2.get("data") == {CONF_ZONE: ENTITY_ID_HOME,
-                                   CONF_STYLE: OPTION_STYLE_STD,
-                                   CONF_DARK_MODE: False,
-                                   CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
-                                   CONF_LANGUAGE_OVERRIDE: 'none'}
+    assert result2.get("data") == {
+        CONF_ZONE: ENTITY_ID_HOME,
+        CONF_STYLE: OPTION_STYLE_STD,
+        CONF_DARK_MODE: False,
+        CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
+        CONF_LANGUAGE_OVERRIDE: "none",
+    }
 
 
 async def test_config_flow_out_benelux_zone(
-        hass: HomeAssistant,
-        mock_setup_entry: MagicMock,
-        mock_get_forecast_out_benelux: MagicMock
+    hass: HomeAssistant,
+    mock_setup_entry: MagicMock,
+    mock_get_forecast_out_benelux: MagicMock,
 ) -> None:
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
@@ -56,20 +68,22 @@ async def test_config_flow_out_benelux_zone(
 
     result2 = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        user_input={CONF_ZONE: ENTITY_ID_HOME,
-                    CONF_STYLE: OPTION_STYLE_STD,
-                    CONF_DARK_MODE: False},
+        user_input={
+            CONF_ZONE: ENTITY_ID_HOME,
+            CONF_STYLE: OPTION_STYLE_STD,
+            CONF_DARK_MODE: False,
+        },
     )
 
     assert result2.get("type") == FlowResultType.FORM
     assert result2.get("step_id") == "user"
-    assert CONF_ZONE in result2.get('errors')
+    assert CONF_ZONE in result2.get("errors")
 
 
 async def test_config_flow_with_api_error(
-        hass: HomeAssistant,
-        mock_setup_entry: MagicMock,
-        mock_get_forecast_api_error: MagicMock
+    hass: HomeAssistant,
+    mock_setup_entry: MagicMock,
+    mock_get_forecast_api_error: MagicMock,
 ) -> None:
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
@@ -77,14 +91,16 @@ async def test_config_flow_with_api_error(
 
     result2 = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        user_input={CONF_ZONE: ENTITY_ID_HOME,
-                    CONF_STYLE: OPTION_STYLE_STD,
-                    CONF_DARK_MODE: False},
+        user_input={
+            CONF_ZONE: ENTITY_ID_HOME,
+            CONF_STYLE: OPTION_STYLE_STD,
+            CONF_DARK_MODE: False,
+        },
     )
 
     assert result2.get("type") == FlowResultType.FORM
     assert result2.get("step_id") == "user"
-    assert 'base' in result2.get('errors')
+    assert "base" in result2.get("errors")
 
 
 async def test_config_flow_unknown_zone(hass: HomeAssistant) -> None:
@@ -94,25 +110,28 @@ async def test_config_flow_unknown_zone(hass: HomeAssistant) -> None:
 
     result2 = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        user_input={CONF_ZONE: "zone.what",
-                    CONF_STYLE: OPTION_STYLE_STD,
-                    CONF_DARK_MODE: False},
+        user_input={
+            CONF_ZONE: "zone.what",
+            CONF_STYLE: OPTION_STYLE_STD,
+            CONF_DARK_MODE: False,
+        },
     )
 
     assert result2.get("type") == FlowResultType.FORM
     assert result2.get("step_id") == "user"
-    assert CONF_ZONE in result2.get('errors')
+    assert CONF_ZONE in result2.get("errors")
 
 
 async def test_option_flow(
-        hass: HomeAssistant,
-        mock_config_entry: MockConfigEntry
+    hass: HomeAssistant, mock_config_entry: MockConfigEntry
 ) -> None:
     mock_config_entry.add_to_hass(hass)
 
     assert not mock_config_entry.options
 
-    result = await hass.config_entries.options.async_init(mock_config_entry.entry_id, data=None)
+    result = await hass.config_entries.options.async_init(
+        mock_config_entry.entry_id, data=None
+    )
 
     assert result["type"] == FlowResultType.FORM
     assert result["step_id"] == "init"
@@ -122,8 +141,8 @@ async def test_option_flow(
         user_input={
             CONF_STYLE: OPTION_STYLE_SATELLITE,
             CONF_DARK_MODE: True,
-            CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED
-        }
+            CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
+        },
     )
 
     assert result["type"] == FlowResultType.CREATE_ENTRY
@@ -131,7 +150,7 @@ async def test_option_flow(
         CONF_STYLE: OPTION_STYLE_SATELLITE,
         CONF_DARK_MODE: True,
         CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
-        CONF_LANGUAGE_OVERRIDE: 'none'
+        CONF_LANGUAGE_OVERRIDE: "none",
     }
 
 
@@ -142,7 +161,7 @@ async def test_config_entry_migration(hass: HomeAssistant) -> None:
         domain=DOMAIN,
         data={CONF_ZONE: "zone.home"},
         unique_id="zone.home",
-        version=1
+        version=1,
     )
 
     entry.add_to_hass(hass)

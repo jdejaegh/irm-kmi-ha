@@ -10,15 +10,20 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import OPTION_STYLE_STD, async_migrate_entry
 from custom_components.irm_kmi.const import (
-    CONF_DARK_MODE, CONF_LANGUAGE_OVERRIDE, CONF_STYLE,
-    CONF_USE_DEPRECATED_FORECAST, CONFIG_FLOW_VERSION, DOMAIN,
-    OPTION_DEPRECATED_FORECAST_NOT_USED)
+    CONF_DARK_MODE,
+    CONF_LANGUAGE_OVERRIDE,
+    CONF_STYLE,
+    CONF_USE_DEPRECATED_FORECAST,
+    CONFIG_FLOW_VERSION,
+    DOMAIN,
+    OPTION_DEPRECATED_FORECAST_NOT_USED,
+)
 
 
 async def test_load_unload_config_entry(
-        hass: HomeAssistant,
-        mock_config_entry: MockConfigEntry,
-        mock_irm_kmi_api: AsyncMock,
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_irm_kmi_api: AsyncMock,
 ) -> None:
     """Test the IRM KMI configuration entry loading/unloading."""
     hass.states.async_set(
@@ -42,9 +47,9 @@ async def test_load_unload_config_entry(
 
 
 async def test_config_entry_not_ready(
-        hass: HomeAssistant,
-        mock_config_entry: MockConfigEntry,
-        mock_exception_irm_kmi_api: AsyncMock
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+    mock_exception_irm_kmi_api: AsyncMock,
 ) -> None:
     """Test the IRM KMI configuration entry not ready."""
     hass.states.async_set(
@@ -61,8 +66,8 @@ async def test_config_entry_not_ready(
 
 
 async def test_config_entry_zone_removed(
-        hass: HomeAssistant,
-        caplog: pytest.LogCaptureFixture,
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test the IRM KMI configuration entry not ready."""
     mock_config_entry = MockConfigEntry(
@@ -80,7 +85,7 @@ async def test_config_entry_zone_removed(
 
 
 async def test_config_entry_migration(
-        hass: HomeAssistant,
+    hass: HomeAssistant,
 ) -> None:
     """Test the IRM KMI configuration entry not ready."""
     mock_config_entry = MockConfigEntry(
@@ -99,7 +104,7 @@ async def test_config_entry_migration(
         CONF_STYLE: OPTION_STYLE_STD,
         CONF_DARK_MODE: True,
         CONF_USE_DEPRECATED_FORECAST: OPTION_DEPRECATED_FORECAST_NOT_USED,
-        CONF_LANGUAGE_OVERRIDE: 'none'
+        CONF_LANGUAGE_OVERRIDE: "none",
     }
 
     assert mock_config_entry.version == CONFIG_FLOW_VERSION

@@ -3,7 +3,6 @@ from zoneinfo import ZoneInfo
 
 import pytest
 from homeassistant.core import HomeAssistant
-from irm_kmi_api.data import CurrentWeatherData
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.irm_kmi import IrmKmiCoordinator
@@ -13,6 +12,7 @@ from custom_components.irm_kmi.const import (
     CURRENT_WEATHER_SENSORS,
 )
 from custom_components.irm_kmi.data import ProcessedCoordinatorData
+from custom_components.irm_kmi.irm_kmi_api.data import CurrentWeatherData
 from custom_components.irm_kmi.sensor import IrmKmiCurrentRainfall
 from tests.conftest import get_api_with_data
 

@@ -1,49 +1,76 @@
 """Sensor for pollen from the IRM KMI"""
+
 import logging
 from datetime import datetime
 
-from homeassistant.components import sensor
-from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt
-from irm_kmi_api.const import POLLEN_NAMES
-from irm_kmi_api.data import IrmKmiForecast, IrmKmiRadarForecast
-from irm_kmi_api.pollen import PollenParser
 
 from . import DOMAIN, IrmKmiCoordinator
-from .const import (CURRENT_WEATHER_SENSOR_CLASS, CURRENT_WEATHER_SENSOR_ICON,
-                    CURRENT_WEATHER_SENSOR_UNITS, CURRENT_WEATHER_SENSORS,
-                    POLLEN_TO_ICON_MAP)
+from .const import (
+    CURRENT_WEATHER_SENSOR_CLASS,
+    CURRENT_WEATHER_SENSOR_ICON,
+    CURRENT_WEATHER_SENSOR_UNITS,
+    CURRENT_WEATHER_SENSORS,
+    POLLEN_TO_ICON_MAP,
+)
+from .irm_kmi_api.const import POLLEN_NAMES
+from .irm_kmi_api.data import IrmKmiForecast, IrmKmiRadarForecast
+from .irm_kmi_api.pollen import PollenParser
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+):
     """Set up the sensor platform"""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([IrmKmiPollen(coordinator, entry, pollen.lower()) for pollen in POLLEN_NAMES])
-    async_add_entities([IrmKmiCurrentWeather(coordinator, entry, name) for name in CURRENT_WEATHER_SENSORS])
-    async_add_entities([IrmKmiNextWarning(coordinator, entry),
-                        IrmKmiCurrentRainfall(coordinator, entry)])
+    async_add_entities(
+        [IrmKmiPollen(coordinator, entry, pollen.lower()) for pollen in POLLEN_NAMES]
+    )
+    async_add_entities(
+        [
+            IrmKmiCurrentWeather(coordinator, entry, name)
+            for name in CURRENT_WEATHER_SENSORS
+        ]
+    )
+    async_add_entities(
+        [
+            IrmKmiNextWarning(coordinator, entry),
+            IrmKmiCurrentRainfall(coordinator, entry),
+        ]
+    )
 
-    if coordinator.data.get('country') != 'NL':
-        async_add_entities([IrmKmiNextSunMove(coordinator, entry, move) for move in ['sunset', 'sunrise']])
+    if coordinator.data.get("country") != "NL":
+        async_add_entities(
+            [
+                IrmKmiNextSunMove(coordinator, entry, move)
+                for move in ["sunset", "sunrise"]
+            ]
+        )
 
 
 class IrmKmiPollen(CoordinatorEntity, SensorEntity):
     """Representation of a pollen sensor"""
+
     _attr_has_entity_name = True
     _attr_device_class = SensorDeviceClass.ENUM
-    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    _attr_attribution = (
+        "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    )
 
-    def __init__(self,
-                 coordinator: IrmKmiCoordinator,
-                 entry: ConfigEntry,
-                 pollen: str
-                 ) -> None:
+    def __init__(
+        self, coordinator: IrmKmiCoordinator, entry: ConfigEntry, pollen: str
+    ) -> None:
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-pollen-{pollen}"
@@ -56,7 +83,7 @@ class IrmKmiPollen(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> str | None:
         """Return the state of the sensor."""
-        return self.coordinator.data.get('pollen', {}).get(self._pollen, None)
+        return self.coordinator.data.get("pollen", {}).get(self._pollen, None)
 
 
 class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
@@ -64,32 +91,35 @@ class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
 
     _attr_has_entity_name = True
     _attr_device_class = SensorDeviceClass.TIMESTAMP
-    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    _attr_attribution = (
+        "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    )
 
-    def __init__(self,
-                 coordinator: IrmKmiCoordinator,
-                 entry: ConfigEntry,
-                 ) -> None:
+    def __init__(
+        self,
+        coordinator: IrmKmiCoordinator,
+        entry: ConfigEntry,
+    ) -> None:
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-next-warning"
         self._attr_device_info = coordinator.shared_device_info
-        self._attr_translation_key = f"next_warning"
+        self._attr_translation_key = "next_warning"
 
     @property
     def native_value(self) -> datetime | None:
         """Return the timestamp for the start of the next warning.  Is None when no future warning are available"""
-        if self.coordinator.data.get('warnings') is None:
+        if self.coordinator.data.get("warnings") is None:
             return None
 
         now = dt.now()
         earliest_next = None
-        for item in self.coordinator.data.get('warnings'):
-            if now < item.get('starts_at'):
+        for item in self.coordinator.data.get("warnings"):
+            if now < item.get("starts_at"):
                 if earliest_next is None:
-                    earliest_next = item.get('starts_at')
+                    earliest_next = item.get("starts_at")
                 else:
-                    earliest_next = min(earliest_next, item.get('starts_at'))
+                    earliest_next = min(earliest_next, item.get("starts_at"))
 
         return earliest_next
 
@@ -97,10 +127,21 @@ class IrmKmiNextWarning(CoordinatorEntity, SensorEntity):
     def extra_state_attributes(self) -> dict:
         """Return the attributes related to all the future warnings."""
         now = dt.now()
-        attrs = {"next_warnings": [w for w in self.coordinator.data.get('warnings', []) if now < w.get('starts_at')]}
+        attrs = {
+            "next_warnings": [
+                w
+                for w in self.coordinator.data.get("warnings", [])
+                if now < w.get("starts_at")
+            ]
+        }
 
         attrs["next_warnings_friendly_names"] = ", ".join(
-            [warning['friendly_name'] for warning in attrs['next_warnings'] if warning['friendly_name'] != ''])
+            [
+                warning["friendly_name"]
+                for warning in attrs["next_warnings"]
+                if warning["friendly_name"] != ""
+            ]
+        )
 
         return attrs
 
@@ -110,29 +151,36 @@ class IrmKmiNextSunMove(CoordinatorEntity, SensorEntity):
 
     _attr_has_entity_name = True
     _attr_device_class = SensorDeviceClass.TIMESTAMP
-    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    _attr_attribution = (
+        "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    )
 
-    def __init__(self,
-                 coordinator: IrmKmiCoordinator,
-                 entry: ConfigEntry,
-                 move: str) -> None:
-        assert move in ['sunset', 'sunrise']
+    def __init__(
+        self, coordinator: IrmKmiCoordinator, entry: ConfigEntry, move: str
+    ) -> None:
+        assert move in ["sunset", "sunrise"]
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-next-{move}"
         self._attr_device_info = coordinator.shared_device_info
         self._attr_translation_key = f"next_{move}"
         self._move: str = move
-        self._attr_icon = 'mdi:weather-sunset-down' if move == 'sunset' else 'mdi:weather-sunset-up'
+        self._attr_icon = (
+            "mdi:weather-sunset-down" if move == "sunset" else "mdi:weather-sunset-up"
+        )
 
     @property
     def native_value(self) -> datetime | None:
         """Return the timestamp for the next sunrise or sunset"""
         now = dt.now()
-        data: list[IrmKmiForecast] = self.coordinator.data.get('daily_forecast')
+        data: list[IrmKmiForecast] = self.coordinator.data.get("daily_forecast")
 
-        upcoming = [datetime.fromisoformat(f.get(self._move)) for f in data
-                    if f.get(self._move) is not None and datetime.fromisoformat(f.get(self._move)) >= now]
+        upcoming = [
+            datetime.fromisoformat(f.get(self._move))
+            for f in data
+            if f.get(self._move) is not None
+            and datetime.fromisoformat(f.get(self._move)) >= now
+        ]
 
         if len(upcoming) > 0:
             return upcoming[0]
@@ -143,13 +191,14 @@ class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
     """Representation of a current weather sensor"""
 
     _attr_has_entity_name = True
-    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
-    _attr_state_class = SensorStateClass.MEASUREMENT  # Enable LTS    
+    _attr_attribution = (
+        "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    )
+    _attr_state_class = SensorStateClass.MEASUREMENT  # Enable LTS
 
-    def __init__(self,
-                 coordinator: IrmKmiCoordinator,
-                 entry: ConfigEntry,
-                 sensor_name: str) -> None:
+    def __init__(
+        self, coordinator: IrmKmiCoordinator, entry: ConfigEntry, sensor_name: str
+    ) -> None:
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-current-{sensor_name}"
@@ -160,7 +209,9 @@ class IrmKmiCurrentWeather(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> float | None:
         """Return the current value of the sensor"""
-        return self.coordinator.data.get('current_weather', {}).get(self._sensor_name, None)
+        return self.coordinator.data.get("current_weather", {}).get(
+            self._sensor_name, None
+        )
 
     @property
     def native_unit_of_measurement(self) -> str | None:
@@ -179,29 +230,29 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
     """Representation of a current rainfall sensor"""
 
     _attr_has_entity_name = True
-    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    _attr_attribution = (
+        "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    )
     _attr_state_class = SensorStateClass.MEASUREMENT  # Enable LTS
 
-    def __init__(self,
-                 coordinator: IrmKmiCoordinator,
-                 entry: ConfigEntry) -> None:
+    def __init__(self, coordinator: IrmKmiCoordinator, entry: ConfigEntry) -> None:
         super().__init__(coordinator)
         SensorEntity.__init__(self)
         self._attr_unique_id = f"{entry.entry_id}-current-rainfall"
         self._attr_device_info = coordinator.shared_device_info
         self._attr_translation_key = "current_rainfall"
-        self._attr_icon = 'mdi:weather-pouring'
+        self._attr_icon = "mdi:weather-pouring"
 
     def _current_forecast(self) -> IrmKmiRadarForecast | None:
         now = dt.now()
-        forecasts = self.coordinator.data.get('radar_forecast', None)
+        forecasts = self.coordinator.data.get("radar_forecast", None)
 
         if forecasts is None:
             return None
 
         prev = forecasts[0]
         for f in forecasts:
-            if datetime.fromisoformat(f.get('datetime')) > now:
+            if datetime.fromisoformat(f.get("datetime")) > now:
                 return prev
             prev = f
 
@@ -215,10 +266,10 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
         if current is None:
             return None
 
-        if current.get('unit', None) == "mm/10min":
-            return current.get('native_precipitation', None) * 6
+        if current.get("unit", None) == "mm/10min":
+            return current.get("native_precipitation", None) * 6
 
-        return current.get('native_precipitation', None)
+        return current.get("native_precipitation", None)
 
     @property
     def native_unit_of_measurement(self) -> str | None:
@@ -227,7 +278,7 @@ class IrmKmiCurrentRainfall(CoordinatorEntity, SensorEntity):
         if current is None:
             return None
 
-        if current.get('unit', None) == 'mm/10min':
-            return 'mm/h'
-            
-        return current.get('unit', None)
+        if current.get("unit", None) == "mm/10min":
+            return "mm/h"
+
+        return current.get("unit", None)
