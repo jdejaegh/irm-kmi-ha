@@ -91,19 +91,18 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
 
         except IrmKmiApiError as err:
             if (
-                self.last_update_success_time is not None
-                and self.last_update_success_time - utcnow()
-                < 2.5 * self.update_interval
+                    self.last_update_success_time is not None
+                    and utcnow() - self.last_update_success_time < 2.5 * self.update_interval
             ):
                 _LOGGER.warning(
                     f"Error communicating with API for general forecast: {err}. Keeping the old data."
                 )
                 return self.data
-            else:
-                raise UpdateFailed(
-                    f"Error communicating with API for general forecast: {err}. "
-                    f"Last success time is: {self.last_update_success_time}"
-                )
+
+            raise UpdateFailed(
+                f"Error communicating with API for general forecast: {err}. "
+                f"Last success time is: {self.last_update_success_time}"
+            )
 
         if self._api.get_city() in OUT_OF_BENELUX:
             _LOGGER.error(
