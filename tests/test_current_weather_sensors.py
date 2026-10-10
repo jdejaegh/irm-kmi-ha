@@ -38,8 +38,8 @@ def test_sensors_have_class():
 @pytest.mark.parametrize("expected,filename",
                          [
                              ('mm/h', 'forecast_ams_no_ww.json'),
-                             ('mm/10min', 'forecast_out_of_benelux.json'),
-                             ('mm/10min', 'forecast_with_rain_on_radar.json'),
+                             ('mm/h', 'forecast_out_of_benelux.json'),
+                             ('mm/h', 'forecast_with_rain_on_radar.json'),
                          ])
 async def test_current_rainfall_unit(
         hass: HomeAssistant,
