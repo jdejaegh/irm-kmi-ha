@@ -1,9 +1,11 @@
 """Sensor to signal weather warning from the IRM KMI"""
+
 import logging
 
-from homeassistant.components import binary_sensor
-from homeassistant.components.binary_sensor import (BinarySensorDeviceClass,
-                                                    BinarySensorEntity)
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntity,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -15,7 +17,9 @@ from . import DOMAIN, IrmKmiCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+):
     """Set up the binary platform"""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([IrmKmiWarning(coordinator, entry)])
@@ -24,12 +28,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
     """Representation of a weather warning binary sensor"""
 
-    _attr_attribution = "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    _attr_attribution = (
+        "Weather data from the Royal Meteorological Institute of Belgium meteo.be"
+    )
 
-    def __init__(self,
-                 coordinator: IrmKmiCoordinator,
-                 entry: ConfigEntry
-                 ) -> None:
+    def __init__(self, coordinator: IrmKmiCoordinator, entry: ConfigEntry) -> None:
         super().__init__(coordinator)
         BinarySensorEntity.__init__(self)
         self._attr_device_class = BinarySensorDeviceClass.SAFETY
@@ -39,12 +42,12 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
 
     @property
     def is_on(self) -> bool | None:
-        if self.coordinator.data.get('warnings') is None:
+        if self.coordinator.data.get("warnings") is None:
             return False
 
         now = dt.now()
-        for item in self.coordinator.data.get('warnings'):
-            if item.get('starts_at') < now < item.get('ends_at'):
+        for item in self.coordinator.data.get("warnings"):
+            if item.get("starts_at") < now < item.get("ends_at"):
                 return True
 
         return False
@@ -52,13 +55,20 @@ class IrmKmiWarning(CoordinatorEntity, BinarySensorEntity):
     @property
     def extra_state_attributes(self) -> dict:
         """Return the warning sensor attributes."""
-        attrs = {"warnings": self.coordinator.data.get('warnings', [])}
+        attrs = {"warnings": self.coordinator.data.get("warnings", [])}
 
         now = dt.now()
-        for warning in attrs['warnings']:
-            warning['is_active'] = warning.get('starts_at') < now < warning.get('ends_at')
+        for warning in attrs["warnings"]:
+            warning["is_active"] = (
+                warning.get("starts_at") < now < warning.get("ends_at")
+            )
 
-        attrs["active_warnings_friendly_names"] = ", ".join([warning['friendly_name'] for warning in attrs['warnings']
-                                                             if warning['is_active'] and warning['friendly_name'] != ''])
+        attrs["active_warnings_friendly_names"] = ", ".join(
+            [
+                warning["friendly_name"]
+                for warning in attrs["warnings"]
+                if warning["is_active"] and warning["friendly_name"] != ""
+            ]
+        )
 
         return attrs
