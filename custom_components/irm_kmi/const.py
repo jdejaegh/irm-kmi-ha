@@ -157,7 +157,7 @@ IRM_KMI_NAME: Final = {
     "en": "Royal Meteorological Institute of Belgium",
 }
 
-USER_AGENT: Final = "github.com/jdejaegh/irm-kmi-ha 0.3.3"
+USER_AGENT: Final = "github.com/jdejaegh/irm-kmi-ha 0.3.4"
 
 CURRENT_WEATHER_SENSORS: Final = {
     "temperature",
