@@ -106,8 +106,8 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
 
         if self._api.get_city() in OUT_OF_BENELUX:
             _LOGGER.error(
-                f"The zone {self._zone} is now out of Benelux and forecast is only available in Benelux. "
-                f"Associated device is now disabled.  Move the zone back in Benelux and re-enable to fix "
+                f"The zone {self._zone} is out of Belgium and Luxembourg and forecast is only available in Belgium and Luxembourg. "
+                f"Associated device is now disabled.  Move the zone back in Belgium or Luxembourg and re-enable to fix "
                 f"this"
             )
             disable_from_config(self.hass, self.config_entry)
