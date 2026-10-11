@@ -91,8 +91,9 @@ class IrmKmiCoordinator(TimestampDataUpdateCoordinator):
 
         except IrmKmiApiError as err:
             if (
-                    self.last_update_success_time is not None
-                    and utcnow() - self.last_update_success_time < 2.5 * self.update_interval
+                self.last_update_success_time is not None
+                and utcnow() - self.last_update_success_time
+                < 2.5 * self.update_interval
             ):
                 _LOGGER.warning(
                     f"Error communicating with API for general forecast: {err}. Keeping the old data."
