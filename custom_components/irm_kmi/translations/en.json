@@ -76,7 +76,7 @@
         "step": {
           "confirm": {
             "title": "Repair: {zone} is outside Belgium and Luxembourg",
-            "description": "This integration can only get data for location in Belgium and Luxembourg. Move the zone or delete this configuration entry."
+            "description": "This integration can only get data for locations in Belgium and Luxembourg. Move the zone or delete this configuration entry."
           }
         },
         "error": {
