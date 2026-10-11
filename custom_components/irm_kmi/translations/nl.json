@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "out_of_benelux": "{zone} ligt buiten de Benelux. Kies een zone in de Benelux.",
+      "out_of_benelux": "{zone} ligt buiten België en Luxemburg. Kies een zone in België of Luxemburg.",
       "api_error": "Kon geen gegevens van de API krijgen",
       "zone_not_exist": "{zone} bestaat niet"
     }
@@ -42,7 +42,7 @@
     },
     "repair_solution": {
       "options": {
-        "repair_option_move": "Ik heb de zone verplaats naar de Benelux",
+        "repair_option_move": "Ik heb de zone naar België of Luxemburg verplaatst",
         "repair_option_delete": "Deze configuratie verwijderen"
       }
     },
@@ -71,16 +71,16 @@
   },
   "issues": {
     "zone_moved": {
-      "title": "{zone} ligt buiten de Benelux",
+      "title": "{zone} ligt buiten België en Luxemburg",
       "fix_flow": {
         "step": {
           "confirm": {
-            "title": "Reparatie: {zone} ligt buiten de Benelux",
-            "description": "Deze integratie levert alleen gegevens op voor de Benelux. Verplaats de zone of verwijder de configuratie."
+            "title": "Reparatie: {zone} ligt buiten België en Luxemburg",
+            "description": "Deze integratie levert alleen gegevens voor België en Luxemburg. Verplaats de zone of verwijder de configuratie."
           }
         },
         "error": {
-          "out_of_benelux": "{zone} ligt buiten de Benelux. Kies een zone in de Benelux.",
+          "out_of_benelux": "{zone} ligt buiten België en Luxemburg. Kies een zone in België of Luxemburg.",
           "api_error": "Kon geen gegevens van de API krijgen",
           "zone_not_exist": "{zone} bestaat niet",
           "invalid_choice": "Ongeldige keuze"

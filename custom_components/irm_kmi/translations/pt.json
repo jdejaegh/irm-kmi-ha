@@ -18,7 +18,7 @@
       }
     },
     "error": {
-      "out_of_benelux": "{zone} está fora do Benelux. Escolha uma zona no Benelux.",
+      "out_of_benelux": "{zone} está fora da Bélgica e do Luxemburgo. Escolha uma zona na Bélgica ou no Luxemburgo.",
       "api_error": "Não foi possível obter dados da API",
       "zone_not_exist": "{zone} não existe"
     }
@@ -42,7 +42,7 @@
     },
     "repair_solution": {
       "options": {
-        "repair_option_move": "Mudei a zona para o Benelux",
+        "repair_option_move": "Mudei a zona para a Bélgica ou para o Luxemburgo.",
         "repair_option_delete": "Apagar essa entrada de configuração"
       }
     },
@@ -71,16 +71,16 @@
   },
   "issues": {
     "zone_moved": {
-      "title": "{zone} está fora do Benelux",
+      "title": "{zone} está fora da Bélgica e do Luxemburgo",
       "fix_flow": {
         "step": {
           "confirm": {
-            "title": "Reparação: {zone} está fora do Benelux",
-            "description": "Esta integração só pode obter dados para locais no Benelux. Mova a zona ou apague esta entrada de configuração."
+            "title": "Reparação: {zone} está fora da Bélgica e do Luxemburgo",
+            "description": "Esta integração só pode obter dados para a Bélgica e o Luxemburgo. Mova a zona ou apague esta entrada de configuração."
           }
         },
         "error": {
-          "out_of_benelux": "{zone} está fora do Benelux. Mova-a para dentro do Benelux primeiro.",
+          "out_of_benelux": "{zone} está fora da Bélgica e do Luxemburgo. Mova-a para a Bélgica ou para o Luxemburgo primeiro.",
           "api_error": "Não foi possível obter dados da API",
           "zone_not_exist": "{zone} não existe",
           "invalid_choice": "A escolha não é válida"
