@@ -3,7 +3,7 @@
 Home Assistant weather provider using data from Belgian IRM KMI. 
 The data is collected via their non-public mobile application API.
 
-Although the provider is Belgian, the data is available for Belgium 🇧🇪, Luxembourg 🇱🇺, and The Netherlands 🇳🇱
+Although the provider is Belgian, the data is available for Belgium 🇧🇪 and Luxembourg 🇱🇺.
 
 > [!NOTE]  
 > Starting with Home Assistant 2025.10, this integration is also available directly in Home Assistant Core. 
@@ -64,7 +64,7 @@ weather condition is taken into account in this integration.
 <br><img src="https://github.com/jdejaegh/irm-kmi-ha/raw/main/img/monday.png" height="150" alt="Example of two weather conditions">
 
 2. The trends for 14 days are not shown
-3. The provider only has data for Belgium, Luxembourg and The Netherlands 
+3. The provider only has data for Belgium and Luxembourg 
 
 ## Mapping between IRM KMI and Home Assistant weather conditions
 
