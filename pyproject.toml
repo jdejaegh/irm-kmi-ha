@@ -15,4 +15,4 @@ push = true
     'current_version = "{version}"',
 ]
 "custom_components/irm_kmi/manifest.json" = ['"version": "{version}"']
-"custom_components/irm_kmi/const.py" = ["'github.com/jdejaegh/irm-kmi-ha {version}'"]
+"custom_components/irm_kmi/const.py" = ['"github.com/jdejaegh/irm-kmi-ha {version}"']
