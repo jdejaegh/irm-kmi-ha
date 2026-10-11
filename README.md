@@ -8,6 +8,9 @@ Although the provider is Belgian, the data is available for Belgium 🇧🇪 and
 > [!NOTE]  
 > Starting with Home Assistant 2025.10, this integration is also available directly in Home Assistant Core. 
 > Only some features are available in the Home Assistant Core version, other features will be added over time.
+>
+> Migration to the Core version is not yet implemented. If you want to migrate to the Core version in the future, 
+> DO NOT delete your current configuration. 
 
 ## Installing via HACS
 
