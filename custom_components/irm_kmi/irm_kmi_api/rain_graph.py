@@ -161,7 +161,6 @@ class RainGraph:
 
         if idx is not None and type(imgs[idx]) is str:
             _LOGGER.info("Download single cloud image")
-            print("Download single cloud image")
             result = await self._download_images_from_api([imgs[idx]])
             self._animation_data['sequence'][idx]['image'] = result[0]
 
